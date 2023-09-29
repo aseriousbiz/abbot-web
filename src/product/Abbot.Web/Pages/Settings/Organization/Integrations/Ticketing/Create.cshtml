@@ -1,0 +1,46 @@
+@page
+@model Serious.Abbot.Pages.Settings.Organization.Integrations.Ticketing.CreatePage
+
+@{
+    ViewContext.SetPageInfo("Integrations", "Ticketing", "Add Ticketing Integration");
+}
+
+<partial name="../_Header" model="Model.Viewer"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <div class="font-semibold">
+            <a asp-page="../Index">Integrations</a> / Ticketing
+        </div>
+
+        <section class="mt-5">
+            <h2 class="text-3xl">Add Ticketing Integration</h2>
+            <p>Create tickets in another ticketing service.</p>
+
+            <form method="post" class="flex flex-col items-start">
+                <label asp-for="AccessToken" class="mt-4 font-semibold"></label>
+                <input asp-for="AccessToken" class="form-input w-96" />
+                <span asp-validation-for="AccessToken"></span>
+
+                <label asp-for="AccountDetails.Id" class="mt-4 font-semibold"></label>
+                <input asp-for="AccountDetails.Id" class="form-input w-96" />
+                <span asp-validation-for="AccountDetails.Id"></span>
+
+                <label asp-for="AccountDetails.Integration" class="mt-4 font-semibold"></label>
+                <input asp-for="AccountDetails.Integration" class="form-input w-96" />
+                <span asp-validation-for="AccountDetails.Integration"></span>
+
+                <label asp-for="AccountDetails.IntegrationSlug" class="mt-4 font-semibold"></label>
+                <input asp-for="AccountDetails.IntegrationSlug" class="form-input w-96" />
+                <span asp-validation-for="AccountDetails.IntegrationSlug"></span>
+
+                <div class="mt-4 flex gap-x-2 w-96">
+                    <a asp-page="../Index" class="btn">Back</a>
+                    <div class="flex-grow"></div>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </form>
+        </section>
+    </round-box>
+</page-body>

@@ -1,0 +1,214 @@
+@page
+@model Serious.Abbot.Pages.Settings.Organization.Billing.IndexPage
+
+@{
+    ViewContext.SetPageInfo("Billing", "Billing");
+
+    var planName = Model.CurrentPlan.Name;
+}
+
+<partial name="Settings/Organization/_Header" model="Model.Viewer"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <h2>
+            @if (Model.IsUnexpiredTrial) {
+                <text>Your organization is on a free trial of the</text>
+            } else {
+                <text>Your organization is on the</text>
+            }
+
+            <span class="font-semibold">@planName Plan</span>
+
+            @if (Model.CurrentPlanIsPerSeat) {
+                if (Model.PurchasedSeats.HasValue) {
+                    <span class="font-semibold">
+                        with @Model.PurchasedSeats.Value seats
+                    </span>
+                }
+                <span class="text-gray-500">
+                    (@Model.AgentCount.ToQuantity("seat") in use)
+                </span>
+            }
+        </h2>
+
+        <p>
+            @if (Model.IsUnexpiredTrial) {
+                <text>When the trial ends, your monthly bill will be</text>
+            } else {
+                <text>Your monthly bill is</text>
+            }
+            <span class="font-semibold">
+                @if (!Model.IsUnexpiredTrial && !Model.HasSubscription) {
+                    <text>$0.00</text>
+                } else {
+                    <text>@Model.Total.ToDollar()</text>
+                }
+            </span>
+        </p>
+
+        @if (Model.IsUnexpiredTrial) {
+            <p class="text-base my-2">
+                The trial expires <span data-tooltip="@Model.TrialPlan.Expiry.Date.ToLongDateString()">@Model.TrialPlan.Expiry.Humanize()</span>.
+            </p>
+        }
+
+        <div class="mt-5">
+            @if (Model.IsUnexpiredTrial) {
+                <form method="post" asp-controller="Subscription" asp-action="Upgrade" data-turbo="false">
+                    <input type="hidden" name="qty" value="@Model.AgentCount">
+                    <input type="hidden" name="returnUrl" value="@Request.Path">
+                    <button type="submit" class="btn btn-primary">Add payment info</button>
+                    <span class="text-sm mt-2 text-gray-500">We won't charge you until your trial ends.</span>
+                </form>
+            } else {
+                if (Model.HasSubscription) {
+                    <form method="post" asp-controller="Subscription" asp-action="Manage" data-turbo="false">
+                        <input type="hidden" name="returnUrl" value="@Request.Path">
+                        <button type="submit" class="btn btn-primary">Manage subscription</button>
+                    </form>
+                }
+                else if (Model.Organization.TrialEligible) {
+                    <form method="post" asp-controller="Subscription" asp-action="Upgrade" data-turbo="false">
+                        <input type="hidden" name="qty" value="@Model.AgentCount">
+                        <input type="hidden" name="returnUrl" value="@Request.Path">
+                        <button type="submit" class="btn btn-primary">Start a @(TrialPlan.TrialLengthDays)-day trial of the Business Plan</button>
+                    </form>
+                }
+                else if (Model.CanUpgrade) {
+                    <form method="post" asp-controller="Subscription" asp-action="Upgrade" data-turbo="false">
+                        <input type="hidden" name="qty" value="@Model.AgentCount">
+                        <input type="hidden" name="returnUrl" value="@Request.Path">
+                        <button type="submit" class="btn btn-primary">Upgrade to the Business Plan</button>
+                    </form>
+                }
+                else {
+                    <div class="text-sm text-gray-500">
+                        Contact <a href="mailto:@WebConstants.SupportEmail">@WebConstants.SupportEmail</a> to change your plan
+                    </div>
+                }
+            }
+        </div>
+    </round-box>
+
+    <section class="p-5 bg-white rounded-xl my-4 border border-gray-300">
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                @if (!Model.HasSubscription) {
+                    <div class="font-semibold">
+                        Upgrade Details
+                    </div>
+
+                    <text>Business Plan</text>
+                } else {
+                    <div class="font-semibold">
+                        Details
+                    </div>
+
+                    <text>@planName Plan</text>
+                }
+            </div>
+
+            <div>
+                @foreach (var item in Model.LineItems) {
+                    if (item.IsPerUnitPrice) {
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="text-right">
+                                <div class="font-semibold">
+                                    Price per seat
+                                </div>
+
+                                @item.UnitPrice.ToDollar()
+                            </div>
+
+                            <div class="text-right">
+                                <div class="font-semibold">
+                                    Seats
+                                </div>
+
+                                @item.Quantity
+                            </div>
+
+                            <div class="text-right">
+                                <div class="font-semibold">
+                                    Amount
+                                </div>
+
+                                @item.Total.ToDollar()
+                            </div>
+                        </div>
+                    } else {
+                        <div class="text-right">
+                            <div class="font-semibold">
+                                Amount
+                            </div>
+
+                            @item.Total.ToDollar()
+                        </div>
+                    }
+                }
+
+
+                @if (Model.Coupon is {} coupon) {
+                    <div class="grid grid-cols-3 gap-4 font-semibold text-right mt-4">
+                        <div class="col-span-2">
+                            Subtotal
+                        </div>
+
+                        <div class="text-right">
+                            @Model.Subtotal.ToDollar()
+                        </div>
+                    </div>
+
+
+                    <div class="grid grid-cols-3 gap-4 text-right mt-4">
+                        <div class="col-span-2">
+                            <p class="font-semibold">Discount</p>
+                            <p class="text-gray-500 text-sm">
+                                @coupon.Name
+                                @if (coupon.Type is IndexPage.CouponType.Percent) {
+                                    <span class="font-mono text-xs">(@coupon.Amount.ToString("P0") off)</span>
+                                }
+                                else {
+                                    <span class="font-mono text-xs">(@coupon.Amount.ToDollar() off)</span>
+                                }
+                            </p>
+                        </div>
+
+                        <div class="text-right">
+                            -@Model.TotalDiscount.ToDollar()
+                        </div>
+                    </div>
+                }
+
+                <div class="grid grid-cols-3 gap-4 font-semibold text-right mt-4">
+                    <div class="col-span-2">
+                        Total
+                    </div>
+
+                    <div class="text-right">
+                        @Model.Total.ToDollar()
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.CurrentPlan.PricePerAgent || Model.TrialPlanFeatures?.PricePerAgent is true || Model.CurrentPlan.Type is PlanType.Free) {
+            var seatCount = Math.Max(Model.PurchasedSeats ?? Model.AgentCount, 1);
+            <p class="mt-4 text-sm text-gray-500">
+                @if (Model.IsUnexpiredTrial && Model.PurchasedSeats is null) {
+                    @* Current trial *@
+                    <span>Every agent takes up one seat.</span>
+                } else if (Model.PurchasedSeats is not null) {
+                    @* Paid plan *@
+                    <span>Under this plan, you have @seatCount.ToQuantity("seat") to which you can assign Agents.</span>
+                } else {
+                    @* Free plan, but trial expired *@
+                    <span>Upgrade to a plan with <span data-tooltip="This number is determined by the current number of Agents in your organization.">@seatCount.ToQuantity("seat")</span> to which you can assign Agents.</span>
+                }
+                <span>To add or remove Agents, go to <a asp-page="../Users/Index">the Users page</a> and assign or unassign the "Agent" role.</span>
+            </p>
+        }
+    </section>
+</page-body>

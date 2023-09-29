@@ -1,0 +1,14 @@
+@page "/staff/organizations/{orgId}/activity/{id}"
+@model Serious.Abbot.Pages.Staff.Organizations.Activity.DetailsPage
+
+@{
+    ViewContext.SetPageInfo("Activity", "Activity Detail");
+}
+
+<back-link asp-page="Index" asp-route-orgId="@Model.Organization.PlatformId">Back to Activity Log</back-link>
+
+<page-body>
+    <round-box>
+        <partial name="Shared/Activity/_DetailsPage" />
+    </round-box>
+</page-body>

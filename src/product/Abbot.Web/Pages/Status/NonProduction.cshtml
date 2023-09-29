@@ -1,0 +1,21 @@
+@page
+@model Serious.Abbot.Pages.Status.NonProductionModel
+
+@{
+    ViewContext.SetPageInfo("Status", "Non-Production Environment");
+}
+
+<section class="relative sm:w-3/4 mx-auto text-center flex flex-col items-center mt-16">
+    <div class="flex items-baseline gap-4">
+        <i class="fa fa-diamond-exclamation text-5xl text-yellow-500"></i>
+        <h1 class="italic inline-block font-semibold text-6xl my-1">
+            Non-Production Environment
+        </h1>
+        <i class="fa fa-diamond-exclamation text-5xl text-yellow-500"></i>
+    </div>
+    <p class="my-4 font-mono break-words w-full px-4">
+        This is a non-production Abbot environment.
+        Any data stored here may be deleted at any time and is not subject to the same strict access controls as our Production environment.
+        This system should only be used for testing purposes and no personally-identifiable information should be stored here.
+    </p>
+</section>

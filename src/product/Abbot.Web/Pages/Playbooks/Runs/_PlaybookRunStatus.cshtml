@@ -1,0 +1,70 @@
+@model PlaybookRun
+
+<a asp-page="/Playbooks/Runs/View" asp-route-runId="@Model.CorrelationId" asp-route-slug="@Model.Playbook.Slug" preserve-staff>
+@switch (Model.State) {
+    case "Final":
+        switch (Model.Properties.Result?.Outcome) {
+            case PlaybookRunOutcome.Succeeded:
+                <pill color="Green" icon="fa-check">
+                    Completed
+                </pill>
+
+                break;
+            case PlaybookRunOutcome.Faulted:
+            case PlaybookRunOutcome.TimedOut:
+                <pill color="Red" icon="fa-circle-exclamation">
+                    Failed
+                </pill>
+
+                break;
+            case PlaybookRunOutcome.Cancelled:
+                <pill color="Yellow" icon="fa-circle-x">
+                    Cancelled
+                </pill>
+
+                break;
+        }
+        break;
+
+    case var x when (Model.Properties.CancellationRequestedBy is not null):
+        <pill tooltip="The Playbook is being cancelled" color="Yellow" icon="fa-spinner fa-spin-pulse">
+            Cancelling...
+        </pill>
+        break;
+
+    case "Initial":
+        <pill tooltip="The Playbook run is queued but has not started executing yet." color="Gray" icon="fa-clock">
+            Queued
+        </pill>
+
+        break;
+    case "Suspended":
+        @if (Model.Properties.GetActiveStepResult() is { SuspendPresenter: {} presenter, SuspendState: var state }) {
+            <partial name="Shared/SuspendPresenters/@presenter" model="(Model, state)" />
+        } else {
+            <pill tooltip="The Playbook run is waiting to continue." color="Gray" icon="fa-clock">
+                Waiting
+                <staff-only and="Model.Properties.ActiveStep is not null">
+                    at <code>@Model.Properties.ActiveStep!.ActionId</code>
+                </staff-only>
+            </pill>
+        }
+        break;
+
+    // RunStep.* states indicate that a step is either still executing,
+    // or we're about to transition to another state.
+    // So just show that the step is executing.
+    case "RunStep.Pending":
+    case "RunStep.Faulted":
+    case "RunStep.Completed":
+    case "RunStep.TimeoutExpired":
+        <pill tooltip="The Playbook run is running a step." color="Green" icon="fa-spinner fa-spin-pulse">
+            Running
+            <staff-only and="Model.Properties.ActiveStep is not null">
+                <code>@Model.Properties.ActiveStep!.ActionId</code>
+            </staff-only>
+        </pill>
+
+        break;
+}
+</a>

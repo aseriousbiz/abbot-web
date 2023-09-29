@@ -1,0 +1,48 @@
+@model Announcement
+@{
+    var successfulMessages = Model.Messages.Where(m => m.ErrorMessage is not { Length: > 0 });
+    var failedMessages = Model.Messages.Where(m => m.ErrorMessage is { Length: > 0 }).ToList();
+    bool roomsHaveBeenResolved = Model.Messages.Any();
+    var customerSegments = Model.CustomerSegments.Select(cs => cs.CustomerTag).ToList();
+}
+
+@if (customerSegments.Any()) {
+    <div>
+        for customer segments
+        <ul class="room-list">
+            @foreach (var segment in customerSegments) {
+                <li><pill size="Small">@segment.Name</pill></li>
+            }
+        </ul>
+        @if (!roomsHaveBeenResolved) { <span class="italic">The list of rooms is resolved when the announcement is sent.</span> }
+    </div>
+}
+
+@if (!customerSegments.Any() && !roomsHaveBeenResolved) {
+    <div>
+        in all tracked shared rooms.
+        @if (!roomsHaveBeenResolved) { <span class="italic">The list of rooms is resolved when the announcement is sent.</span> }
+    </div>
+}
+
+@if (roomsHaveBeenResolved) {
+    @* If we've expanded the room list, we want to show them no matter the target. *@
+    <div>
+        in
+        <ul class="room-list">
+            @foreach (var message in successfulMessages) {
+                <li>@(message.Room.Name ?? "unknown").</li>
+            }
+
+
+            @if (failedMessages.Any()) {
+                <!-- This is only for screenreaders, so that when the room list is
+                read outloud, it will be more informative why some are treated differently. -->
+                <li class="sr-only">and there were errors trying to post in @failedMessages.Count.ToQuantity("room")</li>
+            }
+            @foreach (var message in failedMessages) {
+                <li class="text-red-700">@(message.Room.Name ?? "unknown")</li>
+            }
+        </ul>
+    </div>
+}

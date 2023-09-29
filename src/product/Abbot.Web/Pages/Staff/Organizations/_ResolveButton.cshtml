@@ -1,0 +1,5 @@
+@model RoomsPage
+
+@if (Model.AllowResolvingRoom) {
+    <button class="btn btn-primary" type="submit" asp-page-handler="ResolveRoom">Resolve Room</button>
+}

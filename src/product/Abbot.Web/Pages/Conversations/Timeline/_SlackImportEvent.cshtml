@@ -1,0 +1,17 @@
+@model SlackImportEvent
+
+<timeline-entry icon="file-import" actor="@Model.Member" viewer-organization="@Model.Conversation.Organization">
+    <div>
+        <p class="text-indigo-500 font-semibold text-sm">
+            Conversation imported
+
+            <span class="text-gray-500 font-normal" data-tooltip="@Model.Created" title="@Model.Created">
+                @Model.Created.Humanize()
+            </span>
+        </p>
+
+        <p class="font-semibold">
+            @@@Model.Member.DisplayName imported this conversation from an existing Slack thread.
+        </p>
+    </div>
+</timeline-entry>

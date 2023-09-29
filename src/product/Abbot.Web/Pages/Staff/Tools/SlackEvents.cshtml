@@ -1,0 +1,72 @@
+@page "/staff/tools/slack"
+@model Serious.Abbot.Pages.Staff.Tools.SlackEventsPage
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Slack Event List");
+}
+
+<partial name="Staff/_Header"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+<partial name="_Header"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">Slack Events</h2>
+        <div class="flex flex-row mt-5">
+            <div class="flex-grow flex flex-col items-center">
+                <p class="text-xl font-semibold">Total Slack Events</p>
+                <p class="text-3xl">@Model.Stats.Total.ToString("N0")</p>
+                <span class="text-sm italic">All of them</span>
+            </div>
+            <div class="flex-grow flex flex-col items-center">
+                <p class="text-xl font-semibold">Total Incomplete</p>
+                <p class="text-3xl">@Model.Stats.TotalIncomplete.ToString("N0")</p>
+                <span class="text-sm italic">Every one.</span>
+            </div>
+            <div class="flex-grow flex flex-col items-center">
+                <p class="text-xl font-semibold">Daily Average</p>
+                <p class="text-3xl">@Model.Stats.DailyAverage.ToString("0.###")</p>
+                <span class="text-sm italic">It's mean.</span>
+            </div>
+            <div class="flex-grow flex flex-col items-center">
+                <p class="text-xl font-semibold">Daily Average Errors</p>
+                <p class="text-3xl">@Model.Stats.DailyErrorAverage.ToString("0.###")</p>
+                <span class="text-sm italic">Hopefully small.</span>
+            </div>
+        </div>
+    </round-box>
+
+    <round-box>
+        <h2 class="text-3xl font-semibold">Find a Slack Event</h2>
+
+        <form method="post" class="flex flex-row gap-2 mt-4">
+            <input type="text" name="id" class="form-input flex-grow" placeholder="Event ID" />
+            <button type="submit" class="btn btn-primary">Click to view content</button>
+        </form>
+    </round-box>
+
+    <round-box>
+        <h2 class="text-3xl font-semibold">Last 10 Incomplete</h2>
+        <div class="hard-box mt-4 p-4">
+            <table class="w-full">
+                <thead>
+                <tr>
+                    <th class="text-left border-b p-3">Event Id</th>
+                    <th class="text-left border-b p-3">Event Type</th>
+                    <th class="text-left border-b p-3">Job Id</th>
+                    <th class="text-left border-b p-3">Created</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var slackEvent in Model.RecentIncomplete) {
+                    <tr>
+                        <td class="align-middle p-3"><a asp-page="SlackEvent" asp-route-id="@slackEvent.EventId">@slackEvent.EventId</a></td>
+                        <td class="align-middle p-3"><code>@slackEvent.EventType</code></td>
+                        <td class="align-middle p-3">@slackEvent.JobId</td>
+                        <td class="align-middle p-3"><timeago datetime="@slackEvent.Created"></timeago></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </round-box>
+</page-body>

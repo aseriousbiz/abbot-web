@@ -1,0 +1,31 @@
+@page "/staff/organizations/{id}/disable"
+@model Serious.Abbot.Pages.Staff.Organizations.DisablePage
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Disable Tool");
+}
+
+<section class="section">
+    <div class="container">
+        <partial name="_StatusMessage" model="Model.StatusMessage" />
+
+        <p class="font-semibold p-4 mb-2 border rounded-lg bg-red-100 text-red-900 border-red-200">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            Disabling an organization removes all functionality for an organization.
+            Abbot will respond to commands with a message to contact support.
+            Users who authenticate to the website will see a page with a similar message.
+        </p>
+        <dl class="rows mt-3">
+            <dt>Domain</dt>
+            <dd>@Model.Organization.Domain</dd>
+            <dt>Users</dt>
+            <dd>@Model.Organization.Members.Count</dd>
+        </dl>
+
+        <form method="post">
+            <div class="field is-grouped">
+                <input type="submit" class="btn btn-danger" value="Confirm Disable"/>
+                <a asp-page="../Index" class="btn">Back</a>
+            </div>
+        </form>
+    </p>
+</section>

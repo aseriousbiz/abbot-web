@@ -1,0 +1,59 @@
+@model Serious.Abbot.Pages.Activity.DetailsModel
+@{
+  var auditEvent = Model.AuditEvent as StaffViewedSlackEventContent
+      ?? throw new InvalidOperationException($"AuditEvent is not a {nameof(StaffViewedCodeAuditEvent)}.");
+}
+
+<div class="p-4">
+  <header>
+    <h1 class="mb-2 text-gray-500">Summary</h1>
+  </header>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div>
+      <partial name="Shared/Activity/_OccurrenceDetails" model="auditEvent"/>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Type</h2>
+      <div>
+        Staff Event
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Staff Member</h2>
+      <div>
+        <partial name="Shared/Activity/_UserDetail" model="@auditEvent.Actor" />
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Slack Event Viewed</h2>
+      <div>
+        @if (Model.CurrentUserIsStaff) {
+          <span>@auditEvent.EventId</span>
+        } else {
+          <a asp-page="/Staff/Slack/Details" asp-route-id="@auditEvent.EventId">@auditEvent.EventId</a>
+        }
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Description</h2>
+      <div>
+        <span class="font-bold">A staff member of A Serious Business, Inc. viewed the contents of a Slack message.</span>
+        Staff members should only do this when helping a customer with an issue.
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Reason</h2>
+      <div>
+        <markdown>
+          @auditEvent.Reason
+        </markdown>
+      </div>
+    </div>
+  </div>
+</div>

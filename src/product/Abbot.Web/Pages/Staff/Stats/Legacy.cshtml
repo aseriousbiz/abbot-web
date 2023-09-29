@@ -1,0 +1,110 @@
+@page
+@using Serious.Abbot.Services
+@using Microsoft.Extensions.Options
+@using Serious.Abbot.Infrastructure.TagHelpers
+@model Serious.Abbot.Pages.Staff.Stats.LegacyPageModel
+@inject IOptions<StripeOptions> StripeOptions
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Legacy Stats");
+
+    var numberFormat = new CultureInfo("en-US", false).NumberFormat;
+    numberFormat.PercentDecimalDigits = 2;
+    var orgsCreatedPackageRatio = $"{Model.OrganizationsThatCreatedPackages/(double)Model.TotalOrganizationsCount:P1}";
+    var orgsConsumedPackageRatio = $"{Model.OrganizationsThatConsumedPackages/(double)Model.TotalOrganizationsCount:P1}";
+    var orgsWithSkillsRatio = $"{Model.OrganizationsWithCustomSkillsCount/(double)Model.TotalOrganizationsCount:P1}";
+
+    ViewContext.SetPageInfo("Staff", "Legacy Stats", "Legacy Stats");
+}
+
+<partial name="_Header"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold text-center">Abbot by the numbers</h2>
+        @{
+            var metrics = new[]
+            {
+                ("Average Skills per Org", Model.AverageNumberOfSkillsPerOrganizationNotUs.ToString("#.##"), "Excludes us."),
+                ("Orgs with 1+ skills", $"{Model.OrganizationsWithCustomSkillsCount}", orgsWithSkillsRatio),
+                ("Total Interactions", $"{Model.TotalInteractionCount}", "All of them"),
+                ("Orgs that created packages", $"{Model.OrganizationsThatCreatedPackages}", orgsCreatedPackageRatio),
+                ("Orgs that used packages", $"{Model.OrganizationsThatConsumedPackages}", orgsConsumedPackageRatio),
+                ("Average Lists per Org", Model.AverageNumberOfListsPerOrganizationNotUs.ToString("#.##"), "Excludes us and the joke list."),
+            };
+        }
+        <div class="grid grid-cols-4 gap-5 mt-5">
+            @foreach (var (title, value, note) in metrics)
+            {
+                <div class="flex flex-col flex-grow items-center">
+                    <p class="text-md whitespace-nowrap uppercase text-gray-500">@title</p>
+                    <p class="text-2xl font-semibold">@(value is {Length: >0} ? value : "<none>")</p>
+                    <span class="text-sm">@note</span>
+                </div>
+            }
+        </div>
+
+    </round-box>
+
+    <round-box>
+        <h2 class="text-3xl font-semibold text-center">Monthly Breakdowns</h2>
+
+        <div class="grid grid-cols-4 gap-5 mt-5">
+            @{
+                #nullable enable
+
+                var monthlyCountTables = new (string, int?, IDictionary<DateTime, int>, string?)[]
+                {
+                    ("Active Users", null, Model.ActiveUsersCountByMonth, null),
+                    ("New Users", Model.TotalUsersCount, Model.UsersCountByMonth, "Note that only users who have logged in are counted. Users we import are not counted here. This also doesn't include users who have interacted with Abbot in chat, but never logged in the website."),
+                    ("Skills", Model.TotalSkillsCount, Model.SkillCountByMonth, "Excludes us."),
+                    ("Interactions", Model.TotalInteractionCount, Model.AuditLogInteractionsByMonth, null),
+                    ("Packages", Model.TotalPackageCount, Model.PackagesCountByMonth, null),
+                    ("Patterns", Model.TotalPatternsCount, Model.PatternsByMonth, "Excludes us."),
+                    ("Users with Location", Model.TotalUsersWithLocation, Model.UsersWithLocationSet, "Excludes us."),
+                    ("Memories via Rem", Model.TotalMemoriesCount, Model.MemoriesByMonth, "Excludes us."),
+                    ("Lists", Model.TotalListsCount, Model.ListsByMonth, "Excludes us."),
+                    ("Patterns", Model.TotalPatternsCount, Model.PatternsByMonth, "Excludes us."),
+                    ("Triggers", Model.TotalTriggerCount, Model.TriggersByMonth, "Excludes us."),
+                    ("Permissions", Model.TotalPermissionsCount, Model.PermissionsByMonth, "Excludes us."),
+                };
+            }
+            @foreach (var (title, count, table, note) in monthlyCountTables)
+            {
+                <div class="flex flex-col flex-grow items-center">
+                    <p class="text-md uppercase text-gray-500">
+                        @title
+                        @if (count is not null)
+                        {
+                            <span>(@count)</span>
+                        }
+                    </p>
+                    <partial name="Shared/Stats/_MonthlyCountTable" model="table" />
+                    @if (note is {Length: >0})
+                    {
+                        <span class="text-sm mt-2">@note</span>
+                    }
+                </div>
+            }
+        </div>
+            <div class="columns">
+                <div class="column">
+                </div>
+            </div>
+    </round-box>
+
+    <round-box>
+        <h2 class="text-3xl font-semibold text-center">Operations</h2>
+
+        <h3 class="text-2xl mt-5">Max Ids</h3>
+        <div class="hard-box w-full p-4 mt-5">
+            <div class="grid gap-2" style="grid-template-columns: max-content 1fr;">
+                @foreach (var (table, id) in Model.MaxIds)
+                {
+                    <span class="font-semibold">@table</span>
+                    <span><code>@id</code></span>
+                }
+            </div>
+        </div>
+    </round-box>
+</page-body>

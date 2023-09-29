@@ -1,0 +1,54 @@
+@using Microsoft.AspNetCore.Html
+@model MetadataManagerPage
+
+@if (Model.MetadataFields.Any()) {
+    <div class="contents text-sm text-gray-700">
+        <div>Name</div>
+        <div>Default Value</div>
+        <div>Usage</div>
+        <div></div>
+    </div>
+    foreach (var field in Model.MetadataFields) {
+        var usageCount = field.RoomMetadataFields.Count;
+        var confirm = usageCount > 0
+            ? new HtmlString($"data-confirm=\"Are you sure you want to delete this field? It is in use by {usageCount.ToQuantity("room")}.\"")
+            : null;
+        <div class="contents">
+            <div class="font-semibold">@field.Name</div>
+            <div>
+                @field.DefaultValue
+            </div>
+            <div>
+                <em class="text-gray-500">@field.RoomMetadataFields.Count.ToQuantity("room")</em>
+            </div>
+            <form asp-page-handler="DeleteMetadataField">
+                <input type="hidden" asp-for="MetadataFieldToDelete" value="@field.Name"/>
+                <button type="submit" class="btn btn-danger" @confirm>Delete</button>
+            </form>
+        </div>
+    }
+} else {
+    <div class="contents">
+        <div class="text-gray-500 col-span-3 text-center">
+            <em>No metadata fields</em>
+        </div>
+        <div></div>
+    </div>
+}
+
+<form class="contents" asp-page-handler="AddMetadataField">
+    <div class="flex flex-col">
+        <input asp-for="MetadataInput.Name" placeholder="Name" class="form-input text-sm" />
+        <span asp-validation-for="MetadataInput.Name"></span>
+    </div>
+
+    <div class="flex flex-col col-span-2">
+        <input asp-for="MetadataInput.DefaultValue" placeholder="Default Value" class="form-input w-full text-sm" />
+        <span asp-validation-for="MetadataInput.DefaultValue"></span>
+    </div>
+
+    <div>
+        <input type="hidden" asp-for="MetadataInput.Type" value="@Model.MetadataFieldType" />
+        <button type="submit" class="btn">Add</button>
+    </div>
+</form>

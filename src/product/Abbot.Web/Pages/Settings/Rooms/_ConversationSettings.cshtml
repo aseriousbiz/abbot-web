@@ -1,0 +1,65 @@
+@model RoomPage
+
+
+@{
+    var effectiveEmojiSetting = Model.RoomEmojiSetting ?? Model.OrganizationEmojiSetting;
+    var disabled = Model.ReadOnly ? "disabled" : null;
+}
+<p>Currently, the 🎫 emoji <strong class="font-semibold">@(effectiveEmojiSetting ? "can" : "cannot")</strong> be used to open a ticket from conversations in this room.</p>
+
+<form method="post" class="mt-3" asp-page-handler="ConversationSettings" data-controller="show-hide">
+    <div class="flex items-start gap-x-2 px-3 py-2 shrink-0">
+        <input type="radio"
+               class="mt-2"
+               name="useOrganizationDefault"
+               id="use-default-emoji"
+               value="true"
+               disabled="@disabled"
+               checked="@(Model.RoomEmojiSetting is null)"
+               data-action="show-hide#update" />
+        <div>
+            <label class="font-semibold py-1 inline-block" for="use-default-emoji">Organization Defaults</label>
+            <p>This is set in your <a asp-page="/Settings/Organization/Index" asp-fragment="conversation-settings">organization’s conversation settings</a></p>
+            <span class="text-gray-500">
+                By default, the 🎫 emoji @(Model.OrganizationEmojiSetting ? "can" : "cannot") be used to open a ticket from conversations in this organization.
+            </span>
+        </div>
+    </div>
+    <div class="flex items-start gap-x-2 px-3 py-2 shrink-0">
+        <input type="radio"
+               class="mt-2"
+               name="useOrganizationDefault"
+               id="use-custom-emoji"
+               value="false"
+               disabled="@disabled"
+               data-show-hide-target="toggler"
+               checked="@(Model.RoomEmojiSetting is not null)"
+               data-action="show-hide#update" />
+        <div>
+            <label class="font-semibold py-1 inline-block" for="use-custom-emoji"> Custom Settings </label>
+            <p class="text-gray-500">Set an option specific to this room.</p>
+            <div data-show-hide-target="subject" class="@(!Model.RoomEmojiSetting is null ? "hidden" : null) flex flex-col">
+                <label class="checkbox">
+                    <input type="checkbox"
+                           name="allowTicketReactions"
+                           checked="@(Model.RoomEmojiSetting ?? false)"
+                           disabled="@disabled"
+                           value="true">
+                    <span class="font-semibold">Allow Ticket Reactions</span>
+                </label>
+                <p class="text-sm text-gray-500">
+                    If enabled, the 🎫 emoji reaction will allow any user (including external users)
+                    to open a ticket using any of your enabled ticketing integrations.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <input type="submit"
+               class="btn btn-primary"
+               asp-authz-policy="@AuthorizationPolicies.CanManageConversations"
+               value="Save Changes"
+               disabled="@disabled" />
+    </div>
+</form>

@@ -1,0 +1,30 @@
+@page "/skills/{skill}/history/recovered"
+@model Serious.Abbot.Pages.Skills.History.RecoveredPage
+@{
+    ViewContext.SetPageInfo("Skills", "History Recovered");
+}
+<header class="page-header">
+    <div class="container level">
+        <div class="level-left">
+            <h1 class="title is-3">Recovered unsaved changes to the <code>@Model.SkillName</code> skill</h1>
+        </div>
+        <div class="level-right">
+            <a class="level-item btn" asp-page="/Skills/Edit" asp-route-skill="@Model.SkillName">Back to skill editor</a>
+        </div>
+    </div>
+</header>
+
+<section class="section">
+    <div class="container">
+        <div class="field">
+            <textarea
+                class="code-viewer recovered-changes"
+                data-skill-id="@Model.SkillId"
+                data-readonly="true"
+                data-language="@Model.Language"></textarea>
+        </div>
+        <div id="no-changes" style="display: none;">
+            There were no recovered changes.
+        </div>
+    </div>
+</section>

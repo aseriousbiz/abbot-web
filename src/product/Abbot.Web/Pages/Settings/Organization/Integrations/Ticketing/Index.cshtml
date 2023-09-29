@@ -1,0 +1,21 @@
+﻿@page "{id}/{handler?}"
+@model Serious.Abbot.Pages.Settings.Organization.Integrations.Ticketing.IndexPage
+
+@{
+    ViewContext.SetPageInfo("Integrations", "Ticketing Details", $"Ticketing Integration: {Model.IntegrationName}");
+}
+
+<partial name="../_Header" model="Model.Viewer"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <div class="font-semibold">
+            <a asp-page="../Index">Integrations</a> / Ticketing / @Model.IntegrationName
+        </div>
+
+        <section class="mt-5">
+            <h2 class="text-3xl">Create Ticket</h2>
+        </section>
+    </round-box>
+</page-body>

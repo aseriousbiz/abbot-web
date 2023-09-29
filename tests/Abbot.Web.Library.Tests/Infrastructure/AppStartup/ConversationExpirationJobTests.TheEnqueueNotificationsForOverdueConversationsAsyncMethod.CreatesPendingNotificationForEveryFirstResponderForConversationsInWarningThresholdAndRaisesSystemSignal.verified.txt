@@ -1,0 +1,56 @@
+﻿{
+  target: {
+    BusTestHarness: {
+      Messages: []
+    },
+    Conversation: {
+      RoomId: 1,
+      FirstMessageId: 1111.0006,
+      ThreadIds: [
+        1111.0006
+      ],
+      Title: CONVO-WARN-0,
+      IsImported: false,
+      LastMessagePostedOn: 1999-02-02 11:00 Utc,
+      TimeToRespondWarningNotificationSent: 1999-02-03 12:00,
+      LastStateChangeOn: 1999-02-02 11:00 Utc,
+      State: New,
+      StartedById: 6,
+      Properties: {
+        LastSupporteeMessageId: 1112.0000
+      },
+      OrganizationId: 1,
+      Id: 1,
+      Created: 1999-02-02 11:00 Utc
+    },
+    Events: [
+      {
+        $type: NotificationEvent,
+        Id: 1,
+        ConversationId: 1,
+        ThreadId: 1111.0006,
+        MemberId: 2,
+        Created: 1999-01-02 03:04:05 Utc,
+        Metadata: {"Notification":{"Type":"Warning","Icon":"⚠️","Headline":"Deadline in 4 weeks","Message":"<https://testorg.example.com/archives/Croom/p11120000?thread_ts=1111.0006|This conversation> in <#Croom> will expire in 4 weeks. Please reply as soon as possible.","MentionGroups":[{"RecipientType":"FirstResponder","MentionIds":["Uhome","Uother_fr"]}]},"Suppressed":false}
+      }
+    ],
+    RaisedSignals: [
+      {
+        Name: system:conversation:overdue,
+        Arguments: Warning,
+        PlatformRoomId: Croom,
+        SenderId: 2
+      }
+    ],
+    Pending: [
+      {
+        ConversationId: 1,
+        MemberId: 3
+      },
+      {
+        ConversationId: 1,
+        MemberId: 7
+      }
+    ]
+  }
+}

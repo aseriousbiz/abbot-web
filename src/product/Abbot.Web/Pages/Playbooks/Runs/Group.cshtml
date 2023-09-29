@@ -1,0 +1,77 @@
+@page "/playbooks/{slug}/groups/{groupId}"
+@model Serious.Abbot.Pages.Playbooks.Runs.GroupsModel
+
+@{
+    var title = $"Run of {Model.Group.Playbook.Name} v{Model.Group.Version}";
+    ViewContext.SetPageInfo("Playbook", "Playbook Run Group", title);
+}
+
+<page-header class="mx-4 my-3">
+    <header class="mb-4 flex place-items-center">
+        <div class="grow">
+            <div class="font-medium text-sm">
+                <a asp-page="../Index"
+                   preserve-staff>
+                    Playbooks
+                </a>
+                /
+                <a asp-page="../View"
+                   asp-all-route-data="ViewContext.GetCurrentRouteValues()"
+                   asp-route-slug="@Model.Group.Playbook.Slug">
+                    @Model.Group.Playbook.Name
+                </a>
+                /
+                <a asp-page="Index" asp-route-slug="@Model.Group.Playbook.Slug" preserve-staff>
+                    Runs
+                </a>
+            </div>
+
+            <h1 class="font-semibold" id="playbook-name">
+                Run Group
+            </h1>
+
+            <p class="text-slate-500 text-sm font-normal">
+                Created <timeago tooltip-position="Bottom" datetime="@Model.Group.Created"/>
+            </p>
+        </div>
+        @if (Model.CanBeCancelled) {
+            <form asp-page-handler="Cancel" class="text-base font-normal flex items-center gap-x-2">
+                @if (Model.InStaffTools) {
+                    <input class="form-input" name="staffReason" placeholder="Cancellation Reason"/>
+                }
+                <button class="btn btn-danger" data-confirm="Are you sure you want to cancel this run?">
+                    <i class="fa fa-circle-xmark"></i>
+                    Cancel
+                </button>
+            </form>
+        }
+    </header>
+</page-header>
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body class="h-full">
+    <div class="p-2 bg-white rounded-2xl m-2 border border-gray-200">
+        <div class="px-4">
+            @if (Model.Group.Runs.Count > 0) {
+                <partial name="_PlaybookRunList" model="Model.Group.Runs"/>
+            } else {
+                <blankslate>
+                    <h2 class="text-center text-lg text-gray-700">
+                        No runs in this group.
+                    </h2>
+                    @if (Model.Group.Properties.DispatchSettings.CustomerSegments.Count > 0) {
+                        <p>This might happen when the dispatch filter does not match any customers.</p>
+                    }
+                </blankslate>
+            }
+            <div class="border-t py-4 border-slate-200">
+                <p class="font-semibold">Group ID</p>
+                <copy-box>@Model.Group.CorrelationId</copy-box>
+                <p class="text-xs mt-1 text-gray-500">
+                    (Provide this value if you need to contact our <a href="mailto:@WebConstants.SupportEmail">support team</a> about this Playbook run.)
+                </p>
+            </div>
+        </div>
+    </div>
+</page-body>

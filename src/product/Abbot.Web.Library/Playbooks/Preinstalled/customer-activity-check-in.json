@@ -1,0 +1,82 @@
+{
+  "triggers": [
+    {
+      "id": "abbot_customer_created",
+      "type": "abbot.customer-created",
+      "inputs": {}
+    }
+  ],
+  "sequences": {
+    "start_sequence": {
+      "actions": [
+        {
+          "id": "system_continue_if",
+          "type": "system.continue-if",
+          "inputs": {
+            "left": "{{ trigger.outputs.customer.segments }}",
+            "right": "Enterprise",
+            "comparison": "StartsWith"
+          }
+        },
+        {
+          "id": "abbot_notify_responders",
+          "type": "abbot.notify-responders",
+          "inputs": {
+            "channel": "",
+            "message": "A new customer has been created in <#{{ outputs.channel.id }}>",
+            "headline": ":tada: New customer created!"
+          }
+        },
+        {
+          "id": "system_wait",
+          "type": "system.wait",
+          "inputs": {
+            "duration": "P3M"
+          }
+        },
+        {
+          "id": "abbot_notify_responders_2",
+          "type": "abbot.notify-responders",
+          "inputs": {
+            "channel": "",
+            "message": "It's time to setup a business review for {{ trigger.outputs.customer.name }}",
+            "headline": ":books: Time for {{ trigger.outputs.customer.name }}'s first QBR"
+          }
+        },
+        {
+          "id": "system_wait_1",
+          "type": "system.wait",
+          "inputs": {
+            "duration": "P3M"
+          }
+        },
+        {
+          "id": "abbot_notify_responders_3",
+          "type": "abbot.notify-responders",
+          "inputs": {
+            "channel": "",
+            "message": "{{ trigger.outputs.customer.name }} signed up six months ago. Set up a business review with them to see how it's been going!",
+            "headline": ":mag: Six month check in for {{ trigger.outputs.customer.name }}"
+          }
+        },
+        {
+          "id": "system_wait_2",
+          "type": "system.wait",
+          "inputs": {
+            "duration": "P3M"
+          }
+        },
+        {
+          "id": "abbot_notify_responders_1",
+          "type": "abbot.notify-responders",
+          "inputs": {
+            "channel": "",
+            "message": "{{ trigger.outputs.customer.name }} is coming up for renewal soon. Time to review their account and check in.",
+            "headline": "Upcoming renewal for {{ trigger.outputs.customer.name }}"
+          }
+        }
+      ]
+    }
+  },
+  "startSequence": "start_sequence"
+}

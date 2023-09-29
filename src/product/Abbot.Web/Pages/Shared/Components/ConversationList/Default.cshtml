@@ -1,0 +1,383 @@
+@using Serious.Abbot.Integrations.GitHub
+@using Serious.Abbot.Integrations.HubSpot
+@using Serious.Abbot.Integrations.Zendesk
+@using Serious.Abbot.Pages.Conversations
+@using Serious.Abbot.Repositories
+@using Serious.AspNetCore.TagHelpers
+@model ConversationListViewComponent.ViewModel
+@inject Messaging.IMessageRenderer Renderer
+
+@{
+    // Temporary hack
+    var currentFilter = Enum.TryParse<ConversationStateFilter>(ViewContext.HttpContext.Request.Query["state"], out var state)
+        ? state
+        : ConversationStateFilter.Open;
+    var closeButtonLabel = currentFilter is ConversationStateFilter.Closed
+        ? "Archive"
+        : "Close";
+}
+
+<environment include="Development">
+    <div class="text-sm rounded-lg border border-yellow-300 bg-yellow-50 font-mono p-3 my-2">
+        <p>
+            <span class="text-yellow-700">Debug only time: </span>
+            <strong>@DateTime.Now</strong>
+        </p>
+        <p class="text-yellow-700 text-xs">
+            Time should stop when window loses focus or when changing tabs in this browser.
+        </p>
+    </div>
+</environment>
+
+@if (Model.Conversations.Any()) {
+    <div data-controller="checkboxes">
+        <h2 class="sr-only">Conversations list</h2>
+        @if (currentFilter is not ConversationStateFilter.All) {
+            <div class="sticky top-0 z-50 p-2 bg-gray-50 -mx-2 -mb-1">
+                <div class="rounded-xl p-2 bg-white flex items-center border border-gray-300 shadow-sm">
+                    <p class="text-sm mx-2 font-medium text-indigo-900 grow">
+                        <span data-checkboxes-target="counter">0</span> of @Model.Conversations.TotalCount conversations selected.
+                        <button class="text-xs text-indigo-600 font-medium ml-1 hover:underline" data-checkboxes-target="toggle">
+                            Select all conversations
+                        </button>
+                    </p>
+                    <form method="post" id="bulk-close-form" asp-page-handler="BulkClose" asp-all-route-data="@ViewContext.GetCurrentRouteValues()">
+                        <button class="btn btn-danger btn-sm" type="submit" data-checkboxes-target="action" disabled>
+                            @closeButtonLabel conversations
+                        </button>
+                    </form>
+                </div>
+            </div>
+        }
+
+        @foreach (var convoModel in Model.Conversations) {
+            var convo = convoModel.Conversation;
+            var needsResponseTitleCss = convoModel.NeedsResponse
+                ? "font-medium"
+                : "";
+
+            <div class="bg-white p-2 rounded-2xl my-4 shadow">
+                <div class="shadow border border-gray-300 p-4 rounded-xl text-sm mb-2">
+                    <div class="sm:flex">
+                            <label class="font-semibold mb-1 text-indigo-900 grow flex items-start">
+                            @if (currentFilter is not ConversationStateFilter.All) {
+                                <input type="checkbox" form="bulk-close-form" data-checkboxes-target="item" name="conversationIds" class="mr-2 ml-1 prevent-reload-when-checked mt-1" value="@convo.Id"/>
+                            }
+                            @if (convoModel.Summary is { Length: > 0 } summary) {
+                                var summaryMrkdwn = await Renderer.RenderMessageAsync(summary, Model.Organization);
+                                @* If we go this route, we shouldn't render links here since
+                                it can create some accessibility concerns (per
+                                https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label) *@
+                                <message-renderer message="summaryMrkdwn" render-links="true"/>
+                            } else {
+                                <span>A conversation was started in #@convo.Room.Name.</span>
+                            }
+                        </label>
+
+                        <div class="ml-auto shrink-0 flex flex-row items-middle gap-2">
+                            @foreach (var link in convoModel.Conversation.Links) {
+                                var (title, url, tooltip) = link switch {
+                                    { LinkType: ConversationLinkType.ZendeskTicket } when ZendeskTicketLink.Parse(link.ExternalId) is {} zdLink
+                                        => ("Zendesk", zdLink.WebUrl, "Zendesk ticket"),
+                                    { LinkType: ConversationLinkType.HubSpotTicket } when HubSpotTicketLink.FromConversationLink(link) is {} hsLink
+                                        => ("HubSpot", hsLink.WebUrl, "HubSpot ticket"),
+                                    { LinkType: ConversationLinkType.GitHubIssue } when GitHubIssueLink.Parse(link.ExternalId) is { } ghLink
+                                        => ("GitHub", ghLink.WebUrl, "GitHub issue"),
+                                    _ => (null, null, null)
+                                };
+                                if (title is not null && url is not null) {
+                                    <span class="has-tooltip has-tooltip-arrow has-tooltip-left shrink-0" data-tooltip="This conversation is linked to a @tooltip">
+                                        <a href="@url" target="_blank" class="inline-block">
+                                            <pill size="Small" color="Blue" icon="fa-link">
+                                                @title
+                                            </pill>
+                                        </a>
+                                    </span>
+                                }
+                            }
+                            @if (convoModel.ThresholdStatus is ThresholdStatus.Deadline or ThresholdStatus.Warning) {
+                                var (tooltip, message) = convoModel.ThresholdStatus == ThresholdStatus.Deadline
+                                    ? ("This Conversation has exceeded your response deadline for this room", "Deadline Exceeded")
+                                    : ("This Conversation is nearing your target response time for this room", "Target Exceeded");
+                                <span class="has-tooltip has-tooltip-arrow has-tooltip-left shrink-0" data-tooltip="@tooltip">
+                                    <pill size="Small" color="@convoModel.ThresholdStatus.ToPillColor()" icon="@convoModel.ThresholdStatus.ToFontAwesomeIcon(ok: convo.State is ConversationState.New or ConversationState.NeedsResponse ? "fa-star" : "fa-check-circle")">
+                                        @message
+                                    </pill>
+                                </span>
+                            }
+
+                            @if (convo.State is ConversationState.Snoozed) {
+                                <pill size="Small" color="Gray">Currently Snoozed</pill>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="ml-2 pl-2 py-2 border-l-2 border-gray-300 mb-2">
+                        <div class="sm:flex items-center">
+                            <div class="flex gap-x-2 items-center shrink-0">
+                                @if (convoModel.IsNew) {
+                                    <i class="fa-solid fa-circle w-2.5 h-2.5 text-indigo-600 relative left-0.5" aria-label="New conversation"></i>
+                                }
+
+                                <avatar class="rounded-md w-6 h-6 -mt-1" size="Small" member="convo.StartedBy" viewer-organization="Model.Organization"/>
+
+                                <h1 class="font-semibold">
+                                    @@@convo.StartedBy.DisplayName
+                                </h1>
+
+                                <p class="text-gray-500">
+                                    <timeago datetime="@convo.Created"/>
+
+                                    @if (convo.ImportedOn is {} importedOn) {
+                                        <span class="has-tooltip-arrow" data-tooltip="Imported on @importedOn">
+                                            (<i class="fa-regular fa-file-import text-gray-500"></i>)
+                                        </span>
+                                    }
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="@needsResponseTitleCss mt-1">
+                            <message-renderer class="line-clamp-2 focus:line-clamp-none" message="convoModel.Title" />
+                        </div>
+
+                        <div class="sm:flex items-center text-xs gap-x-1 -mb-1 text-gray-500">
+                            <a class="text-gray-500" href="@convo.Room.GetLaunchUrl()" target="_blank">
+                                #@convo.Room.Name
+                            </a>
+
+                            <span class="text-gray-300" aria-hidden="true">|</span>
+                            <div class="flex items-center gap-x-2">
+                                <partial name="Shared/_AvatarStack" model="AvatarStackViewModel.FromConversationMembers(convo.Members.OrderBy(m => m.LastPostedAt), Model.Organization)"/>
+
+                                <span>
+                                    @if (convo.State is ConversationState.Waiting) {
+                                        <text>Responded </text>
+                                    } else {
+                                        <text>Last response </text>
+                                    }
+                                    <timeago datetime="@convo.LastMessagePostedOn"/>
+                                </span>
+                            </div>
+
+                            <span class="text-gray-300" aria-hidden="true">|</span>
+
+                            @if (convo.Assignees.Any()) {
+                                <div class="flex items-center">
+                                    <span>
+                                        Assigned to
+                                    </span>
+
+                                    @foreach(var assignee in convo.Assignees)
+                                    {
+                                        <div class="inline-block ml-1">
+                                            <avatar size="Small" member="assignee" />
+                                            <span class="font-semibold">
+                                                @assignee.DisplayName
+                                            </span>
+                                        </div>
+                                    }
+                                </div>
+                                <span class="text-gray-300" aria-hidden="true">|</span>
+                            }
+
+                            <div class="flex items-center gap-x-1">
+                                <a asp-page="/Conversations/View" asp-route-conversationId="@convo.Id"
+                                   class="text-xs text-indigo-600 font-medium">
+                                    View history
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="@ConversationListViewComponent.TagsDomId(convoModel.Conversation)">
+                        <partial name="Shared/Components/ConversationList/_Tags" model="convoModel" />
+                    </div>
+                </div>
+
+                @* The header tabs are _outside_ our current turbo frame. These actions may change them, so target the top frame *@
+                <form class="p-2 bg-indigo-50 sm:flex items-center text-sm rounded-lg gap-x-2"
+                     method="post" asp-page="/Conversations/View"
+                     asp-route-conversationId="@convo.Id" asp-page-handler="State"
+                     data-turbo-frame="_top">
+                    <input type="hidden" name="returnUrl" value="@Context.Request.GetEncodedPathAndQuery()"/>
+                    @if (Model.AIEnhancementsEnabled && convoModel.Conversation.Properties is { Conclusion: { Length: > 0 } conclusion }) {
+                        var conclusionMrkdwn = await Renderer.RenderMessageAsync(conclusion, Model.Organization);
+                        <div class="text-indigo-900 font-semibold sm:flex grow items-center"
+                           feature="@FeatureFlags.AIEnhancements">
+                            <div class="sm:flex items-center flex-grow">
+                                <div class="order-2 px-2 text-center sm:text-left">
+                                    <span class="has-tooltip-right" data-tooltip="Abbot suggested this next step based on the content of the conversation">
+                                        <i class="fa fa-message-bot"></i>
+                                    </span>
+                                    <message-renderer message="conclusionMrkdwn" class="inline" render-links="true" />
+                                </div>
+
+                                @if (Model.AIEnhancementsEnabled && convoModel.SuggestedStateChange is { } suggestedStateChange) {
+                                    <button class="btn btn-sm btn-danger my-0.5 block sm:inline-block w-full sm:w-40 shrink-0"
+                                        name="action" value="@suggestedStateChange" type="submit">
+                                        @suggestedStateChange
+                                    </button>
+                                } else {
+                                    <a href="@convo.GetFirstMessageUrl()" target="_blank"
+                                       class="btn btn-sm btn-primary my-0.5 block sm:inline-block w-full sm:w-40 shrink-0">
+                                       Open thread in Slack
+                                    </a>
+                                   }
+                            </div>
+
+                            @if (!(Model.AIEnhancementsEnabled && convoModel.SuggestedStateChange is { })) {
+                                <div class="shrink-0">
+                                    @if (convo.State.IsOpen()) {
+                                        <button name="action" value="@ViewPage.StateChangeAction.Close"
+                                                class="btn btn-sm btn-danger my-0.5 block sm:inline-block w-full sm:w-auto shrink-0" type="submit">
+                                            Close conversation
+                                        </button>
+                                    }
+                                    else if (convo.State == ConversationState.Closed) {
+                                        <button name="action" value="@ViewPage.StateChangeAction.Archive"
+                                                class="btn btn-sm btn-danger my-0.5 block sm:inline-block w-full sm:w-auto shrink-0" type="submit">
+                                            Archive conversation
+                                        </button>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    } else {
+                        @if (convoModel.NeedsResponse) {
+                            <div class="text-indigo-900 font-semibold sm:flex grow items-center">
+                                <div class="sm:flex items-center flex-grow">
+                                    <p class="text-center sm:text-left px-2 order-2">
+                                        Agent follow-up required.
+                                    </p>
+
+                                    <a href="@convo.GetFirstMessageUrl()" target="_blank"
+                                       class="btn btn-sm btn-primary my-0.5 block sm:inline-block w-full sm:w-40 order-1 shrink-0">
+                                       Open thread in Slack
+                                    </a>
+                                </div>
+
+                                <div class="shrink-0">
+                                    <span class="h-2 border-l border-gray-300 mx-2 hidden sm:inline-block" aria-hidden="true"></span>
+                                    @if (convo.State.IsOpen()) {
+                                        <button name="action" value="@ViewPage.StateChangeAction.Close"
+                                                class="btn btn-sm btn-danger my-0.5 block sm:inline-block w-full sm:w-auto shrink-0" type="submit">
+                                            Close conversation
+                                        </button>
+                                    }
+                                    else if (convo.State == ConversationState.Closed) {
+                                        <button name="action" value="@ViewPage.StateChangeAction.Archive"
+                                                class="btn btn-sm btn-danger my-0.5 block sm:inline-block w-full sm:w-auto shrink-0" type="submit">
+                                            Archive conversation
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        } else if (convoModel.Conversation.State.IsOpen()) {
+                            <div class="text-indigo-900 font-semibold sm:flex grow items-center">
+                                <div class="sm:flex items-center flex-grow">
+                                    <p class="text-center sm:text-left px-2 order-2">
+                                        Waiting on a response from the customer.
+                                    </p>
+
+                                    <a href="@convo.GetFirstMessageUrl()" target="_blank"
+                                       class="btn btn-sm btn-primary my-0.5 block sm:inline-block w-full sm:w-40 order-1 shrink-0">
+                                       Open thread in Slack
+                                    </a>
+                                </div>
+
+                                <div class="shrink-0">
+                                    <span class="h-2 border-l border-gray-300 mx-2 hidden sm:inline-block" aria-hidden="true"></span>
+                                    @if (convo.State.IsOpen()) {
+                                        <button name="action" value="@ViewPage.StateChangeAction.Close"
+                                                class="btn btn-sm btn-danger my-0.5 block sm:inline-block w-full sm:w-auto shrink-0" type="submit">
+                                            Close conversation
+                                        </button>
+                                    }
+                                    else if (convo.State == ConversationState.Closed) {
+                                        <button name="action" value="@ViewPage.StateChangeAction.Archive"
+                                                class="btn btn-sm btn-danger my-0.5 block sm:inline-block w-full sm:w-auto shrink-0" type="submit">
+                                            Archive conversation
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        } else if (convoModel.Conversation.State.IsOpen()) {
+                            <div class="text-indigo-900 font-semibold sm:flex grow items-center">
+                                <div class="sm:flex items-center flex-grow">
+                                    <p class="text-center sm:text-left px-2 order-2">
+                                        Waiting on a response.
+                                    </p>
+
+                                    <a href="@convo.GetFirstMessageUrl()" target="_blank"
+                                       class="btn btn-sm btn-primary my-0.5 block sm:inline-block w-full sm:w-40 order-1 shrink-0">
+                                       Open thread in Slack
+                                    </a>
+                                </div>
+
+                                <div class="shrink-0">
+                                    <span class="h-2 border-l border-gray-300 mx-2 hidden sm:inline-block" aria-hidden="true"></span>
+                                    @if (convo.State.IsOpen()) {
+                                        <button name="action" value="@ViewPage.StateChangeAction.Close"
+                                                class="btn btn-sm btn-danger my-0.5 block sm:inline-block w-full sm:w-auto shrink-0" type="submit">
+                                            Close conversation
+                                        </button>
+                                    }
+                                    else if (convo.State == ConversationState.Closed) {
+                                        <button name="action" value="@ViewPage.StateChangeAction.Archive"
+                                                class="btn btn-sm btn-danger my-0.5 block sm:inline-block w-full sm:w-auto shrink-0" type="submit">
+                                            Archive conversation
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        } else if (!convoModel.Conversation.State.IsOpen()) {
+                            <div class="text-indigo-900 font-semibold sm:flex grow items-center">
+                                <div class="sm:flex items-center flex-grow">
+                                    <p class="text-center sm:text-left px-2 order-2">
+                                        Conversation is closed, no action needed.
+                                    </p>
+
+                                    <button name="action" value="@ViewPage.StateChangeAction.Archive"
+                                            class="btn btn-sm btn-danger my-0.5 block sm:inline-block order-1 w-full sm:w-40 shrink-0" type="submit">
+                                        Archive conversation
+                                    </button>
+                                </div>
+
+                                <div class="shrink-0">
+                                    <span class="h-2 border-l border-gray-300 mx-2 hidden sm:inline-block" aria-hidden="true"></span>
+                                    <a href="@convo.GetFirstMessageUrl()" target="_blank"
+                                       class="btn btn-sm my-0.5 block sm:inline-block shrink-0">
+                                       Open thread in Slack
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    }
+                </form>
+            </div>
+        }
+
+        @if (Model.Conversations.TotalCount > Model.Conversations.Count) {
+            if (Model.ShowViewAllLink) {
+                <div class="p-4 text-center">
+                    <a asp-page="/Index" asp-route-room="my">See more conversations</a>
+                </div>
+            } else if (Model.ShowPager) {
+                <div class="p-4">
+                    <partial name="Shared/_Paginator" model="Model.Conversations"/>
+                </div>
+            }
+        }
+    </div>
+} else {
+    <blankslate>
+        <div class="text-center text-xl h-6 text-gray-500 mb-2">
+            <i class="fa-regular fa-comment-slash"></i>
+        </div>
+
+        <h2 class="text-center text-lg text-gray-700">
+            No conversations here!
+        </h2>
+    </blankslate>
+}

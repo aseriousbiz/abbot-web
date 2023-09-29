@@ -1,0 +1,19 @@
+{
+  "id": "con_gHR507Za4NdqqMHx",
+  "options": {
+    "mfa": {
+      "active": true,
+      "return_enroll_settings": true
+    },
+    "passwordPolicy": "good",
+    "strategy_version": 2,
+    "brute_force_protection": true
+  },
+  "strategy": "auth0",
+  "name": "Username-Password-Authentication",
+  "is_domain_connection": false,
+  "realms": [
+    "Username-Password-Authentication"
+  ],
+  "enabled_clients": []
+}

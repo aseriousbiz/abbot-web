@@ -1,0 +1,59 @@
+@page
+@model Serious.Abbot.Pages.Account.Install.CompleteModel
+@{
+    ViewData["HideInstallBanner"] = new object(); // Just has to not be null.
+    ViewContext.SetPageInfo("Account", "Install Confirm", "Confirming Installation");
+}
+
+<page-header>
+    Thank you for installing Abbot
+</page-header>
+
+<page-body>
+    <div class="columns">
+        <div class="column is-2">
+            <img src="/img/smiling-bot.svg" alt="Happy Robot Face"/>
+        </div>
+        <div class="column">
+        @if (Model.TeamIdMatchesOrganization) {
+            <div id="confirming-install" data-platform-id="@Model.PlatformId">
+                <progress class="progress is-large is-info" max="100">60%</progress>
+                <p>
+                    Confirming successful installation of Abbot. This page should redirect you automatically
+                    in a few seconds.
+                </p>
+            </div>
+            <div id="confirmation-failed" style="display: none">
+                <div class="notification is-warning" role="alert">
+                    Something went wrong confirming the installation.
+                </div>
+                <p>
+                    However, this <em>should</em> be easy to fix. Please go to @Model.Platform and send a
+                    message to @@abbot and then refresh this page. That's it!
+                </p>
+            </div>
+            <div id="unexpected-error" style="display: none">
+                <div class="notification is-warning" role="alert">
+                    Something went wrong confirming the installation.
+                </div>
+                <p>
+                    Try it again?
+                    <vc:add-to-slack-button verb="Connect" first="true"/>
+                </p>
+            </div>
+        } else {
+            <div class="notification is-warning" role="alert">
+                <strong>Installation failed.</strong> It looks like you might have selected the wrong Slack team
+                when approving the Abbot app in Slack.
+            </div>
+            <p>
+                Try it again?
+                <vc:add-to-slack-button verb="Connect" first="true"/>
+            </p>
+        }
+        </div>
+    </div>
+</page-body>
+
+<form method="post" id="force-reload">
+</form>

@@ -1,0 +1,29 @@
+@using Microsoft.Extensions.Configuration
+@using Microsoft.Extensions.Options
+@using Serious.Abbot.Infrastructure.Telemetry
+@inject IOptions<AnalyticsOptions> Analytics
+@inject IConfiguration Config
+@{
+    var (_, _, title) = ViewContext.GetPageInfo();
+}
+
+<title>Abbot - @title</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="description" content="Abbot gives your team Slack Ops tools to manage and scale conversations in Slack Connect channels.">
+<meta name="slack-app-id" content="A0136GZSLBC">
+<partial name="Shared/Layouts/_TurboMetadata" />
+<meta name="ai-connection-string" content="@(Config.GetValue<string>("ApplicationInsights:ConnectionString"))">
+<meta name="segment-write-key" content="@Analytics.Value.SegmentWriteKey">
+<link rel="apple-touch-icon" sizes="180x180" href="~/ico/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="~/ico/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="~/ico/favicon-16x16.png">
+<link rel="manifest" href="~/ico/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="~/dist/css/main.css" asp-append-version="true" />
+<mini-profiler/>
+
+<script src="https://kit.fontawesome.com/031cd71dd6.js" crossorigin="anonymous"></script>
+<script src="~/dist/js/main.js" asp-append-version="true"></script>

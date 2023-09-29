@@ -1,0 +1,26 @@
+@page
+@model Serious.Abbot.Pages.Skills.BuiltInPage
+
+@{
+    ViewContext.SetPageInfo("Skills", "Built-in Skills");
+    Layout = "Shared/Layouts/_SkillListLayout";
+}
+
+<header class="max-w-3xl">
+    <h2 class="font-bold text-lg">Built-in skills</h2>
+    <p>
+        These skills are provided by Abbot.
+    </p>
+</header>
+
+<div class="rounded-lg border my-4 divide-y bg-white">
+    @foreach (var builtInSkill in Model.BuiltInSkills) {
+        <div class="p-4">
+            <div class="font-mono text-red-500">
+                @builtInSkill.Name
+            </div>
+
+            <p class="mt-1">@builtInSkill.Description</p>
+        </div>
+    }
+</div>

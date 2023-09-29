@@ -1,0 +1,26 @@
+@model Serious.Abbot.Pages.Activity.DetailsModel
+
+@{
+    var skill = Model.Skill;
+    var auditEvent = Model.AuditEvent as SkillAuditEvent
+        ?? throw new InvalidOperationException($"AuditEvent is not a {nameof(SkillAuditEvent)}.");
+}
+
+@if (skill is not null) {
+    <a asp-page="/Skills/Edit" asp-route-skill="@skill.Name">@auditEvent.SkillName</a>
+    if (!skill.Name.Equals(auditEvent.SkillName, StringComparison.Ordinal)) {
+        <p class="text-sm text-gray-500">
+           Since renamed to @skill.Name
+        </p>
+    }
+} else {
+    @auditEvent.SkillName
+    <p class="text-gray-500 text-sm">
+        @if (auditEvent.SkillId != 0) {
+            <text>Since deleted</text>
+        } else {
+            @* If auditEvent.SkillId is 0, we don't know if the skill was deleted or renamed. *@
+            <text>Since deleted or renamed</text>
+        }
+    </p>
+}

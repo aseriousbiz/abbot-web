@@ -1,0 +1,24 @@
+@model AttachedToHubEvent
+
+<timeline-entry icon="link" actor="Model.Member" viewer-organization="Model.Conversation.Organization">
+    <div>
+        <p class="text-indigo-500 font-semibold text-sm">
+            Attached to Hub
+
+            <span class="text-gray-500 font-normal" data-tooltip="@Model.Created" title="@Model.Created">
+                @Model.Created.Humanize()
+            </span>
+        </p>
+
+        <p>
+            <span class="font-semibold">@@@Model.Member.DisplayName</span>
+            <span>attached the conversation to the</span>
+            @if (Model.MessageUrl is not null) {
+                <a class="font-semibold" href="@Model.MessageUrl">@Model.Hub.Name</a>
+            } else {
+                <span class="font-semibold">@Model.Hub.Name</span>
+            }
+            <span>hub.</span>
+        </p>
+    </div>
+</timeline-entry>

@@ -1,0 +1,29 @@
+﻿{
+  target: {
+    Room: {
+      Name: Test Room 4,
+      PlatformRoomId: C0004,
+      ManagedConversationsEnabled: true,
+      Persistent: true,
+      Shared: true,
+      RoomType: PublicChannel,
+      Deleted: false,
+      Archived: false,
+      BotIsMember: true,
+      Modified: 1999-01-02 03:04:05 Utc,
+      OrganizationId: 1,
+      Id: 1,
+      Created: 1999-01-02 03:04:05 Utc
+    },
+    TimeToRespond: {},
+    SentMessages: [
+      {
+        $type: RichActivity,
+        ResponseUrl: https://example.com/callback,
+        Type: message,
+        Text: To enable conversation tracking, please ask an https://ab.bot/ Agent or Administrator to visit <https://app.ab.bot/settings/rooms/C0004|Room Settings> to enable conversation tracking.
+      }
+    ],
+    AnalyticsClient: {}
+  }
+}

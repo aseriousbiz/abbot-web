@@ -1,0 +1,70 @@
+@model Skill
+@{
+    // Because the "Settings" tab is not a separate page, but a tab on the "Edit" page, but all the other tabs
+    // are actually links, we have to do a bit of hackiness here.
+    bool isMainEditPage = ViewContext.ActionDescriptor.DisplayName is "/Skills/Edit";
+}
+
+<nav role="tablist">
+    <ul class="sm:flex mx-4 my-1">
+        <li class="inline-block mr-2 mt-1">
+            @if (isMainEditPage) {
+                <button class="tabnav-btn" type="button" id="skill-code" role="tab" aria-selected="true">Code</button>
+            } else {
+                <a asp-page="/Skills/Edit" asp-route-skill="@Model.Name" class="tabnav-btn">Code</a>
+            }
+        </li>
+
+        <li class="inline-block mr-2 mt-1 flex-none">
+            <a asp-page="/Skills/Secrets/Index" asp-route-skill="@Model.Name" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                Secrets
+                <span class="text-gray-500">
+                    @Model.Secrets.Count
+                </span>
+            </a>
+        </li>
+
+        <li class="inline-block mr-2 mt-1 flex-none">
+            <a class="tabnav-btn" asp-page="/Skills/Patterns/Index" asp-route-skill="@Model.Name" nav-exact-match nav-active-class="tabnav-btn-active">
+                Patterns
+                <span class="text-gray-500">
+                    @Model.Patterns.Count
+                </span>
+            </a>
+        </li>
+
+        <li class="inline-block mr-2 mt-1 flex-none">
+            <a asp-page="/Skills/Triggers/Index" asp-route-skill="@Model.Name" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                Triggers
+                <span class="text-gray-500">
+                    @Model.Triggers.Count
+                </span>
+            </a>
+        </li>
+
+        <li class="inline-block mr-2 mt-1 flex-none">
+            <a asp-page="/Skills/Subscriptions/Index" asp-route-skill="@Model.Name" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                Signals
+                <span class="text-gray-500">
+                    @Model.SignalSubscriptions.Count
+                </span>
+            </a>
+        </li>
+
+        <li class="inline-block mr-2 mt-1 flex-none" feature="@FeatureFlags.AISkillPrompts">
+            <a asp-page="/Skills/AI/Index" asp-route-skill="@Model.Name" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                <i class="fa fa-robot"></i> AI
+                <span class="text-gray-500">
+                    @Model.Exemplars.Count
+                </span>
+            </a>
+        </li>
+
+        @if (isMainEditPage) {
+            <li class="inline-block mr-2 mt-1">
+                <button class="tabnav-btn" type="button" id="skill-settings" role="tab" tabindex="-1">Settings</button>
+            </li>
+        }
+
+    </ul>
+</nav>

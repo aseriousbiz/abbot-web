@@ -1,0 +1,221 @@
+@page "/packages/{organization}/{name}"
+@model Serious.Abbot.Pages.Packages.DetailsModel
+
+@{
+    var package = Model.Package;
+    ViewContext.SetPageInfo("Packages", "Package Details", $"\"{package.Name} v{package.Version}\" by {package.OrganizationName}");
+}
+
+@section Meta {
+    <meta property="og:title" content="@package.Name v.@package.Version by @package.OrganizationName">
+    <meta property="og:description" content="@package.Description">
+    <meta property="og:image" content="@package.Icon">
+    <meta property="og:image:alt" content="Icon for the @package.OrganizationName team">
+    <meta property="og:article:author" content="@package.OrganizationName">
+    <meta property="og:url" content="@Request.GetFullyQualifiedUrl(Request.Path)">
+    <meta name="twitter:card" content="summary">
+}
+
+<div class="md:flex m-2">
+    <div class="border border-gray-300 text-sm self-start md:w-72 flex-shrink-0 mb-2 bg-white">
+        <header class="bg-blue-500 text-white px-2 m-2">
+            <h1 class="text-sm">
+                Skill: @package.Name
+            </h1>
+        </header>
+        <a class="m-2 p-2 text-sm text-blue-500 font-semibold block" asp-page="/Packages/Index" data-hotkey="g p">&larr; Back to package directory</a>
+
+        <div class="p-3 border-t">
+            <dl>
+                <dt class="text-sm text-gray-500">Author</dt>
+                <dd class="flex items-center ml-1 mb-2">
+                    <img src="@package.Icon" class="rounded w-6 h-6 inline mr-1" aria-hidden="true" alt="" />
+                    @package.OrganizationName
+                </dd>
+            </dl>
+
+            <dl>
+                <dt class="text-sm text-gray-500 mt-2">Language</dt>
+                <dd class="ml-1 mb-2">
+                    @package.Language
+                </dd>
+            </dl>
+
+            <dl>
+                <dt class="text-sm text-gray-500 mt-2">Installs</dt>
+                <dd class="ml-1 mb-2">
+                    @package.TotalInstalls.ToQuantity("total install")
+                </dd>
+            </dl>
+
+            <dl>
+                <dt class="text-sm text-gray-500 mt-2">Last updated</dt>
+                <dd class="ml-1 mb-2">
+                    <timeago datetime="@package.Modified"></timeago>
+                </dd>
+            </dl>
+
+            <dl>
+                <dt class="text-sm text-gray-500 mt-2">License</dt>
+                <dd class="ml-1">
+                    <a href="https://choosealicense.com/licenses/mit/">MIT License</a>
+                </dd>
+            </dl>
+        </div>
+
+        @if (Model.OrgOwnsPackage) {
+            <div class="border-t p-2">
+                <ul class="p-1">
+                    @if (Model.Organization.UserSkillsEnabled) {
+                        <li class="my-1">
+                            <a class="text-blue-500"
+                               asp-page="/Skills/Edit"
+                               asp-route-skill="@package.Name">
+                                Edit Skill
+                            </a>
+                        </li>
+                    }
+
+                    <li class="my-1">
+                        @if (Model.CanEditPackage) {
+                            <a asp-page="Edit"
+                               class="text-blue-500"
+                               asp-route-organization="@package.OrganizationSlug"
+                               asp-route-name="@package.Name">Edit Package Metadata</a>
+                        } else {
+                            <span class="text-gray-500">Edit Package Metadata</span>
+                            <p>
+                                <small class="has-text-grey"><code class="permission">Edit</code> permission to the package&#8217;s source skill is required to edit package metadata <partial name="Shared/_PermissionTooltip" model="Model.Skill"/>.</small>
+                            </p>
+                        }
+                    </li>
+                </ul>
+            </div>
+            }
+    </div>
+
+    <div class="border md:ml-2 border-gray-300 flex-grow bg-white">
+        <div class="m-2 px-2 bg-blue-50 text-sm">
+            Skill information
+        </div>
+
+        <div>
+            @if (!package.IsListed) {
+                <p class="px-4 py-2 text-sm m-2 bg-red-50 text-red-600 text-center rounded">
+                    This package is unlisted for people in other organizations
+                </p>
+            }
+
+            <header class="px-4 pb-4 border-b border-gray-200 max-w-screen-xl">
+                <partial name="Shared/_StatusMessage" model="@Model.StatusMessage"/>
+                <div class="my-2">
+                    <h1 class="font-mono text-2xl font-bold">
+                        @if (Model.OrgOwnsPackage) {
+                            <a asp-page="/Skills/Edit" asp-route-skill="@package.Name" class="text-blue-500">
+                                @package.Name
+                            </a>
+                        } else {
+                            @package.Name
+                        }
+
+                        <span class="text-gray-500 font-normal">
+                            @package.Version
+                        </span>
+                    </h1>
+
+                    @if (package.Description is { Length: > 0 }) {
+                        <p class="mb-2">@package.Description</p>
+                    }
+                </div>
+
+                <div class="block flex">
+                    @if (Model.Organization.UserSkillsEnabled) {
+                        @if (User.IsAuthenticated()) {
+                            <a class="btn btn-primary text-center block" href="/skills/create/@package.Language.ToSlug()?fromPackageId=@package.Id">Install this package</a>
+                        } else {
+                            <div>
+                                <a class="btn btn-primary mb-2 block flex-shrink-0 sm:inline-block" asp-controller="Account" asp-action="Login">Log In or Create Account</a>
+                                <p class="text-xs text-gray-500">
+                                    You need an account to install this package with <a href="/about">Abbot</a>.
+                                    <br>
+                                    Signing in with Slack will create an account if you don't have one already.
+                                </p>
+                            </div>
+                        }
+                    }
+                </div>
+            </header>
+        </div>
+
+        <div class="m-4">
+            <nav class="package-details-nav js-tabbed-navigation mb-4 flex">
+                <ul>
+                    <li class="tabnav-btn tabnav-btn-active js-tabbed-navigation-item mr-1 cursor-pointer" data-nav-for="readme-tab-content">
+                        <a class="text-black">README</a>
+                    </li>
+
+                    <li class="tabnav-btn js-tabbed-navigation-item mr-1 cursor-pointer" data-nav-for="usage-tab-content">
+                        <a class="text-black">Usage</a>
+                    </li>
+
+                    <li class="tabnav-btn js-tabbed-navigation-item mr-1 cursor-pointer" data-nav-for="code-tab-content">
+                        <a class="text-black">Code</a>
+                    </li>
+
+                    <li class="tabnav-btn js-tabbed-navigation-item mr-1 cursor-pointer" data-nav-for="versions-tab-content">
+                        <a class="text-black">Version History</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <section class="">
+                <div class="js-tabbed-navigation-content m-2" id="readme-tab-content">
+                    <h2 class="sr-only">README</h2>
+                    @if (package.Readme is { Length: > 0 }) {
+                        <div class="content">
+                            <markdown allow-html="true">@package.Readme</markdown>
+                        </div>
+                    }
+                    else {
+                        <em>This package has no README</em>
+                    }
+                </div>
+
+                <div class="hidden js-tabbed-navigation-content m-2" id="usage-tab-content">
+                    <h2 class="sr-only">Usage</h2>
+                    @if (package.Usage is { Length: > 0 }) {
+                        <div class="content">
+                            <markdown allow-html="true" normalize-whitespace="false">@package.Usage.Replace("\n", "\n\n", StringComparison.Ordinal)</markdown>
+                        </div>
+                    }
+                    else
+                    {
+                        <em>This package has no usage examples</em>
+                    }
+                </div>
+
+                <div class="js-tabbed-navigation-content invisible" id="code-tab-content">
+                    <h2 class="sr-only">Code</h2>
+                    <textarea
+                        class="code-viewer"
+                        data-readonly="true"
+                        data-language="@package.Language">
+                        @if (package.Language == CodeLanguage.JavaScript) {
+                            // Make it look like the user code is in a module, even though we strip this out.
+                            @Html.Raw($"module.exports.{package.Name.ToPascalCase()} = (async () => {{\n")
+                            @package.Code
+                            @Html.Raw("\n})();")
+                        } else {
+                            @package.Code
+                        }
+                    </textarea>
+                </div>
+
+                <div class="hidden js-tabbed-navigation-content" id="versions-tab-content">
+                    <h2 class="sr-only">Version History</h2>
+                    <partial name="Shared/Packages/_VersionHistory" model="@package.Versions"/>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>

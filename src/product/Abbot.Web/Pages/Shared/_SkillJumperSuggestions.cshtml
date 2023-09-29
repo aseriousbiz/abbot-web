@@ -1,0 +1,10 @@
+@model IReadOnlyList<Skill>
+@{
+    var selected = "true";
+}
+@if (Model is {Count: > 0}) {
+    foreach (var skill in Model) {
+        <li id="@skill.Name" role="option" class="p-1 rounded-sm" aria-selected="@selected">@skill.Name</li>
+        selected = null;
+    }
+}

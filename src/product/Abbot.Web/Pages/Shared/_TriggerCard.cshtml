@@ -1,0 +1,191 @@
+@using TimeZoneNames
+@model TriggerViewModel
+@{
+    var trigger = Model;
+    var baseUrl = trigger.GetTriggerUrl(Context.Request);
+    var apiToken = trigger.ApiToken;
+}
+
+@if (!trigger.IsEditing) {
+    <div class="flex items-center max-w-5xl">
+        @if (Model.IsHttpTrigger) {
+            <div class="rounded p-1 flex mr-2 self-start" aria-hidden="true">
+                <i class="fa-regular fa-link text-gray-500"></i>
+            </div>
+
+            <div>
+                <div>
+                    <span class="font-bold">Webhook:</span>
+                    <span class="trigger-url break-all">
+                        @baseUrl<span class="api-token">@apiToken</span>
+                    </span>
+                </div>
+
+                <div>
+                    <p>@trigger.Description</p>
+                    <div class="text-gray-500 text-sm">
+                        #@trigger.Name
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (Model.IsScheduledTrigger) {
+            <div class="rounded p-1 flex mr-2 self-start" aria-hidden="true">
+                <i class="fa-regular fa-clock text-gray-500"></i>
+            </div>
+
+            <div>
+                <div>
+                    <span class="font-bold">Schedule:</span>
+                    @Model.CronScheduleDescription
+                    <span class="font-mono text-gray-500">(@Model.CronSchedule)</span>
+                </div>
+
+                <div>
+                    <div class="flex">
+                        <span>@trigger.Description</span>
+
+                        <span class="text-gray-500">
+                            @TZNames.GetDisplayNameForTimeZone(trigger.TimeZoneId ?? "Etc/UTC", CultureInfo.CurrentUICulture.Name)
+                            (@trigger.TimeZoneId)
+                        </span>
+                    </div>
+
+                    <div class="text-gray-500 text-sm">
+                        #@trigger.Name
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="ml-auto">
+            <skilllink class="btn"
+                       asp-page="Activity/Index"
+                       asp-route-triggerType="@trigger.TriggerTypeRouteParam"
+                       asp-route-trigger="@trigger.Name"
+                       model="Model.PageModel">Activity</skilllink>
+            <skilllink class="btn"
+                       asp-page="Edit"
+                       asp-route-triggerType="@trigger.TriggerTypeRouteParam"
+                       asp-route-trigger="@trigger.Name"
+                       model="Model.PageModel">Edit</skilllink>
+            <skilllink class="btn btn-danger"
+                       asp-page="Delete"
+                       asp-route-triggerType="@trigger.TriggerTypeRouteParam"
+                       asp-route-trigger="@trigger.Name">
+                Delete
+            </skilllink>
+        </div>
+    </div>
+}
+
+
+@if (trigger.IsEditing) {
+    <div class="mx-auto my-2">
+        <section class="border border-gray-200 mx-1 mt-2 sm:mt-0">
+            <header class="px-2 m-2 bg-blue-50">
+                <h1 class="text-sm">
+                    Edit Trigger for
+                    <span class="font-bold">
+                        @Model.SkillName
+                    </span>
+                </h1>
+            </header>
+
+            <section class="m-4">
+                <div asp-validation-summary="ModelOnly"></div>
+                    @if (Model.IsHttpTrigger) {
+                        var url = $"{baseUrl}{trigger.ApiToken}";
+
+                        <div>
+                            <div>
+                                <label class="form-label mb-0">Trigger URL</label>
+                                <p class="text-sm mb-1">
+                                    Keep this URL secret! Hover to see the full URL.
+                                </p>
+                            </div>
+
+                            <div>
+                                <p class="text-gray-500 bg-gray-50 border px-2 py-1 rounded-lg cursor-default font-mono break-all trigger-url group">
+                                    <span class="trigger-url group-hover:text-black">
+                                        @baseUrl<span class="api-token">@apiToken</span>
+                                    </span>
+                                </p>
+
+                                <copy-box value="@url" />
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <label class="form-label -mb-1" asp-for="Description"></label>
+                            <description asp-for="Description" />
+                        </div>
+                        <input class="form-input w-full" asp-for="Description"/>
+                    }
+
+                    @if (Model.IsScheduledTrigger) {
+                        <div class="mb-4">
+                            <div>
+                                <label class="form-label"
+                                       data-tooltip="minute hour monthday month weekday"
+                                       asp-for="CronSchedule"></label>
+                                <description asp-for="CronSchedule"/>
+                            </div>
+                            <div>
+                                <input class="form-input w-full"
+                                       data-cron="CronSchedule"
+                                       data-modal-id="cron-editor"
+                                       data-modal-target="CronSchedule"
+                                       value="@Model.CronScheduleDescription"/>
+                                <p class="text-sm" asp-validation-for="CronSchedule"></p>
+                                <input asp-for="CronSchedule" type="hidden" />
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="mb-1">
+                                <label class="form-label -mb-1" asp-for="TimeZoneId"></label>
+                                <description asp-for="TimeZoneId" />
+                            </div>
+                            <div>
+                                <div class="form-select-wrapper">
+                                    <timezonepicker class="form-select" asp-for="TimeZoneId"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div>
+                                <label class="form-label -mb-1" asp-for="Arguments"></label>
+                                <description asp-for="Arguments" />
+                            </div>
+                            <div>
+                                <input class="form-input" asp-for="Arguments" />
+                            </div>
+                        </div>
+
+                        <div>
+                            <div>
+                                <label class="form-label -mb-1" asp-for="Description"></label>
+                                <description asp-for="Description" />
+                            </div>
+                            <input class="form-input w-full" asp-for="Description"/>
+                        </div>
+                    }
+
+                    <div class="mt-8 flex items-center">
+                        <skilllink class="btn btn-danger"
+                                   asp-page="Delete"
+                                   asp-route-triggerType="@trigger.TriggerTypeRouteParam"
+                                   asp-route-trigger="@trigger.Name"
+                                   model="Model.PageModel">Delete</skilllink>
+                        <div class="ml-auto">
+                            <skillbacklink class="btn"/>
+                            <button class="ml-1 btn btn-primary">Update trigger</button>
+                        </div>
+                    </div>
+            </section>
+        </section>
+    </div>
+}

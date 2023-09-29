@@ -1,0 +1,98 @@
+@model Serious.Abbot.Pages.Activity.DetailsModel
+
+@{
+  var auditEvent = Model.AuditEvent.Require<RoomResponseTimesChangedEvent>();
+  var responseTimeDetails = auditEvent.ReadProperties<ResponseTimeInfo>().Require();
+  var displayRoom = auditEvent.Room is { Length:> 0 } && auditEvent.Room[0] != '#'
+    ? $"#{auditEvent.Room}"
+    : auditEvent.Room;
+}
+
+<div class="p-4">
+  <header>
+    <h1 class="mb-2">Summary</h1>
+  </header>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <partial name="Shared/Activity/_OccurrenceDetails" model="auditEvent"/>
+    <div>
+      <h2 class="font-bold text-sm mb-1">Type</h2>
+      <p class="text-gray-500">
+        Room Response Times Changed
+      </p>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Actor</h2>
+      <partial name="Shared/Activity/_UserDetail" model="@auditEvent.Actor"/>
+    </div>
+  </div>
+</div>
+
+<div class="p-4 border-t">
+  <header>
+    <h1 class="text-gray-500 mb-2">Details</h1>
+  </header>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div>
+      <h2 class="font-bold text-sm mb-1">Channel</h2>
+      <p>
+        @if (displayRoom is { Length: > 0 }) {
+           <span title="@auditEvent.RoomId">@displayRoom</span>
+           if (auditEvent.RoomId is not null) {
+             <em>(@auditEvent.RoomId)</em>
+           }
+        }
+        else {
+          <span class="text-gray-500">Unknown</span>
+        }
+      </p>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Target</h2>
+      <div>
+        @if (responseTimeDetails.OldTarget != responseTimeDetails.NewTarget) {
+          <span>From <code>@Model.Humanize(responseTimeDetails.OldTarget)</code> to <code>@Model.Humanize(responseTimeDetails.NewTarget)</code>.</span>
+          if (responseTimeDetails.OrganizationDefaultTarget is { } defaultTarget) {
+            if (responseTimeDetails.NewTarget is null) {
+              <p>The organization default target <code>@defaultTarget.Humanize()</code> is in effect.</p>
+            } else if (responseTimeDetails.OldTarget is null) {
+              <p>The organization default target <code>@defaultTarget.Humanize()</code> was in effect.</p>
+            }
+          }
+        } else {
+          <em>Unchanged</em>
+        }
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Deadline</h2>
+      <div>
+        @if (responseTimeDetails.OldDeadline != responseTimeDetails.NewDeadline) {
+          <span>From <code>@Model.Humanize(responseTimeDetails.OldDeadline)</code> to <code>@Model.Humanize(responseTimeDetails.NewDeadline)</code>.</span>
+          if (responseTimeDetails.OrganizationDefaultDeadline is { } defaultDeadline) {
+            if (responseTimeDetails.NewTarget is null) {
+              <p>The organization default deadline <code>@defaultDeadline.Humanize()</code> is in effect.</p>
+            } else if (responseTimeDetails.OldTarget is null) {
+              <p>The organization default deadline <code>@defaultDeadline.Humanize()</code> was in effect.</p>
+            }
+          }
+        } else {
+          <em>Unchanged</em>
+        }
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Description</h2>
+      <div>
+        <markdown>
+          @auditEvent.Description
+        </markdown>
+      </div>
+    </div>
+  </div>
+</div>

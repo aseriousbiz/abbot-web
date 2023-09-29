@@ -1,0 +1,29 @@
+{
+  "token": "REDACTED_TOKEN",
+  "team_id": "T013108BYLS",
+  "api_app_id": "A01TG9GPJQ3",
+  "event": {
+    "client_msg_id": "0338ec86-6e7e-4c91-93bf-96c30ca08b7b",
+    "type": "message",
+    "text": ".ping --debug",
+    "user": "U012LKJFG0P",
+    "ts": "1640027021.060900",
+    "team": "T013108BYLS",
+    "channel": "C01A3DGTSP9",
+    "event_ts": "1640027021.060900",
+    "channel_type": "channel"
+  },
+  "type": "event_callback",
+  "event_id": "Ev00000001",
+  "event_time": "1640027021.1234",
+  "authorizations": [
+    {
+      "enterprise_id": null,
+      "team_id": "T013108BYLS",
+      "user_id": "U01TG976JSW",
+      "is_bot": true,
+      "is_enterprise_install": false
+    }],
+  "is_ext_shared_channel": false,
+  "event_context": "4-eyJldCI6Im1lc3NhZ2UiLCJ0aWQiOiJUMDEzMTA4QllMUyIsImFpZCI6IkEwMVRHOUdQSlEzIiwiY2lkIjoiQzAxQTNER1RTUDkifQ"
+}

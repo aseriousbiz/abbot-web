@@ -1,0 +1,13 @@
+@model SlackButtonModel
+
+@{
+    var platform = Model.First
+        ? "Slack"
+        : $"another Slack";
+}
+
+<a class="btn flex items-middle gap-1" href="@Model.InstallUrl" data-turbo="false">
+    <img class="w-4 h-4 mt-0.5" src="/img/logo-slack.svg" alt="Slack logo"/>
+    @Model.Verb @Model.AppName to @platform
+</a>
+

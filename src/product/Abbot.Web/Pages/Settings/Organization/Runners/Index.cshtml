@@ -1,0 +1,48 @@
+﻿@page
+@model Serious.Abbot.Pages.Settings.Organization.Runners.IndexPage
+
+@{
+    ViewContext.SetPageInfo("Settings", "Self-Hosted Skill Runners");
+}
+
+<partial name="Settings/Organization/_Header" model="Model.Viewer"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">
+            Self-Hosted Skill Runners
+        </h2>
+        <p class="mt-5">
+            Run Abbot Skill Runners in your own infrastructure.
+            To learn how to deploy self-hosted skill runners in your own infrastructure, visit the
+            <a href="https://docs.ab.bot/chatops/custom-runner" target="_blank">Self-Hosted Runners documentation</a>.
+        </p>
+
+        <h3 class="text-2xl font-semibold mt-5">Runner Endpoints</h3>
+        @foreach (var (lang, name, endpoint) in Model.CurrentConfig) {
+            <div class="mt-4">
+                <div>
+                    <label class="label">@name Runner</label>
+                    <div>
+                        <div class="grid gap-2 items-center" style="grid-template-columns: 1fr max-content max-content">
+                            @if (endpoint is not null) {
+                                <copy-box container-classes="flex flex-grow" size-to-value="true" value="@endpoint">
+                                </copy-box>
+                            } else {
+                                <span class="form-input flex flex-grow text-gray-500 italic">
+                                    &lt;using hosted runner&gt;
+                                </span>
+                            }
+
+                            <a class="btn" asp-page="Edit" asp-route-language="@lang.ToString().ToLower()">Edit</a>
+                            <form asp-page="Edit" asp-route-language="@lang.ToString().ToLower()" asp-page-handler="Reset">
+                                <button class="btn btn-danger" type="submit">Reset</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </round-box>
+</page-body>

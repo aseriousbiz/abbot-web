@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <Description>Interfaces for Abbot .NET Skill Runner</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Dapper" />
+        <PackageReference Include="HtmlAgilityPack" />
+        <PackageReference Include="Humanizer.Core" />
+        <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Recognizers.Text.Choice" />
+        <PackageReference Include="Microsoft.Recognizers.Text.DateTime" />
+        <PackageReference Include="Microsoft.Recognizers.Text.Sequence" />
+        <PackageReference Include="MySqlConnector" />
+        <PackageReference Include="Newtonsoft.Json" />
+        <PackageReference Include="NodaTime" />
+        <PackageReference Include="Npgsql" />
+        <PackageReference Include="Octokit" />
+        <PackageReference Include="System.Collections.Immutable" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\libraries\Serious.Slack.Messages\Serious.Slack.Messages.csproj" />
+    </ItemGroup>
+</Project>

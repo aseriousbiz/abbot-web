@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNet.WebApi.Client" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="NSubstitute" />
+        <PackageReference Include="xunit.analyzers" />
+        <PackageReference Include="xunit.core" />
+        <PackageReference Include="xunit.runner.visualstudio">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="xunit.assert" />
+        <PackageReference Include="coverlet.collector">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\product\Abbot.ScriptReferences\Abbot.ScriptReferences.csproj" />
+      <ProjectReference Include="..\..\src\product\Abbot.Web\Abbot.Web.csproj" />
+      <ProjectReference Include="..\Abbot.Web.Library.TestHelpers\Abbot.Web.Library.TestHelpers.csproj" />
+      <ProjectReference Include="..\Serious.TestHelpers\Serious.TestHelpers.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Pages\Account\Settings" />
+    </ItemGroup>
+
+    <Target Name="CopyFrameworkXmlDocumentation" AfterTargets="ResolveReferences">
+        <ItemGroup>
+            <Content Include="@(Reference->'%(RootDir)%(Directory)%(Filename).xml')" Link="@(Reference->'refs/%(Filename).xml')" Condition="($([System.String]::new('%(Filename)').StartsWith('System')) or '%(Filename)' == 'netstandard') and Exists('%(RootDir)%(Directory)%(Filename).xml')">
+                <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            </Content>
+        </ItemGroup>
+    </Target>
+
+    <Target Name="CopyPackageXmlDocumentation" BeforeTargets="Build">
+        <ItemGroup>
+            <DocumentationFiles Include="%(Reference.RelativeDir)%(Reference.Filename).xml" />
+        </ItemGroup>
+        <Copy SourceFiles="@(DocumentationFiles)" DestinationFolder="$(OutputPath)" Condition="Exists('%(RootDir)%(Directory)%(Filename)%(Extension)')" />
+    </Target>
+
+    <!-- Copy indirect dependencies into the non-indirect-reference output path -->
+    <Target Name="CopyScriptReferences" BeforeTargets="Build">
+        <ItemGroup>
+          <ScriptReferences Include="$(RootDir)build\bin\Abbot.ScriptReferences\refs\*.dll" />
+        </ItemGroup>
+        <Copy SourceFiles="@(ScriptReferences)" DestinationFolder="$(OutputPath)" />
+     </Target>
+
+</Project>

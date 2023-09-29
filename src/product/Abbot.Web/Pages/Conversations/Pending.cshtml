@@ -1,0 +1,26 @@
+@page "{conversationId}/{integrationType}/{actorId}"
+@model Serious.Abbot.Pages.Conversations.PendingPageModel
+
+@{
+    ViewContext.SetPageInfo("Integrations", "Ticket Creation Pending");
+}
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <div  class="flex item-center justify-center p-8">
+        <round-box class="p-4 max-w-2xlp-4 max-w-2xl rounded-xl flex flex-col gap-y-4">
+            <header class="text-center">
+                <h1 class="font-medium">@Model.IntegrationType Ticket Creation Pending</h1>
+                <p>A request to create a ticket associated with this conversation in <code>#@Model.Conversation.Room.Name</code> is pending.</p>
+            </header>
+            <blockquote class="bg-gray-100 text-sm p-2 rounded-lg">
+                <message-renderer message="@Model.ConversationTitle" truncate-length="255"/>
+            </blockquote>
+
+            <p class="text-center text-sm text-gray-500">
+                The conversation will be associated with the ticket when the creation is completed.
+            </p>
+        </round-box>
+    </div>
+</page-body>

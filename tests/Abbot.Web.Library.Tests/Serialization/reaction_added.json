@@ -1,0 +1,29 @@
+{
+  "token": "REDACTED_TOKEN",
+  "team_id": "T00012121",
+  "api_app_id": "A0000000001",
+  "event": {
+    "type": "reaction_added",
+    "user": "U50100000",
+    "item": {
+      "type": "message",
+      "channel": "C50000000",
+      "ts": "1644779732.750289"
+    },
+    "reaction": "eyes",
+    "event_ts": "1644780478.041900"
+  },
+  "type": "event_callback",
+  "event_id": "Ev00000001",
+  "event_time": 1644780478,
+  "authorizations": [
+    {
+      "team_id": "T00012121",
+      "user_id": "U0BOTID0000",
+      "is_bot": true,
+      "is_enterprise_install": false
+    }
+  ],
+  "is_ext_shared_channel": false,
+  "event_context": "4-REDACTED_EVENT_CONTEXT"
+}

@@ -1,0 +1,16 @@
+@model RoomPage
+
+<p class="text-gray-500">These agents are contacted (in addition to the first responders) when the deadline is exceeded.</p>
+@if (!Model.EscalationResponders.Members.Any() && Model.DefaultEscalationResponders.Any()) {
+    <div class="mt-1">
+        <p><i class="fa-solid fa-triangle-exclamation"></i> This room has no escalation responders assigned.</p>
+        <div class="text-black flex-row">
+            <em>The <a asp-page="Index" asp-fragment="default-first-responders">default escalation responders</a></em>
+            @foreach (var firstResponder in Model.DefaultEscalationResponders) {
+                <partial name="Shared/_SmallAvatar" model="firstResponder.User"/>
+            }
+            <em> will be notified instead.</em>
+        </div>
+    </div>
+}
+<partial name="_RespondersList" model="Model.EscalationResponders"/>

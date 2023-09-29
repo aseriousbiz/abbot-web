@@ -1,0 +1,5 @@
+{
+  "token":"TOKEN123",
+  "type": "url_verification",
+  "challenge": "some-challenge"
+}

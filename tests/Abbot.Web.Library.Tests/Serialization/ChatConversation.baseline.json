@@ -1,0 +1,42 @@
+{
+  "Id": "123",
+  "FirstMessageId": "1111.4444",
+  "Title": "Convo Title",
+  "WebUrl": "https://app.ab.bot/conversations/123",
+  "Room": {
+    "Id": "C999",
+    "Name": "midgar"
+  },
+  "StartedBy": {
+    "Id": "U888",
+    "UserName": "you",
+    "Name": "You",
+    "Email": "you@ab.bot",
+    "Location": {
+      "TimeZone": "America/Vancouver",
+      "Coordinate": {
+        "Latitude": 42.24,
+        "Longitude": 24.42
+      },
+      "FormattedAddress": "123 Jump St."
+    }
+  },
+  "Created": "2022-01-01T01:02:03+08:00",
+  "LastMessagePostedOn": "2022-01-01T01:02:03+08:00",
+  "Members": [
+    {
+      "Id": "U888",
+      "UserName": "you",
+      "Name": "You",
+      "Email": "you@ab.bot",
+      "Location": {
+        "TimeZone": "America/Vancouver",
+        "Coordinate": {
+          "Latitude": 42.24,
+          "Longitude": 24.42
+        },
+        "FormattedAddress": "123 Jump St."
+      }
+    }
+  ]
+}

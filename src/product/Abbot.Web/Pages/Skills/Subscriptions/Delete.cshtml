@@ -1,0 +1,23 @@
+@page "/skills/{skill}/subscriptions/{name}/delete"
+@model Serious.Abbot.Pages.Skills.Subscriptions.DeletePageModel
+@{
+    ViewContext.SetPageInfo("Signals", "Signal Subscription Delete", "Delete signal subscription");
+}
+<div class="border border-red-300 sm:w-96 m-8 bg-white shadow mx-auto">
+    <header class="p-2">
+        <h1 class="bg-red-500 text-white px-2">
+            Unsubscribe <span class="font-bold">@Model.SkillName</span> from signal <span class="font-bold">@Model.SignalName</span>?
+        </h1>
+    </header>
+
+    <form class="p-2" method="post">
+        <p class="mx-2">
+            Deleting this subscription will stop this skill from responding to this signal.
+        </p>
+
+        <div class="flex items-center mt-4">
+            <skillbacklink class="btn"/>
+            <button class="btn btn-danger ml-auto">Confirm Delete</button>
+        </div>
+    </form>
+</div>

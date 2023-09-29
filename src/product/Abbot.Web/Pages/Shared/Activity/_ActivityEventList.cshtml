@@ -1,0 +1,125 @@
+@using Serious.Abbot.Repositories
+@model IReadOnlyList<AuditEventBase>
+@inject IUserRepository UserRepository
+
+@{
+    var viewer = ViewData.GetViewer();
+    var organization = ViewData.GetOrganization();
+    var abbot = await UserRepository.EnsureAbbotUserAsync();
+    var showOrgColumn = (bool?)ViewBag.ShowOrgColumn == true;
+}
+
+<table class="table w-full">
+    <thead>
+    <tr>
+        <th class="px-1 py-2"></th>
+        <th class="text-sm text-left px-1 py-2">Timestamp</th>
+        @if (showOrgColumn) {
+            <th class="text-sm text-left px-1 py-2">Organization</th>
+        }
+        <th class="text-sm text-left px-1 py-2">Actor</th>
+        <th class="text-sm pr-2 py-2">
+            <div class="flex">
+                <span class="flex-grow">Activity</span>
+            </div>
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var auditEvent in Model) {
+        var isTheEventWeAreViewing = ViewData.TryGetValue("ViewingAuditEvent", out var v) &&
+                                     v is AuditEventBase {Identifier: var id } &&
+                                     id == auditEvent.Identifier;
+        var color = isTheEventWeAreViewing
+            ? "bg-indigo-100"
+            : auditEvent.StaffOnly ? "bg-yellow-200" : null;
+        <tr class="@(color)">
+            <td class="py-1 pl-2">
+                <div class="flex items-baseline gap-2 p-1">
+                    @if (auditEvent.ErrorMessage is null) {
+                        <i class="fa-light fa-check text-green-500" aria-label="Success"></i>
+                    } else {
+                        <i class="fa-light fa-times-circle text-red-500" aria-label="Error"></i>
+                    }
+                    @if (auditEvent is AuditEvent genericEvent) {
+                        <span data-tooltip="@genericEvent.Type">
+                            <i class="fa-light fa-tag"></i>
+                        </span>
+                    }
+                    @if (auditEvent.SerializedProperties is not null
+                         && (auditEvent.ShouldShowProperties() || ViewContext.IsStaffMode())) {
+                        <span data-tooltip="Event has properties, view them in the Details.">
+                            <i class="fa-light fa-info-circle"></i>
+                        </span>
+                    }
+                    @if (isTheEventWeAreViewing) {
+                        <span data-tooltip="This is the event you're currently viewing">
+                            <i class="fa-solid fa-star"></i>
+                        </span>
+                    }
+                </div>
+            </td>
+            <td>
+                <div class="flex flex-none p-1">
+                    <timeago datetime="@auditEvent.Created"></timeago>
+                </div>
+            </td>
+            @if (showOrgColumn) {
+                <td class="p-1">
+                    <a asp-page="/Staff/Organizations/Activity/Index" asp-route-id="@auditEvent.Organization.PlatformId">
+                        @auditEvent.Organization.Name
+                    </a>
+                </td>
+            }
+            <td class="p-1">
+                <span class="flex flex-none">
+                    @if (auditEvent is StaffAuditEvent && !ViewContext.IsStaffMode()) {
+                        @* Unless the viewer is staff, don't show them the staff actor *@
+                        <span class="mr-1">
+                            <partial name="Shared/_SmallAvatar" model="abbot"/>
+                        </span>
+
+                        <span class="has-tooltip-arrow hidden sm:inline">
+                            Staff
+                        </span>
+                    } else {
+                        <span class="mr-1">
+                            <partial name="Shared/_SmallAvatar" model="auditEvent.Actor"/>
+                        </span>
+
+                        <span class="has-tooltip-arrow hidden sm:inline" data-tooltip="@auditEvent.Actor.DisplayName (@auditEvent.Actor.PlatformUserId)">
+                            @auditEvent.Actor.DisplayName
+                        </span>
+                    }
+
+                    @* We show this badge even if staff mode is enabled *@
+                    @if (auditEvent.StaffOnly) {
+                        <span data-tooltip="This event is visible only to Abbot staff" class="ml-2">
+                            <i class="fa-regular fa-eye-slash"></i>
+                        </span>
+                    }
+
+                    @if (auditEvent is StaffAuditEvent or AuditEvent { StaffPerformed: true }) {
+                        <staff-icon tooltip="This action was performed by Abbot staff" class="ml-2">
+                        </staff-icon>
+                    }
+                </span>
+            </td>
+            <td colspan="2">
+                <div class="flex p-1">
+                    <partial name="Shared/Activity/_SimpleDescription" model="auditEvent"/>
+
+                    @if (ViewContext.IsStaffMode() || User.IsAdministrator() || viewer.UserId == auditEvent.ActorId) {
+                        <a class="ml-2"
+                           asp-page="Details"
+                           preserve-route-values
+                           asp-route-id="@auditEvent.Identifier">
+                            Details…
+                        </a>
+                    }
+                </div>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

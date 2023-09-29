@@ -1,0 +1,61 @@
+@using Serious.Abbot.Repositories
+@model ConversationViewModel
+@inject ITagRepository Tags
+@{
+    var allTags = await ViewContext.HttpContext.GetOrCreateAsync(
+        "AllTags",
+        async () => await Tags.GetAllUserTagsAsync(Model.Conversation.Organization));
+}
+<form method="post" class="inline" data-controller="checkboxes" data-checkboxes-exclusive-value="true" asp-all-route-data="@ViewContext.GetCurrentRouteValues()">
+    <details class="dropdown inline">
+        <summary>
+            <pill size="Small" icon="fa-plus" tooltip="Add tag">
+                Manage tags
+            </pill>
+        </summary>
+
+        <div role="menu" class="dropdown-menu rounded border border-gray-300 bg-white absolute drop-shadow-md text-sm w-fit">
+            <div class="flex flex-col shrink-0">
+                <header class="p-2 font-medium whitespace-nowrap border-b">
+                    Set Tags
+                </header>
+            </div>
+            <div class="max-h-56 overflow-y-scroll pr-8">
+                @foreach (var tag in allTags) {
+                    <label class="flex items-center gap-x-2 px-3 py-2">
+                        <input type="checkbox"
+                               data-checkboxes-target="item"
+                               name="TagIds"
+                               value="@tag.Id"
+                               checked="@Model.Tags.Any(t => t.Id == tag.Id)" />
+                        <span class="font-medium whitespace-nowrap">@tag.Name</span>
+                    </label>
+                }
+            </div>
+
+            <div class="border-t">
+                <label class="flex items-center gap-x-2 px-3 py-2" data-controller="toggle">
+                    <input type="checkbox"
+                           asp-for="CreateNewTag"
+                           value="@true"
+                           data-checkboxes-target="toggle"
+                           data-toggle-target="source" />
+                    <div data-action="click->toggle#enable">
+                        <input type="text"
+                               asp-for="NewTagName"
+                               class="form-input w-96"
+                               placeholder="New Tag Name"
+                               data-toggle-target="dependent"
+                               disabled="disabled" />
+                        <span asp-validation-for="NewTagName"></span>
+                    </div>
+                </label>
+            </div>
+
+            <div class="p-2 pr-4 font-medium whitespace-nowrap border-t">
+                <input type="hidden" name="conversationId" value="@Model.Conversation.Id" />
+                <button class="btn btn-primary" type="submit">Save tags</button>
+            </div>
+        </div>
+    </details>
+</form>

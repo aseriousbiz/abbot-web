@@ -1,0 +1,299 @@
+﻿{
+  target: {
+    Conversation: {
+      RoomId: 1,
+      FirstMessageId: 1111.0006,
+      ThreadIds: [
+        1111.0006
+      ],
+      Title: Test Conversation 6,
+      IsImported: false,
+      LastMessagePostedOn: 1999-01-02 03:04:05 Utc,
+      LastStateChangeOn: 1999-01-02 03:04:05 Utc,
+      State: New,
+      StartedById: 3,
+      HubId: 1,
+      HubThreadId: the-hub-thread-id,
+      Properties: {},
+      OrganizationId: 1,
+      Id: 1,
+      Created: 1999-01-02 03:04:05 Utc
+    },
+    PostedMessages: {
+      $type: List<MessageRequest>,
+      $values: [
+        {
+          Channel: Chub,
+          Timestamp: 0000000001.000000,
+          Blocks: {
+            $type: List<ILayoutBlock>,
+            $values: [
+              {
+                $type: Section,
+                Text: {
+                  $type: MrkdwnText,
+                  Verbatim: false,
+                  Text: Conversation with <https://testorg.example.com/team/Uhome|@Test User 1> in <#C0004>,
+                  Type: mrkdwn
+                },
+                Type: section
+              },
+              {
+                $type: Context,
+                Elements: {
+                  $type: IContextBlockElement[],
+                  $values: [
+                    {
+                      $type: MrkdwnText,
+                      Verbatim: false,
+                      Text: *Created:* <!date^915246245^{date_short_pretty} at {time}|1999-01-02T03:04:05>. *Last updated*: <!date^915246245^{date_short_pretty} at {time}|1999-01-02T03:04:05>,
+                      Type: mrkdwn
+                    }
+                  ]
+                },
+                Type: context
+              },
+              {
+                $type: Section,
+                Text: {
+                  $type: MrkdwnText,
+                  Verbatim: false,
+                  Text:
+*Responders*
+_None Assigned_,
+                  Type: mrkdwn
+                },
+                Type: section
+              },
+              {
+                $type: Actions,
+                Elements: {
+                  $type: IActionElement[],
+                  $values: [
+                    {
+                      $type: ButtonElement,
+                      Text: {
+                        Emoji: true,
+                        Text: Open,
+                        Type: plain_text
+                      },
+                      Value: open,
+                      Url: https://testorg.example.com/archives/C0004/p11110006,
+                      Type: button
+                    }
+                  ]
+                },
+                Type: actions
+              }
+            ]
+          },
+          ReplyBroadcast: false,
+          Text: A new conversation was posted by Test User 1 in Test Room 4
+        }
+      ]
+    },
+    AuditEvents: {
+      $type: List<AuditEventBase>,
+      $values: [
+        {
+          $type: AuditEvent,
+          Type: {
+            Subject: Conversation,
+            Event: AttachedToHub
+          },
+          StaffPerformed: false,
+          Discriminator: AuditEvent,
+          Identifier: Guid_1,
+          ActorId: 2,
+          Description: attached this conversation to the 'test-hub' Hub.,
+          StaffOnly: false,
+          EntityId: 1,
+          IsTopLevel: true,
+          SerializedProperties: {"HubId":1,"HubThreadId":"the-hub-thread-id"},
+          HasDetails: false,
+          OrganizationId: 1,
+          Id: 1,
+          Created: 1999-01-02 03:04:05 Utc
+        }
+      ]
+    }
+  },
+  logs: {
+    $type: List<LogEvent>,
+    $values: [
+      {
+        CategoryName: Serious.Abbot.Eventing.AttachConversationToHubConsumer,
+        LogLevel: Information,
+        EventId: {
+          Id: 3,
+          Name: CreatedHubThread
+        },
+        Message: Created Hub Thread 'the-hub-thread-id',
+        State: {
+          $type: LoggerMessage.LogValues<string>,
+          $values: [
+            {
+              HubThreadId: the-hub-thread-id
+            },
+            {
+              {OriginalFormat}: Created Hub Thread '{HubThreadId}'
+            }
+          ]
+        },
+        Scopes: {
+          $type: List<object>,
+          $values: [
+            {
+              $type: LoggerMessage.LogValues<int, string,
+              $values: [
+                {
+                  OrganizationId: 1
+                },
+                {
+                  OrganizationPlatformId: Thome
+                },
+                {
+                  OrganizationSlug: testorg
+                },
+                {
+                  {OriginalFormat}: Organization: {OrganizationId}, {OrganizationPlatformId}, {OrganizationSlug}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<int, string>,
+              $values: [
+                {
+                  RoomId: 1
+                },
+                {
+                  RoomPlatformId: C0004
+                },
+                {
+                  {OriginalFormat}: Room: {RoomId}, {RoomPlatformId}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<int, ConversationState,
+              $values: [
+                {
+                  ConversationId: 1
+                },
+                {
+                  ConversationState: New
+                },
+                {},
+                {
+                  {OriginalFormat}: Conversation: {ConversationId}, {ConversationState}, {HubThreadId}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<int, int?,
+              $values: [
+                {
+                  HubId: 1
+                },
+                {
+                  HubRoomId: 2
+                },
+                {
+                  HubRoomPlatformId: Chub
+                },
+                {
+                  {OriginalFormat}: Hub: {HubId}, {HubRoomId}, {HubRoomPlatformId}
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        CategoryName: Serious.Abbot.Eventing.AttachConversationToHubConsumer,
+        LogLevel: Debug,
+        EventId: {
+          Id: 1,
+          Name: AttachedConversationToHub
+        },
+        Message: Attached conversation to hub,
+        State: {
+          $type: LoggerMessage.LogValues,
+          $values: [
+            {
+              {OriginalFormat}: Attached conversation to hub
+            }
+          ]
+        },
+        Scopes: {
+          $type: List<object>,
+          $values: [
+            {
+              $type: LoggerMessage.LogValues<int, string,
+              $values: [
+                {
+                  OrganizationId: 1
+                },
+                {
+                  OrganizationPlatformId: Thome
+                },
+                {
+                  OrganizationSlug: testorg
+                },
+                {
+                  {OriginalFormat}: Organization: {OrganizationId}, {OrganizationPlatformId}, {OrganizationSlug}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<int, string>,
+              $values: [
+                {
+                  RoomId: 1
+                },
+                {
+                  RoomPlatformId: C0004
+                },
+                {
+                  {OriginalFormat}: Room: {RoomId}, {RoomPlatformId}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<int, ConversationState,
+              $values: [
+                {
+                  ConversationId: 1
+                },
+                {
+                  ConversationState: New
+                },
+                {},
+                {
+                  {OriginalFormat}: Conversation: {ConversationId}, {ConversationState}, {HubThreadId}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<int, int?,
+              $values: [
+                {
+                  HubId: 1
+                },
+                {
+                  HubRoomId: 2
+                },
+                {
+                  HubRoomPlatformId: Chub
+                },
+                {
+                  {OriginalFormat}: Hub: {HubId}, {HubRoomId}, {HubRoomPlatformId}
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

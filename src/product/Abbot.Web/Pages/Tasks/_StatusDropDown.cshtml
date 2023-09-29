@@ -1,0 +1,64 @@
+@model TaskItemStatus
+@{
+    Dictionary<TaskItemStatus, (string, string, string)> taskStatuses = new() {
+        [TaskItemStatus.None] = ("text-gray-500", "fa-circle", "Open"),
+        [TaskItemStatus.InProgress] = ("text-yellow-600", "fa-circle-half-stroke", "In Progress"),
+        [TaskItemStatus.Open] = ("text-gray-500", "fa-circle", "Open"),
+        [TaskItemStatus.Closed] = ("text-green-600", "fa-circle-check", "Closed"),
+        [TaskItemStatus.Blocked] = ("text-red-600", "fa-circle-exclamation", "Blocked"),
+    };
+    var (color, icon, label) = taskStatuses[Model];
+    var statusItems = Html.GetEnumSelectList<TaskItemStatus>();
+    var isBulkSetButton = Model is TaskItemStatus.None;
+    var formId = ViewData["form-id"];
+}
+
+<details class="dropdown relative" @if (isBulkSetButton) { <text>data-checkboxes-target="action"</text> }>
+    @if (isBulkSetButton) {
+        @* If status is None, then we're using this as a bulk setting button. *@
+        <summary class="btn btn-sm cursor-pointer">
+            Status
+        </summary>
+    } else {
+        <summary class="cursor-pointer">
+            <div class="flex items-center @color has-tooltip-right has-tooltip-arrow" data-tooltip="@label">
+                <i class="fa-regular @icon m-1"></i>
+                <span class="sm:sr-only text-sm">
+                    @label
+                </span>
+            </div>
+        </summary>
+    }
+
+    <div role="menu" class="dropdown-menu rounded border border-gray-300 bg-white absolute drop-shadow-md text-sm w-60 z-10">
+        <div class="flex flex-col shrink-0">
+            <header class="p-2 font-medium whitespace-nowrap border-b">
+                Set status
+            </header>
+
+            <div class="max-h-56 overflow-y-scroll">
+                @foreach (var status in statusItems.Where(s => s.Text is not "None")) {
+                    var (_, statusIcon, _) = taskStatuses[(TaskItemStatus)int.Parse(status.Value)];
+                    var checkedValue = $"{(int)Model}" == status.Value ? "checked" : null;
+                    <label class="flex items-center gap-x-2 px-3 py-2">
+                        <input
+                            type="radio"
+                            name="NewStatus"
+                            value="@status.Value"
+                            form="@formId"
+                            checked="@checkedValue" />
+                        <i class="fa-regular @statusIcon m-1"></i>
+                        <span class="font-normal">@status.Text</span>
+                    </label>
+                }
+            </div>
+            <div class="p-2 pr-4 font-medium whitespace-nowrap border-t">
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    form="@formId"
+                    asp-page-handler="ChangeStatuses">Save status</button>
+            </div>
+        </div>
+    </div>
+</details>

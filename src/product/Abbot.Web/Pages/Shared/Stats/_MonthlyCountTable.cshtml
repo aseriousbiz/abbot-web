@@ -1,0 +1,40 @@
+@model IDictionary<DateTime, int>
+@{
+    var now = DateTime.UtcNow;
+}
+<div class="hard-box w-full">
+    @if (Model.Any())
+    {
+        <table class="w-full">
+            <thead>
+            <tr>
+                <th class="text-left border-b p-3">Year</th>
+                <th class="text-left border-b p-3">Month</th>
+                <th class="text-left border-b p-3">Count</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var kvp in Model)
+            {
+                <tr>
+                    <td class="align-middle p-3">@kvp.Key.Year</td>
+                    <td class="align-middle p-3">@kvp.Key.ToString("MMMM", CultureInfo.InvariantCulture)</td>
+                    <td class="align-middle p-3">@kvp.Value @if (kvp.Key.Year == now.Year && kvp.Key.Month == now.Month) {<em style="font-weight: normal;">so far</em>}</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <blankslate>
+            <div class="text-center text-xl h-6 text-gray-500 mb-2">
+                <i class="fa-regular fa-align-slash"></i>
+            </div>
+
+            <h2 class="text-center text-lg text-gray-700">
+                No data.
+            </h2>
+        </blankslate>
+    }
+</div>

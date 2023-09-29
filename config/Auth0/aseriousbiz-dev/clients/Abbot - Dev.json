@@ -1,0 +1,53 @@
+{
+  "is_token_endpoint_ip_header_trusted": false,
+  "name": "Abbot - Dev",
+  "callbacks": [
+    "https://localhost:4979/callback",
+    "https://ipv4.fiddler:4979/callback"
+  ],
+  "is_first_party": true,
+  "oidc_conformant": true,
+  "sso_disabled": false,
+  "cross_origin_auth": false,
+  "refresh_token": {
+    "expiration_type": "non-expiring",
+    "idle_token_lifetime": 2592000,
+    "infinite_idle_token_lifetime": true,
+    "infinite_token_lifetime": true,
+    "leeway": 0,
+    "token_lifetime": 31557600,
+    "rotation_type": "non-rotating"
+  },
+  "allowed_clients": [],
+  "native_social_login": {
+    "apple": {
+      "enabled": false
+    },
+    "facebook": {
+      "enabled": false
+    }
+  },
+  "initiate_login_uri": "https://ab.bot/login",
+  "allowed_logout_urls": [
+    "https://localhost:4979/",
+    "https://ipv4.fiddler:4979/"
+  ],
+  "description": "Abbot Dev Environment",
+  "client_id": "Cfjsv8i5RZW43vKNvmwYEywxmN23K7MA",
+  "client_secret": "LicbbQtoI1wR7eQLl8xEcbqsLkY4RpfBNcoWHbSyEZ_7QX99YDM_h1w85AUfZYHS",
+  "jwt_configuration": {
+    "alg": "RS256",
+    "lifetime_in_seconds": 36000,
+    "secret_encoded": false
+  },
+  "client_aliases": [],
+  "token_endpoint_auth_method": "client_secret_post",
+  "app_type": "regular_web",
+  "grant_types": [
+    "authorization_code",
+    "implicit",
+    "refresh_token",
+    "client_credentials"
+  ],
+  "custom_login_page_on": true
+}

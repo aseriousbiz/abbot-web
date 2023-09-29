@@ -1,0 +1,14 @@
+{
+  "Id": "U001",
+  "UserName": "cloud",
+  "Name": "Cloud Strife",
+  "Email": "cstrife@ava.lanche",
+  "Location": {
+    "TimeZone": "America/Vancouver",
+    "Coordinate": {
+      "Latitude": 12.42,
+      "Longitude": 42.12
+    },
+    "FormattedAddress": "185 Shinra Drive, Sector 4, Midgar, A1B 2C3"
+  }
+}

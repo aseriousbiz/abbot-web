@@ -1,0 +1,27 @@
+@page "{id:int}"
+@model Serious.Abbot.Pages.Settings.Organization.Tags.DeletePage
+
+@{
+    ViewContext.SetPageInfo("Settings", "Delete Conversation Tag");
+}
+
+<partial name="../_Header" model="Model.Viewer"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold"><a asp-page="Index">Conversation Tags</a> / @Model.Tag.Name</h2>
+        <div class="mt-5">
+            <span class="font-semibold text-lg">
+                Are you sure you want to delete <pill size="Medium">@Model.Tag.Name</pill>?
+            </span>
+            <p class="italic">
+                Deleting this tag will remove it from @Model.Tag.Conversations.Count.ToQuantity("conversation").
+            </p>
+        </div>
+        <form method="post" class="mt-5">
+            <button type="submit" class="btn btn-danger">Yes, delete @Model.Tag.Name</button>
+            <a class="btn btn-primary" asp-page="../Index">No, take me back</a>
+        </form>
+    </round-box>
+</page-body>

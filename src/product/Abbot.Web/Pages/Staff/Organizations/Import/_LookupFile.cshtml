@@ -1,0 +1,66 @@
+@model IndexPageModel
+
+@{
+    var lookupFile = Model.LookupFile.Require();
+}
+
+<form method="post">
+    <h3 class="text-xl font-semibold mt-5">Data To Import</h3>
+
+    <table class="w-full">
+        <thead>
+        <tr>
+            @foreach (var col in lookupFile.Columns) {
+                <th class="text-left border-b p-3">@col.ColumnDataType</th>
+            }
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var row in Model.LookupFile.Rows.OrderByDescending(r => r.HasErrors ? 1 : r.HasStatus ? 0 : -1)) {
+            <tr>
+                <td class="text-left border-t p-3" rowspan="2">
+                    @row.CustomerName
+                </td>
+                <td class="text-left border-t p-3">
+                    <partial name="_RoomLookupResult" model="row.RoomResult"/>
+                </td>
+                @foreach (var candidate in row.FirstResponders) {
+                    <td class="text-left border-t p-3">
+                        <partial name="_MemberLookupResult" model="@candidate" />
+                    </td>
+                }
+            </tr>
+            <tr>
+                <td class="text-left p-3 pb-4" colspan="@(lookupFile.Columns.Count - 2)">
+                    <strong>Import Action:</strong>
+                    <span class="ml-2">
+                        @if (row.RoomResult.Error is { Length: > 0 } || row.FirstResponders.Any(c => c.Error is { Length: > 0 })) {
+                            <span><i class="fa-solid fa-triangle-exclamation text-yellow-500"></i>️ Actions required.</span>
+                        } else if (row.RoomResult.Error is null && row.FirstResponderCandidates.Count > 0) {
+                            <span>Will add these folks as first responders to this room:</span>
+                            <ul class="comma-list inline">
+                                @foreach (var candidate in row.FirstResponderCandidates) {
+                                    <li class="font-semibold text-gray-600">
+                                        @candidate.User.Email (@candidate.DisplayName @candidate.User.PlatformUserId)
+                                    </li>
+                                }
+                            </ul>
+                        } else {
+                            <span>✅ Nothing to import for this row.</span>
+                        }
+                    </span>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <label data-tooltip="By default, importing will only add responders. Checking this will replace first responders with the ones in the import.">
+        <input asp-for="ReplaceExisting" />
+        Replace existing responders
+    </label>
+    <input asp-page-handler="Import" class="btn btn-primary" type="submit" value="Import" />
+    <button type="submit" class="btn ml-2" form="clear-form">Clear</button>
+</form>
+
+<form id="clear-form" name="clear-form" method="post" asp-page-handler="Clear">
+</form>

@@ -1,0 +1,174 @@
+@page
+@model Serious.Abbot.Pages.Settings.Account.IndexPage
+@{
+    ViewContext.SetPageInfo("Settings", "Account Settings");
+}
+
+<partial name="_Header" model="Model.Viewer" />
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage" />
+
+<page-body>
+    <round-box>
+        <h2 class="text-xl font-semibold mb-2">Profile</h2>
+
+        <div class="flex">
+            <img class="w-16 h-16 border-gray-300 border-4 rounded-full" src="@Model.Viewer.User.Avatar" alt="" />
+            <div class="flex flex-col ml-3">
+                <div class="font-semibold">@Model.Viewer.DisplayName</div>
+                <div>@Model.Viewer.User.Email</div>
+                <div class="text-sm text-gray-500">This information comes from your Slack profile.</div>
+            </div>
+            @if (Model.ZendeskEnabled) {
+                <div class="flex-col ml-6">
+                    <div class="font-semibold">Zendesk Linked Identity</div>
+                    <div class="text-gray-500">
+                        @if (Model.ZendeskIdentity is { } zendeskIdentity) {
+                            <span data-tooltip="@zendeskIdentity.Id">@zendeskIdentity.Name</span>
+                        } else {
+                            <text><a asp-controller="Zendesk" asp-action="Connect" asp-route-organizationId="@Model.Organization.Id" class="btn">Connect Your Zendesk Identity</a></text>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </round-box>
+
+    @if (!Model.Viewer.CanManageConversations())
+    {
+        <round-box>
+            <h2 class="text-xl font-semibold mb-2">No Role Assigned</h2>
+            <p>Cannot manage Conversations without Agent or Administrator permissions.</p>
+        </round-box>
+    }
+
+    <round-box asp-authz-policy="@AuthorizationPolicies.RequireAgentRole">
+        <h2 class="text-xl font-semibold mb-2">Working Hours</h2>
+        <p class="text-gray-500">Configure the hours you start and stop working so Abbot knows when you're available.</p>
+        <div>
+            <span class="font-semibold">Time Zone:</span>
+            @if (Model.Viewer.TimeZoneId is {Length: >0}) {
+                <span data-tooltip="This comes from your Slack profile.">@Model.Viewer.TimeZoneId</span>
+            }
+            else {
+                <span data-tooltip="This comes from your Slack profile." class="italic">Not Set</span>
+            }
+        </div>
+        @if (Model.Viewer.TimeZoneId is not {Length: >0}) {
+            <div class="mt-4 font-semibold">Sorry, but until you set a time zone in your Slack profile, we can't track your working hours.</div>
+        }
+        else {
+            <form asp-page="Index"
+                asp-route-filter="@Model.Filter"
+                asp-route-p="@Model.Rooms.PageNumber">
+                <div class="mt-4">
+                    <div class="form-select-wrapper">
+                        <select class="form-select" asp-for="WorkingHoursStart" asp-items="UserInterfaceHelpers.AllWorkingHours">
+                        </select>
+                    </div>
+                    <span>to</span>
+                    <div class="form-select-wrapper">
+                        <select class="form-select" asp-for="WorkingHoursEnd" asp-items="UserInterfaceHelpers.AllWorkingHours">
+                        </select>
+                    </div>
+                    <div class="mt-4">
+                        <label class="checkbox ml-2">
+                            <input asp-for="WorkingDays.Monday"/> Monday
+                        </label>
+                        <label class="checkbox ml-2">
+                            <input asp-for="WorkingDays.Tuesday"/> Tuesday
+                        </label>
+                        <label class="checkbox ml-2">
+                            <input asp-for="WorkingDays.Wednesday"/> Wednesday
+                        </label>
+                        <label class="checkbox ml-2">
+                            <input asp-for="WorkingDays.Thursday"/> Thursday
+                        </label>
+                        <label class="checkbox ml-2">
+                            <input asp-for="WorkingDays.Friday"/> Friday
+                        </label>
+                        <label class="checkbox ml-2">
+                            <input asp-for="WorkingDays.Saturday"/> Saturday
+                        </label>
+                        <label class="checkbox ml-2">
+                            <input asp-for="WorkingDays.Sunday"/> Sunday
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-4">Save Working Hours</button>
+            </form>
+        }
+    </round-box>
+
+    <round-box asp-authz-policy="@AuthorizationPolicies.RequireAgentRole">
+        <form method="post" asp-page-handler="NotificationSettings">
+            <h2 class="text-xl font-semibold mb-2">Notification Settings</h2>
+            <p class="text-gray-500">These settings apply to overdue conversation warning and deadline notifications.</p>
+            <div class="mt-5">
+                <label class="checkbox">
+                    <input asp-for="Input.OnExpiration"/>
+                    <span class="font-semibold">When Conversations Become Overdue</span>
+                </label>
+                <p class="text-sm text-gray-500">
+                    Receive a DM when conversations <span data-tooltip="Conversations assigned to you or that are in rooms where you are a First Responder or Escalation Responder" class="has-tooltip-arrow underline decoration-dotted">you are responsible for</span> have not received a response by their Target or Deadline response time.
+                    Notifications are batched together in 15-minute intervals. Notifications will only be sent inside your working hours, if you have set them.
+                </p>
+            </div>
+            <button type="submit" class="btn btn-primary mt-4">Save Notification Settings</button>
+        </form>
+
+    </round-box>
+
+    <round-box asp-authz-policy="@AuthorizationPolicies.CanManageConversations">
+        <h2 class="text-xl font-semibold mb-4">
+            Rooms
+        </h2>
+
+        <div class="rounded-lg shadow-sm border divide-y border-gray-300">
+            <form method="get" class="flex gap-x-4 p-2">
+                <input class="form-input w-full flex-grow" name="filter" id="filter" placeholder="Search for a room" value="@Model.Filter">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </form>
+            @if (Model.Rooms.Any()) {
+                <ol class="divide-y p-2">
+                    @foreach (var room in Model.Rooms) {
+                        <li class="flex items-center py-2">
+                            <span class="text-gray-500">#</span>
+                            <span class="ml-2 flex-grow">
+                                <a href="@room.Room.GetLaunchUrl()" target="_blank">@room.Room.Name</a>
+                                @if (room.IsFirstResponder || room.IsEscalationResponder) {
+                                    if (room.IsEscalationResponder && room.IsFirstResponder) {
+                                        <pill color="Yellow">First and Escalation Responder</pill>
+                                    }
+                                    else if (room.IsFirstResponder) {
+                                        <pill color="Yellow">First Responder</pill>
+                                    } else {
+                                        <pill color="Yellow">Escalation Responder</pill>
+                                    }
+                                }
+                            </span>
+                        </li>
+                    }
+                </ol>
+                @if (Model.Rooms.TotalPages > 1)
+                {
+                    <div class="px-2">
+                        <partial name="Shared/_Paginator" model="Model.Rooms"/>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="border border-gray-100 rounded overflow-hidden">
+                    <blankslate>
+                        @if (Model.Filter is { Count: >0 }) {
+                            <span class="text-gray-500">No rooms matched your search criteria!</span>
+                        }
+                        else {
+                            <span class="text-gray-500">Abbot isn't currently monitoring any rooms</span>
+                        }
+                    </blankslate>
+                </div>
+            }
+        </div>
+    </round-box>
+</page-body>

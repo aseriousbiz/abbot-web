@@ -1,0 +1,37 @@
+﻿{
+  Content: [
+    {
+      $type: TipTapCodeBlockNode,
+      Content: [
+        {
+          Text:
+public void ThisMethod() {
+  SomeCode();
+},
+          Type: text
+        }
+      ],
+      Type: codeBlock
+    },
+    {
+      $type: TipTapBlockQuoteNode,
+      Content: [
+        {
+          $type: TipTapCodeBlockNode,
+          Content: [
+            {
+              Text:
+public void ThatMethod() {
+  MoreCode();
+},
+              Type: text
+            }
+          ],
+          Type: codeBlock
+        }
+      ],
+      Type: blockquote
+    }
+  ],
+  Type: doc
+}

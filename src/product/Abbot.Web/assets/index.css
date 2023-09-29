@@ -1,0 +1,339 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@import 'codemirror/lib/codemirror';
+@import 'codemirror/addon/lint/lint';
+@import 'codemirror/addon/hint/show-hint';
+@import 'codemirror-addon-infotip/dist/infotip';
+@import 'codemirror-addon-lint-fix/dist/lint-fix';
+@import 'codemirror/theme/the-matrix';
+@import 'codemirror/addon/dialog/dialog';
+@import 'mirrorsharp/mirrorsharp';
+@import 'flatpickr';
+@import 'flatpickr/dist/plugins/confirmDate/confirmDate';
+
+@import './css/fixed-select';
+@import './css/dl';
+@import './css/site';
+@import './css/tooltip';
+@import './css/vscode-dark';
+@import './css/vscode-dark-hints';
+@import './css/code';
+@import './css/forms';
+@import './css/diff';
+@import './css/notification-abbot';
+@import './css/mybot';
+@import './css/content';
+
+@layer components {
+  a {
+    @apply link;
+  }
+
+  .btn {
+    @apply inline-block text-sm text-center select-none rounded-lg py-1 px-2 border font-medium cursor-pointer border-indigo-200 text-indigo-600 hover:border-blue-300 hover:text-blue-600 bg-white shadow-sm;
+
+    &-primary {
+      @apply border text-white shadow-sm hover:text-white border-indigo-800 bg-indigo-600 hover:bg-indigo-500 hover:border-indigo-500;
+    }
+
+    &-danger {
+      @apply border border-red-300 bg-red-50 text-red-600 hover:text-red-700 hover:bg-red-100 hover:border-red-500 shadow-sm;
+      box-shadow: 0 0 0 1px #FFFFFFE5 inset;
+    }
+
+    &-sm {
+      @apply text-xs px-2 py-1 rounded-md;
+    }
+
+    &-disabled,&[disabled] {
+      @apply opacity-70 cursor-not-allowed border-gray-500 text-gray-500;
+    }
+
+    &-danger[disabled] {
+      @apply border-red-200 text-red-400 hover:bg-red-50;
+    }
+
+    svg text {
+      @apply font-sans;
+    }
+  }
+
+  .btn-primary {
+    &.btn-disabled {
+      @apply bg-indigo-100 text-indigo-400 border-indigo-300;
+    }
+  }
+
+  .form {
+    &-label {
+      @apply font-semibold block mb-1;
+    }
+    
+    &-label-disabled {
+      @apply text-gray-500;
+    }
+     
+    &-input {
+      @apply border rounded-lg shadow-inner bg-gray-50 p-1;
+
+      &-split {
+        @apply border-l border-t border-b rounded-tl-lg rounded-bl-lg shadow-inner bg-gray-50 py-1 pl-1;
+
+        &-l {
+          @apply border-r border-t border-b rounded-tr-lg rounded-br-lg shadow-inner bg-gray-50 py-1 pl-1;
+        }
+      }
+      &-button {
+        @apply border-r border-t border-b rounded-tr-lg rounded-br-lg bg-gray-50 py-1 px-3;
+      }
+    }
+
+    &-select {
+      @apply appearance-none font-sans inline-block text-sm bg-white rounded-lg border-gray-300 py-1 pl-2 pr-6 border text-gray-800 font-medium cursor-pointer hover:text-black hover:border-gray-400 shadow-sm;
+      -webkit-appearance: none;
+
+      &-wrapper {
+        @apply relative inline-block;
+
+        &:after {
+          @apply absolute right-2 top-1 text-gray-500 hover:text-gray-700 text-base pointer-events-none;
+          font-family: sans-serif;
+          content: "▾";
+        }
+      }
+    }
+  }
+
+  .tabnav {
+    &-btn {
+      @apply inline-block rounded-lg px-2 py-1 bg-gray-100 text-sm text-black font-medium hover:bg-gray-200;
+
+      &-active,
+      &[aria-selected="true"] {
+        @apply bg-yellow-300 text-black;
+
+        .tabnav-badge {
+          @apply text-black;
+        }
+      }
+
+      &-disabled {
+        @apply text-gray-500 cursor-default hover:bg-gray-100;
+      }
+    }
+
+    &-badge {
+        @apply inline-block text-center ml-1 text-gray-500;
+    }
+  }
+
+  .msg {
+    &-mention {
+      @apply bg-gray-100 p-0.5 mx-0.5 rounded-md;
+    }
+  }
+
+  body.fullscreen {
+    .hide-on-fullscreen {
+      @apply hidden;
+    }
+  }
+
+  .hard-shadow {
+    filter: drop-shadow(8px 8px 0px rgba(0, 0, 0, 0.05));
+  }
+
+  .hard-box {
+    @apply border border-gray-300 bg-white rounded drop-shadow overflow-hidden;
+  }
+
+  .bubble-box {
+    @apply rounded-xl bg-white p-4 mb-4;
+
+    &-title {
+      @apply font-semibold text-xl mb-4;
+    }
+  }
+
+  .autoComplete {
+    &_wrapper {
+      @apply relative flex-grow;
+    }
+  }
+
+  .user-selector {
+    &-popup {
+      @apply absolute top-8 left-2 hard-box;
+      min-width: 24rem;
+    }
+    &-no-results {
+      @apply p-3 font-semibold;
+    }
+    &-item {
+      @apply p-3;
+
+      &:hover {
+        @apply bg-yellow-200;
+      }
+
+      &-selected {
+        @apply bg-yellow-200;
+      }
+      &-container {
+        @apply grid gap-x-2 gap-y-1;
+        grid-template-columns: 2rem 1fr;
+      }
+      &-avatar {
+        @apply row-span-2 place-self-start -mt-0.5 w-8 h-8 border-gray-300 border-4 rounded-full;
+      }
+      &-name {
+        @apply font-semibold col-start-2;
+      }
+      &-working-hours {
+        &-label {
+          @apply text-gray-500;
+        }
+        @apply col-start-2 flex gap-2;
+      }
+    }
+  }
+
+  #skill-jumper-modal li[aria-selected="true"] {
+    @apply bg-gray-200;
+  }
+  
+  pre, code {
+    @apply font-mono rounded px-1 text-sm bg-indigo-50 text-indigo-600;
+  }
+
+  .dropdown {
+    @apply relative
+  }
+
+  .dropdown-menu {
+    @apply absolute text-sm font-normal p-1 rounded-lg border border-gray-200 bg-white shadow-sm z-50;
+  }
+
+  .dropdown-item {
+    @apply block px-2 py-1 rounded hover:bg-gray-50;
+  }
+  
+  .modal-content {
+    @apply z-50;
+  }
+
+  .modal-background {
+    @apply bg-gray-900 fixed opacity-70 inset-0;
+  }
+  
+  .dynamic-list {
+    @apply rounded border-gray-300 drop-shadow-sm;
+    
+    &:has(> li) {
+      @apply border;
+     }
+  }
+}
+
+/* Used for making buttons look like links */
+.link {
+  @apply text-indigo-600 hover:text-gray-600;
+}
+
+/*
+
+Example usage:
+
+  <div class="has-tooltip hidden sm:inline-block">
+      Text to hover over
+      <div class="tooltip">
+          Tooltip text (gets rendered above)
+      </div>
+  </div>
+
+ */
+.tooltip {
+  @apply invisible absolute bg-gray-600 text-white px-2 py-1 rounded -mt-2 -ml-6 whitespace-nowrap -top-full -left-1/2;
+}
+
+.has-tooltip {
+  @apply relative cursor-pointer;
+}
+
+.has-tooltip:hover .tooltip {
+  @apply visible z-50;
+}
+
+.hide-file-selector-button::file-selector-button {
+  @apply sr-only;
+}
+
+#abbot-logo path {
+  fill: #333322;
+}
+
+svg text {
+  @apply font-sans;
+}
+
+svg .shadow {
+  @apply hard-box;
+}
+
+svg rect.has-title {
+  stroke: white;
+  stroke-width: 1px;
+}
+
+.preview-pill {
+  @apply inline-block bg-yellow-100 text-yellow-900 px-2 rounded mx-1 font-normal;
+}
+
+table {
+  /* activates the set of figures where numbers are all of the same size */
+  font-variant-numeric: tabular-nums;
+}
+
+.conversation-list-item {
+  .conversation-list-item-actions {
+    visibility: hidden;
+    position: absolute;
+  }
+
+  &:hover {
+    .conversation-list-item-actions {
+      visibility: visible;
+    }
+  }
+}
+
+.modal {
+  align-items: center;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  position: fixed;
+  z-index: 40;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.modal.is-active {
+  display: flex;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+/* Don't mess with text rendering of graphviz */
+svg.graphviz text {
+  font-family: Times, serif
+}

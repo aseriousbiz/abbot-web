@@ -1,0 +1,178 @@
+@page "/packages/{name}-for-{platform}-by-{organization}"
+@model Serious.Abbot.Pages.Packages.SeoDetailsModel
+
+@{
+    var package = Model.Package;
+    ViewContext.SetPageInfo("Packages", "Package SEO Details", $"\"{package.Name} v{package.Version}\" by {package.OrganizationName}");
+}
+
+@section Meta {
+    <meta property="og:title" content="@package.Name for @Model.Platform by @package.OrganizationName">
+    <meta property="og:description" content="@package.Description">
+    <meta property="og:image" content="@package.Icon">
+    <meta property="og:image:alt" content="Icon for the @package.OrganizationName team">
+    <meta property="og:article:author" content="@package.OrganizationName">
+    <meta property="og:url" content="@Request.GetFullyQualifiedUrl(Request.Path)">
+    <meta name="twitter:card" content="summary">
+}
+
+<section class="section">
+    <div class="container">
+        <div class="columns">
+            <div class="column is-1 sm:text-left text-right">
+                <img src="@package.Icon" class="rounded" width="56" height="56" alt="" />
+            </div>
+            <div class="column is-8">
+                <header class="package-details-header">
+                    <h1 class="is-size-4 is-family-code">
+                        @package.Name <span class="nowrap has-text-grey">@package.Version</span>
+                    </h1>
+                    <h2 class="has-text-grey is-size-6">
+                        an Abbot package for @Model.Platform by @package.OrganizationName
+                    </h2>
+                </header>
+
+                @if (package.Description is { Length: > 0 }) {
+                    <p class="block my-4">
+                        @package.Description
+                    </p>
+                } else {
+                    <em>This package has no description</em>
+                }
+
+                <nav class="tabs package-details-nav js-tabbed-navigation">
+                    <ul>
+                        <li class="is-active js-tabbed-navigation-item" data-nav-for="about-abbot-content"><a><b>What is Abbot?</b></a></li>
+                        <li class="js-tabbed-navigation-item" data-nav-for="readme-tab-content"><a>Package Info</a></li>
+                        <li class="js-tabbed-navigation-item" data-nav-for="usage-tab-content"><a>Usage</a></li>
+                        <li class="js-tabbed-navigation-item" data-nav-for="code-tab-content"><a>Code</a></li>
+                        <li class="js-tabbed-navigation-item" data-nav-for="versions-tab-content"><a>Version History</a></li>
+                    </ul>
+                </nav>
+
+                <div class="js-tabbed-navigation-content" id="about-abbot-content">
+                    <h2 class="sr-only">About Abbot</h2>
+                    <p class="content is-medium">
+                        <a href="https://app.ab.bot"><b>Abbot</b></a> is a programmable bot that turns your team chat into a shared command center. We handle all the boilerplate of building and running these conmmands so that you can focus on making tools that help you ship faster.
+                    </p>
+
+                    <p class="content is-medium">
+                        We built Abbot because we saw the power of this style of work (called <a href="https://github.com/exAspArk/awesome-chatops">ChatOps</a>), when we worked at GitHub. ChatOps made it possible for GitHub to work productively without meetings, while globally distributed. We think it's a pretty great way to work, so we made it easy to use in Slack.
+                    </p>
+
+                    <p class="content is-medium">
+                        You can read more <a href="/about">about Abbot here</a>, check out <a href="https://ab.bot/blog">our blog</a>, or take a look at some of the other cool packages available as a one-click install from <a href="https://app.ab.bot/packages">Abbot's Package Directory</a>.
+                    </p>
+                </div>
+
+                <div class="is-hidden js-tabbed-navigation-content" id="readme-tab-content">
+                    <h2 class="sr-only">README</h2>
+                    @if (package.Readme is { Length: > 0 }) {
+                        <div class="content">
+                            <markdown allow-html="true">@package.Readme</markdown>
+                        </div>
+                    } else {
+                        <em>This package has no README</em>
+                    }
+                </div>
+
+                <div class="is-hidden js-tabbed-navigation-content" id="usage-tab-content">
+                    <h2 class="sr-only">Usage</h2>
+                    @if (package.Usage is { Length: > 0 }) {
+                        <div class="content">
+                            <markdown>@package.Usage</markdown>
+                        </div>
+                    } else {
+                        <em>This package has no usage examples</em>
+                    }
+                </div>
+
+                <div class="js-tabbed-navigation-content is-invisible" id="code-tab-content">
+                    <h2 class="sr-only">Code</h2>
+                    <textarea
+                        class="code-viewer"
+                        data-readonly="true"
+                        data-language="@package.Language">
+                        @if (package.Language == CodeLanguage.JavaScript)
+                        {
+                            // Make it look like the user code is in a module, even though we strip this out.
+                            @Html.Raw($"module.exports.{package.Name.ToPascalCase()} = (async () => {{\n")
+                            @package.Code
+                            @Html.Raw("\n})();")
+                        }
+                        else
+                        {
+                            @package.Code
+                        }
+                    </textarea>
+                </div>
+
+                <div class="is-hidden js-tabbed-navigation-content" id="versions-tab-content">
+                    <h2 class="sr-only">Version History</h2>
+                    <partial name="Shared/Packages/_VersionHistory" model="@package.Versions"/>
+                </div>
+
+
+            </div>
+            <div class="column is-3">
+                @if (User.IsAuthenticated()) {
+                    <div class="control mt-3">
+                        <a class="btn w-full" href="/skills/create/@package.Language.ToSlug()?fromPackageId=@package.Id">Add this to your @Model.Platform now!</a>
+                    </div>
+                } else {
+                    <div class="control mt-3">
+                        <a class="btn w-full" asp-controller="Account" asp-action="Login">Sign in to add this to @Model.Platform</a>
+                        <span class="text-gray-500">
+                            You need an account to install this package with <a href="/about">Abbot</a>. Signing in with @Model.Platform will create an account if you don't have one already.
+                            <br><br> <b>It's free to get started!</b>
+                        </span>
+                    </div>
+                }
+
+                <div class="my-4">
+                    <h2 class="text-sm mb-1 font-semibold">Details</h2>
+                    <dl class="meta">
+                        <div class="is-flex my-1">
+                            <dt class="is-flex-grow-1 is-flex-shrink-1 is-flex has-text-grey" style="flex-basis: 0;">
+                                <i class="fa-solid fa-clock-rotate-left m-1"></i>
+                                Last updated
+                            </dt>
+                            <dd class="is-flex-grow-1 is-flex-shrink-1" style="flex-basis: 0;">
+                                <timeago datetime="@package.Modified"></timeago>
+                            </dd>
+                        </div>
+                        <div class="is-flex my-1">
+                            <dt class="is-flex-grow-1 is-flex-shrink-1 is-flex has-text-grey" style="flex-basis: 0;">
+                                <i class="fa-solid fa-download m-1"></i>
+                                Installs
+                            </dt>
+                            <dd class="is-flex-grow-1 is-flex-shrink-1" style="flex-basis: 0;">
+                                @package.TotalInstalls.ToQuantity("total install")
+                            </dd>
+                        </div>
+
+                        <div class="is-flex my-1">
+                            <dt class="is-flex-grow-1 is-flex-shrink-1 is-flex has-text-grey" style="flex-basis: 0;">
+                                <i class="fa-regular fa-code m-1" style="width: 16px"></i>
+                                Language
+                            </dt>
+                            <dd class="is-flex-grow-1 is-flex-shrink-1" style="flex-basis: 0;">
+                                @package.Language
+                            </dd>
+                        </div>
+
+                        <div class="is-flex my-1">
+                            <dt class="is-flex-grow-1 is-flex-shrink-1 is-flex has-text-grey" style="flex-basis: 0;">
+                                <i class="fa-regular fa-file-lines m-1" style="width: 16px"></i>
+                                License
+                            </dt>
+                            <dd class="is-flex-grow-1 is-flex-shrink-1" style="flex-basis: 0;">
+                                <a href="https://choosealicense.com/licenses/mit/">MIT License</a>
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

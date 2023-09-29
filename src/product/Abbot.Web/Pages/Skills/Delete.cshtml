@@ -1,0 +1,50 @@
+@page "/skills/{skill}/delete"
+@model Serious.Abbot.Pages.Skills.DeletePage
+@{
+    var skill = Model.Skill;
+    var deleteDisabled = Model.CanDelete ? null : "disabled";
+    ViewContext.SetPageInfo("Skills", "Skill Delete", $"Delete {skill.Name} skill");
+}
+
+<div class="border border-gray-300 p-4 m-4 rounded-lg bg-white">
+    <div>
+        <h1 class="font-semibold text-lg">
+            Are you sure you want to delete the
+            <code class="text-lg">@Model.Skill.Name</code>
+            skill?
+        </h1>
+    </div>
+
+    <section>
+        <div>
+            @if (Model.Skill.Package is null) {
+                <form method="post">
+                    <div class="mb-2">
+                        @if (Model.CanDelete)
+                        {
+                            <p>Deleting the skill will make it unavailable to all users in your organization.</p>
+                        }
+                        else
+                        {
+                            <p class="has-text-danger-dark">
+                                You need <span class="font-semibold">Edit</span> permission is required to delete a skill. <partial name="Shared/_PermissionTooltip" model="Model.Skill"/>
+                            </p>
+                        }
+                    </div>
+
+                    <div>
+                        <button type="submit" class="btn btn-danger" disabled="@deleteDisabled">Delete skill</button>
+                        <a class="btn" asp-page="Index">Cancel</a>
+                    </div>
+                </form>
+            } else {
+                <div class="mt-2" role="alert">
+                    This skill has a published package. Deleting it could affect everyone who has the package installed.
+                    Please contact <a class="text-blue-500" href="mailto:@WebConstants.SupportEmail">@WebConstants.SupportEmail</a>
+                    and we can work with you to transfer ownership of the skill
+                    or to delete it if absolutely necessary.
+                </div>
+            }
+        </div>
+    </section>
+</div>

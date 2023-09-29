@@ -1,0 +1,123 @@
+﻿{
+  Conversation: {
+    RoomId: 1,
+    FirstMessageId: 1111.0005,
+    ThreadIds: [
+      1111.0005
+    ],
+    Title: Test Conversation 5,
+    IsImported: false,
+    LastMessagePostedOn: 1999-01-02 03:04:05 Utc,
+    ClosedOn: 1999-01-02 03:04:05 Utc,
+    ArchivedOn: 1999-01-02 03:04:05 Utc,
+    LastStateChangeOn: 1999-01-02 03:04:05 Utc,
+    State: Archived,
+    StartedById: 3,
+    Properties: {},
+    OrganizationId: 1,
+    Id: 1,
+    Created: 1999-01-02 03:04:05 Utc
+  },
+  OpenModals: {
+    $type: Dictionary<string, ViewUpdatePayload>,
+    view-id: {
+      Title: {
+        Emoji: true,
+        Text: Manage Conversation,
+        Type: plain_text
+      },
+      Close: {
+        Emoji: true,
+        Text: Close,
+        Type: plain_text
+      },
+      Blocks: [
+        {
+          $type: Section,
+          Text: {
+            $type: PlainText,
+            Emoji: true,
+            Text: 🌐 View this conversation on ab.bot,
+            Type: plain_text
+          },
+          Accessory: {
+            $type: ButtonElement,
+            Text: {
+              Emoji: true,
+              Text: View,
+              Type: plain_text
+            },
+            Url: https://app.ab.bot/conversations/1,
+            Type: button
+          },
+          BlockId: view_conversation,
+          Type: section
+        },
+        {
+          $type: Section,
+          Text: {
+            $type: PlainText,
+            Emoji: true,
+            Text: ✋ Assign this conversation,
+            Type: plain_text
+          },
+          Accessory: {
+            $type: ButtonElement,
+            Text: {
+              Emoji: true,
+              Text: Assign,
+              Type: plain_text
+            },
+            Value: 1,
+            Type: button
+          },
+          BlockId: i:AssignConversationModal,
+          Type: section
+        },
+        {
+          $type: Section,
+          Text: {
+            $type: PlainText,
+            Emoji: true,
+            Text: 🚫 Unarchive conversation,
+            Type: plain_text
+          },
+          Accessory: {
+            $type: ButtonElement,
+            Text: {
+              Emoji: true,
+              Text: Unarchive,
+              Type: plain_text
+            },
+            Value: 1,
+            Style: danger,
+            ActionId: Closed,
+            Type: button
+          },
+          BlockId: archive_unarchive,
+          Type: section
+        }
+      ],
+      PrivateMetadata: C0004|1111.0005|,
+      CallbackId: i:ManageConversationHandler,
+      ClearOnClose: false,
+      NotifyOnClose: false,
+      SubmitDisabled: false,
+      Type: modal
+    }
+  },
+  AnalyticsClient: {
+    Tracked: {
+      (3, Conversation State Changed): {
+        feature: Conversations,
+        old_state: New,
+        organization: 1,
+        organization_name: Test Organization,
+        plan: Unlimited,
+        platform_id: Thome,
+        source: unknown,
+        state: Archived
+      }
+    }
+  }
+}

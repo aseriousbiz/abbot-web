@@ -1,0 +1,69 @@
+{
+  "dispatch": {
+    "type": "Once"
+  },
+  "triggers": [
+    {
+      "id": "system_schedule",
+      "type": "system.schedule",
+      "inputs": {
+        "tz": "America/Los_Angeles",
+        "schedule": {
+          "hour": 9,
+          "type": "weekly",
+          "minute": 30,
+          "weekdays": [
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday"
+          ]
+        }
+      }
+    },
+    {
+      "id": "system_schedule_1",
+      "type": "system.schedule",
+      "inputs": {
+        "tz": "America/Los_Angeles",
+        "schedule": {
+          "hour": 9,
+          "type": "weekly",
+          "minute": 0,
+          "weekdays": [
+            "friday"
+          ]
+        }
+      }
+    }
+  ],
+  "sequences": {
+    "start_sequence": {
+      "actions": [
+        {
+          "id": "slack_send_message",
+          "type": "slack.send-message",
+          "inputs": {
+            "channel": "C012ZJGPYTF",
+            "mrkdwn": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "text": "It's time for standup! https://us02web.zoom.us/j/81477272433?pwd=RFd6dXB2bXNtY3lRR056OTVlRWU2dz09 ",
+                      "type": "text"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "branches": {}
+        }
+      ]
+    }
+  },
+  "startSequence": "start_sequence"
+}

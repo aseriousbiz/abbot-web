@@ -1,0 +1,112 @@
+﻿{
+  Content: [
+    {
+      $type: TipTapBulletListNode,
+      Content: [
+        {
+          ParagraphContent: [
+            {
+              $type: TipTapTextNode,
+              Text: item one,
+              Type: text
+            }
+          ],
+          Content: {
+            $type: TipTapParagraphNode[],
+            $values: [
+              {
+                Content: [
+                  {
+                    $type: TipTapTextNode,
+                    Text: item one,
+                    Type: text
+                  }
+                ],
+                Type: paragraph
+              }
+            ]
+          },
+          Type: listItem
+        },
+        {
+          ParagraphContent: [
+            {
+              $type: TipTapTextNode,
+              Text: item ,
+              Type: text
+            },
+            {
+              $type: TipTapTextNode,
+              Text: two,
+              Marks: {
+                $type: ReadOnlyCollection<TipTapMarkNode>,
+                $values: [
+                  {
+                    Type: bold
+                  }
+                ]
+              },
+              Type: text
+            }
+          ],
+          Content: {
+            $type: TipTapParagraphNode[],
+            $values: [
+              {
+                Content: [
+                  {
+                    $type: TipTapTextNode,
+                    Text: item ,
+                    Type: text
+                  },
+                  {
+                    $type: TipTapTextNode,
+                    Text: two,
+                    Marks: {
+                      $type: ReadOnlyCollection<TipTapMarkNode>,
+                      $values: [
+                        {
+                          Type: bold
+                        }
+                      ]
+                    },
+                    Type: text
+                  }
+                ],
+                Type: paragraph
+              }
+            ]
+          },
+          Type: listItem
+        },
+        {
+          ParagraphContent: [
+            {
+              $type: TipTapTextNode,
+              Text: item three.,
+              Type: text
+            }
+          ],
+          Content: {
+            $type: TipTapParagraphNode[],
+            $values: [
+              {
+                Content: [
+                  {
+                    $type: TipTapTextNode,
+                    Text: item three.,
+                    Type: text
+                  }
+                ],
+                Type: paragraph
+              }
+            ]
+          },
+          Type: listItem
+        }
+      ],
+      Type: bulletList
+    }
+  ],
+  Type: doc
+}

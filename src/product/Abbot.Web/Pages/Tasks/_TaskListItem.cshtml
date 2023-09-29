@@ -1,0 +1,71 @@
+@model TaskItemModel
+@{
+    var task = Model.Task;
+    var conversation = task.Conversation;
+}
+
+<input class="m-1"
+       id="@nameof(Model.TaskIds)_@task.Id"
+       type="checkbox"
+       name="@nameof(Model.TaskIds)"
+       aria-label="@task.Title"
+       value="@task.Id"
+       asp-authz-policy="@AuthorizationPolicies.CanManageConversations"
+       data-checkboxes-target="item"/>
+
+<div class="sm:flex grow gap-x-2">
+   <div>
+       @{
+           var statusFormId = Model.GetTaskFormId("status");
+           var taskViewData = new ViewDataDictionary(ViewData) {
+               { "form-id", statusFormId }
+           };
+       }
+       <partial
+           name="_StatusDropDown"
+           Model="task.Properties.Status"
+           view-data='@taskViewData' />
+       <input
+           type="hidden"
+           form="@statusFormId"
+           asp-for="TaskIds"
+           value="@task.Id" />
+   </div>
+   <div class="grow">
+        <a asp-page="Edit" asp-route-q="@Model.Filter" class="font-medium block" asp-route-id="@task.Id">
+            @task.Title
+        </a>
+
+        <div class="text-sm text-gray-500 flex gap-x-2">
+            @if (conversation is not null) {
+                <a class="text-gray-500 hover:text-indigo-600"
+                   href="@conversation.GetFirstMessageUrl()">
+                    Opened
+                    <timeago datetime="@task.Created"/>
+                    in
+                    <span class="-ml-0.5">
+                        #@conversation.Room.Name
+                    </span>
+                </a>
+            }
+        </div>
+   </div>
+
+    <div>
+        <div class="inline-flex items-center text-black nowrap ml-1 -mt-0.5 -space-x-3 hover:space-x-0">
+            @{
+                var assigneeFormId = Model.GetTaskFormId("assignee");
+                var assigneeContainer = Model.AssigneeContainer with { CurrentAssignee = task.Assignee };
+                var assigneeViewData = new ViewDataDictionary(ViewData) {
+                    { "form-id", assigneeFormId }
+                };
+            }
+            <partial name="_AssigneesDropDown" model="assigneeContainer" view-data="@assigneeViewData" />
+            <input
+               type="hidden"
+               form="@assigneeFormId"
+               asp-for="TaskIds"
+               value="@task.Id" />
+        </div>
+    </div>
+</div>

@@ -1,0 +1,104 @@
+@page "/packages/{organization}/{name}/edit"
+@model Serious.Abbot.Pages.Packages.EditModel
+
+@{
+    var package = Model.Package;
+    ViewContext.SetPageInfo("Packages", "Package Edit", $"Edit \"{package.Name} v{package.Version}\" by {package.OrganizationName}");
+}
+
+@section Styles {
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="~/_content/Serious.Razor/dist/css/markdown-editor.css" asp-append-version="true">
+    <script src="~/_content/Serious.Razor/dist/js/markdown-editor.js" asp-append-version="true"></script>
+}
+
+
+<div class="md:flex m-2">
+    <div class="border border-gray-300 text-sm self-start md:w-72 flex-shrink-0 m-1">
+        <header class="bg-blue-500 text-white px-2 m-2">
+            <h1 class="text-sm">
+                @package.Name
+                @package.Version
+            </h1>
+        </header>
+        <section>
+            <div class="p-3 border-t">
+                <dl>
+                    <dt class="text-sm text-gray-500">Publisher</dt>
+                    <dd class="flex items-center ml-1 mb-2">
+                        <img src="@package.Icon" class="rounded w-6 h-6 inline mr-1" aria-hidden="true"/>
+                        @package.OrganizationName
+                    </dd>
+                </dl>
+
+                <dl>
+                    <dt class="text-sm text-gray-500">Last updated</dt>
+                    <dd class="flex items-center ml-1 mb-2">
+                        <timeago datetime="@package.Modified"></timeago>
+                        <span class="mx-1">by</span>
+                        <span>
+                            <partial name="Shared/_SmallAvatar" model="@package.ModifiedBy"/>
+                            @package.ModifiedBy.DisplayName
+                        </span>
+                    </dd>
+                </dl>
+
+                <dl>
+                    <dt class="text-sm text-gray-500">License</dt>
+                    <dd class="ml-1 mb-2">
+                        <a href="https://choosealicense.com/licenses/mit/">MIT License</a>
+                    </dd>
+                </dl>
+            </div>
+        </section>
+    </div>
+
+    <div class="border border-gray-300 m-1">
+        <header class="m-2">
+            <div class="px-2 bg-blue-50 text-sm" aria-hidden="true">
+                Edit package details
+            </div>
+        </header>
+
+        <div class="p-2">
+            <header class="p-2">
+                <h1 class="text-xl font-bold">
+                    Edit details for package: @package.Name
+                </h1>
+
+                <p>
+                    This page lets you update the README for the package and list or unlist the package. To publish
+                    a new version, go to the <a asp-page="/Skills/Edit" asp-route-skill="@package.Name">source skill edit page</a>.
+                </p>
+            </header>
+
+            <form class="max-w-screen-lg p-2" id="update-package-form" method="post">
+                <div>
+                    <label class="form-label" asp-for="Input.Readme"></label>
+                    <div class="-mt-2 mb-2 text-gray-500">
+                        <description asp-for="Input.Readme"/>
+                    </div>
+
+                    <div class="">
+                        <markdowneditor
+                            asp-for="Input.Readme"
+                            placeholder="Describe what this package is about and any steps people using it need to know."/>
+                    </div>
+                </div>
+
+                <div class="mx-2 my-4">
+                    <div class="flex items-center">
+                        <input class="mr-2 -mt-1" asp-for="Input.Listed"/>
+                        <label class="form-label" asp-for="Input.Listed">Show package in search results</label>
+                    </div>
+
+                    <div class="ml-5 -mt-2 text-gray-500">
+                        <description asp-for="Input.Listed"/>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Update Package</button>
+            </form>
+        </div>
+    </div>
+</div>

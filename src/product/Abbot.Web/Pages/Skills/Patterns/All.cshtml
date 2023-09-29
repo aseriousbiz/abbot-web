@@ -1,0 +1,88 @@
+@page
+@model Serious.Abbot.Pages.Skills.Patterns.AllPageModel
+
+@{
+    var type = Model.FilterApplied ? "Matching" : "All";
+    var title = $"{type} skill patterns";
+    ViewContext.SetPageInfo("Patterns", $"{type} Patterns", title);
+
+    Layout = "Shared/Layouts/_SkillListLayout";
+}
+
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+
+<header class="max-w-3xl">
+    <h2 class="font-bold text-lg">@title</h2>
+    <p class="mb-4">
+        Patterns make it possible for skills to respond to regular chat messages that are not commands to Abbot. For example, it&#8217;s possible to create a pattern that calls a skill when a specific word is present in a regular chat message.
+    </p>
+
+    @if (Model.FilterApplied) {
+        <p class="mb-2">
+            These patterns are the active patterns that match the test message in the pattern tester. These
+            are all the skills that would be called given the test message.
+        </p>
+    } else {
+        <p class="mb-2">
+            These patterns are active within your organization in this priority order.
+            Disabled patterns, and patterns belonging to disabled skills are <strong>not</strong> shown here.
+        </p>
+    }
+</header>
+
+<div class="my-2">
+    <button class="btn mr-1"
+            data-controller="modal-launcher"
+            data-modal-launcher-modal-value="pattern-tester">Launch pattern tester</button>
+</div>
+
+<div class="modal bg-gray-900 bg-opacity-75" id="pattern-tester" data-controller="modal">
+    <div role="dialog" class="rounded-lg p-2 border m-4 bg-white shadow-md"
+         aria-labelledby="dialogTitle"
+         aria-describedby="dialogDescription">
+        <header class="bg-blue-500 text-white px-2 flex items-center">
+            <h1 id="dialogTitle">Pattern Tester</h1>
+            <button class="bg-white text-blue-500 hover:text-gray-900 flex p-1 my-1 ml-auto w-6 justify-center"
+                    data-action="modal#dismiss"
+                    aria-label="close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </header>
+
+        <section class="p-2">
+            <p class="my-2" id="dialogDescription">
+                Type in a message and click "Run Test" to see which patterns would match the message.
+            </p>
+
+            <form method="post">
+                <div>
+                    <label class="sr-only" asp-for="Input.Text">Message</label>
+                    <description asp-for="Input.Text"></description>
+                </div>
+
+                <div class="flex items-center">
+                    <input class="flex-grow px-2 py-1 border inner-shadow bg-gray-50 rounded" asp-for="Input.Text" autofocus>
+                    <button class="btn btn-primary mx-2 flex-shrink-0 modal-success-button"
+                            data-action="modal#submit"
+                            type="submit">
+                        Run Test
+                    </button>
+                </div>
+                <p asp-validation-for="Input.Text"></p>
+            </form>
+        </section>
+    </div>
+</div>
+
+<div class="rounded-lg px-4 py-1 border flex text-sm font-bold bg-white" aria-hidden="true">
+    <div>
+        Pattern name
+    </div>
+    <div class="ml-auto">
+        Associated skill
+    </div>
+</div>
+
+<div id="@AllPageModel.MatchingPatternsId">
+    <partial name="_MatchingPatterns"/>
+</div>

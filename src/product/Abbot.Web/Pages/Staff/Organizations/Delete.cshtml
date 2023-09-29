@@ -1,0 +1,47 @@
+@page "/staff/organizations/{id}/delete"
+@model Serious.Abbot.Pages.Staff.Organizations.DeletePage
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Delete Tool");
+}
+
+<section class="section">
+    <div class="container">
+        <partial name="_StatusMessage" model="Model.StatusMessage" />
+
+        <p class="font-semibold p-4 mb-2 border rounded-lg bg-red-100 text-red-900 border-red-200">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span class="inline-block ml-1">
+                <environment exclude="Production">
+                    In this non-production environment, you can delete this Organization and all associated data.
+                </environment>
+                <environment include="Production">
+                    This production! Are you absolutely sure you want to delete this Organization and all associated data?
+                </environment>
+            </span>
+        </p>
+        <dl class="rows mt-3">
+            <dt>Domain</dt>
+            <dd>@Model.Organization.Domain</dd>
+            <dt>Members</dt>
+            <dd>@Model.Organization.Members.Count</dd>
+            <dt>Skills to delete</dt>
+            <dd>@Model.Organization.Skills.Count</dd>
+            <dt>Packages to delete</dt>
+            <dd>@Model.Organization.Packages.Count</dd>
+            <dt>Audit Events to delete</dt>
+            <dd>@Model.AuditEventsCount</dd>
+        </dl>
+
+        <form method="post">
+            <div class="flex gap-x-4 items-baseline">
+                <label asp-for="Reason"></label>
+                <input class="form-input w-full flex-grow" asp-for="Reason"/>
+                <span asp-validation-for="Reason"></span>
+            </div>
+            <div class="mt-4">
+                <button class="btn btn-danger">Confirm Delete</button>
+                <a asp-page="../Index" class="btn">Back</a>
+            </div>
+        </form>
+    </div>
+</section>

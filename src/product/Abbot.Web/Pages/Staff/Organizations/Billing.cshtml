@@ -1,0 +1,142 @@
+@page "/staff/organizations/{id}/billing/{handler?}"
+@model Serious.Abbot.Pages.Staff.Organizations.BillingPage
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Billing");
+}
+
+<page-body>
+    <round-box>
+        <h2 class="title is-4 font-semibold">Stripe Subscription</h2>
+        @if (Model.Organization is { StripeCustomerId: not { Length: >0 }, StripeSubscriptionId: not {Length: >0} })
+        {
+            <p class="mb-1">
+                Organization is <strong>not connected</strong> to a Stripe subscription.
+            </p>
+            <form asp-page-handler="LinkStripe" method="post" class="grid gap-2 items-baseline" style="grid-template-columns: max-content 1fr;" data-turbo="false">
+                <label asp-for="UpdateStripeConnection.CustomerId">Customer ID:</label>
+                <input class="form-input" placeholder="cus_123" asp-for="UpdateStripeConnection.CustomerId">
+                <label asp-for="UpdateStripeConnection.SubscriptionId">Subscription ID:</label>
+                <input class="form-input" placeholder="sub_123" asp-for="UpdateStripeConnection.SubscriptionId">
+                <div class="col-span-2 place-self-start">
+                    <button type="submit" class="btn btn-primary">Link Stripe Subscription</button>
+                    <span class="text-sm">This event will be recorded to the <a asp-page="Activity/Index" asp-route-id="@Model.Organization.PlatformId">Activity Log</a></span>
+                </div>
+            </form>
+        }
+        else
+        {
+            <p class="mb-1">
+                Organization is <strong>connected</strong> to a Stripe subscription.
+            </p>
+            <form asp-page-handler="UnlinkStripe" method="post" class="grid gap-2 items-baseline" style="grid-template-columns: max-content 1fr;" data-turbo="false">
+                <label>Customer ID:</label>
+                <span>
+                    @if (Model.Organization.StripeCustomerId is { Length: > 0 }) {
+                        <code>@Model.Organization.StripeCustomerId</code>
+                        <a target="_blank" href="@Model.StripeCustomerLink"
+                           title="View Customer"
+                           data-tooltip="View Customer">
+                            <i class="fa-solid fa-up-right-from-square"></i>
+                        </a>
+                    }
+                </span>
+                <label>Subscription ID:</label>
+                <span>
+                    @if (Model.Organization.StripeSubscriptionId is { Length: > 0 }) {
+                        <code>@Model.Organization.StripeSubscriptionId</code>
+                        <a target="_blank" href="@Model.StripeSubscriptionLink"
+                           title="View Subscription"
+                           data-tooltip="View Subscription">
+                            <i class="fa-solid fa-up-right-from-square"></i>
+                        </a>
+                    }
+                </span>
+                <label>Purchased Seats:</label>
+                <span>
+                    <code>@Model.Organization.PurchasedSeatCount</code> (Current Agent Count: <code>@Model.AgentCount</code>)
+                </span>
+                <span class="col-span-2 font-semibold">
+                    Unlinking will not change Stripe billing, nor will it downgrade the organization’s plan.
+                    Make sure you cancel the subscription in Stripe as well, or the customer will continue to be billed.
+                    If you want to change the organization’s plan, use the options below.
+                </span>
+                <div class="col-span-2 place-self-start">
+                    <button type="submit" class="btn btn-danger" data-confirm="This will not disable billing on the subscription! Make sure you also properly cancel the subscription in Stripe.">Unlink Stripe Subscription</button>
+                    <span class="text-sm">This event will be recorded to the <a asp-page="Activity/Index" asp-route-id="@Model.Organization.PlatformId">Activity Log</a></span>
+                </div>
+            </form>
+        }
+    </round-box>
+    <round-box>
+        <h2 class="title is-4 font-semibold">Current Plan</h2>
+        <form asp-page-handler="ChangePlan" class="grid gap-2 items-baseline" style="grid-template-columns: max-content 1fr;" data-turbo="false">
+            <span>Current Plan:</span>
+            <span>@Model.Organization.PlanType.GetFeatures().Name</span>
+            <span>Effective Plan (including trials):</span>
+            <span>@Model.Organization.GetPlan().Name</span>
+            <label asp-for="ChangePlan.NewPlan">New Plan:</label>
+            <div>
+                @* form-select-wrapper doesn't like being a grid element (it messes with the down arrow), hence the div parent *@
+                <div class="form-select-wrapper">
+                    <select class="form-select" asp-for="ChangePlan.NewPlan" asp-items="Model.AvailablePlans"></select>
+                </div>
+            </div>
+            <span class="col-span-2 font-semibold">
+                Changing an organization’s plan will not change any billing configuration,
+                use the Stripe options above to do that.
+            </span>
+            <span class="col-span-2 font-semibold">
+                In addition, changing plans will end any active trial.
+            </span>
+            <div class="col-span-2 place-self-start">
+                <button type="submit" class="btn btn-primary" data-confirm="This will remove any active trial and will not change billing!">Change Plan</button>
+                <span class="text-sm">This event will be recorded to the <a asp-page="Activity/Index" asp-route-id="@Model.Organization.PlatformId">Activity Log</a></span>
+            </div>
+        </form>
+    </round-box>
+    <round-box>
+        <h2 class="title is-4 font-semibold">Trials</h2>
+        @if (Model.Organization.Trial is {} trial) {
+            <form asp-page-handler="CancelTrial" class="grid gap-2 items-baseline" style="grid-template-columns: max-content 1fr;"data-turbo="false">
+                <span>Trial of:</span>
+                <span>@trial.Plan.GetFeatures().Name</span>
+                <span>Expires:</span>
+                <div>
+                    <span data-tooltip="@trial.Expiry">@trial.Expiry.Humanize()</span>
+                </div>
+                <div class="col-span-2 place-self-start">
+                    <button type="submit" class="btn btn-danger" data-confirm="This will revert the organization to it’s current plan of @Model.Organization.PlanType">Cancel Trial</button>
+                    <span class="text-sm">This event will be recorded to the <a asp-page="Activity/Index" asp-route-id="@Model.Organization.PlatformId">Activity Log</a></span>
+                </div>
+            </form>
+
+            <form asp-page-handler="ExtendTrial" class="grid gap-2 mt-3 items-baseline" style="grid-template-columns: max-content 1fr;"data-turbo="false">
+                <div class="col-span-2 place-self-start">
+                    <input type="number" asp-for="ExtensionDays" class="form-input" min="1" /> Days <button type="submit" class="btn btn-danger" data-confirm="This will extend the free trial by the specified number of days">Extend Trial</button>
+                    <span class="text-sm">This event will be recorded to the <a asp-page="Activity/Index" asp-route-id="@Model.Organization.PlatformId">Activity Log</a></span>
+                </div>
+            </form>
+        }
+        else
+        {
+            <div class="mb-2">
+                Organization is <span class="font-semibold">@(Model.Organization.TrialEligible ? "eligible" : "not eligible")</span> for a trial.
+                (You can start a trial even if the organization is not eligible)
+            </div>
+            <div class="col-span-2 font-semibold mb-2">
+                Starting a trial will not affect billing, nor the organization’s current plan.
+                After the trial’s expiry date, the organization will revert to their current plan.
+            </div>
+            @if (Model.Organization.PlanType == PlanType.Free) {
+                <form asp-page-handler="StartTrial" data-turbo="false">
+                    <button type="submit" class="btn btn-primary">
+                        Start a @(TrialPlan.TrialLengthDays)-day business plan trial
+                    </button>
+                    <span class="text-sm">This event will be recorded to the <a asp-page="Activity/Index" asp-route-id="@Model.Organization.PlatformId">Activity Log</a></span>
+                </form>
+            } else {
+                <span class="italic">The organization must be on the Free plan to start a trial.</span>
+            }
+        }
+    </round-box>
+</page-body>

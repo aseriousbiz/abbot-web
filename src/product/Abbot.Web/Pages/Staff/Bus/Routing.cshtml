@@ -1,0 +1,139 @@
+@page
+@model Serious.Abbot.Pages.Staff.Bus.RoutingModel
+
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Event Bus Topology");
+}
+
+<partial name="Staff/_Header"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+<partial name="_Header"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold"><i class="fa fa-bus"></i> Event Bus Topology</h2>
+        <p>Bus Address: <code>@Model.Host?.HostAddress</code></p>
+        <p>This Node's Address: <code>@Model.NodeAddress</code></p>
+
+        @if (Model.Host is not null) {
+            <div class="grid grid-cols-2 gap-4" data-controller="highlighter" data-highlighter-highlighted-class="bg-yellow-200">
+                <div>
+                    <h3 class="mt-4 text-xl font-semibold">Queues</h3>
+                    <ul class="mt-2 flex flex-col gap-4">
+                        @foreach (var ep in Model.Host.Endpoints) {
+                            <li class="rounded border p-2" data-highlighter-target="item" data-item-id="queue:@ep.Name">
+                                <div data-action="mouseenter->highlighter#highlight mouseleave->highlighter#unhighlight" data-highlighter-ids-param="sendsTo:@ep.Name">
+                                    <i class="fa fa-layer-group"></i>
+                                    <code>@ep.Name</code>
+                                </div>
+                                <div class="mt-2 flex flex-col ml-6">
+                                    <div class="flex items-center gap-2">
+                                        <span data-tooltip="Address">
+                                            <i class="fa fa-location-dot"></i>
+                                        </span><code>@ep.Address</code>
+                                    </div>
+                                    @if (ep.Filters.FirstOrDefault(f => f.ConsumerType is not null) is {} consumerFilter) {
+                                        <div class="flex items-center gap-2">
+                                            <span data-tooltip="Consumer">
+                                                <i class="fa fa-circle-play"></i>
+                                            </span><code>@consumerFilter.ConsumerType</code>
+                                        </div>
+                                    }
+                                    @if (ep.Filters.FirstOrDefault(f => f.StateMachineType is not null) is {} stateMachineTypeFilter) {
+                                        <div class="flex items-center gap-2">
+                                            <span data-tooltip="State Machine">
+                                                <i class="fa fa-arrow-progress"></i>
+                                            </span><code>@stateMachineTypeFilter.StateMachineType</code>
+                                        </div>
+                                    }
+                                    <div class="flex items-center gap-2">
+                                        <span data-tooltip="Filters">
+                                            <i class="fa fa-filter"></i>
+                                        </span>
+                                        @foreach (var filter in ep.Filters) {
+                                            <code>@filter.Type</code>
+                                        }
+                                    </div>
+                                    @if (ep.QueueMetadata is not null) {
+                                        @if (ep.QueueMetadata is RoutingModel.ServiceBusQueueMetadata sbqm) {
+                                            if (sbqm.EnablePartitioning) {
+                                                <span>
+                                                    <i class="fa fa-gem"></i> Partioned
+                                                </span>
+                                            }
+                                            if (sbqm.RequiresSession) {
+                                                <span>
+                                                    <i class="fa fa-database"></i> Requires Session
+                                                </span>
+                                            }
+                                        }
+                                        <div class="flex items-start gap-2">
+                                            <span class="mt-0.5"><i class="fa fa-memo-circle-info"></i></span>
+                                            <details>
+                                                <summary>Queue Metadata</summary>
+                                                <pre class="overflow-auto">@ep.QueueMetadata.RawMetadata</pre>
+                                            </details>
+                                        </div>
+                                    }
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="mt-4 text-xl font-semibold">Exchanges / Topics</h3>
+                    <ul class="mt-2 flex flex-col gap-4">
+                        @foreach (var ex in Model.Host.Exchanges) {
+                            var ids = "exchange:" + ex.Name;
+                            if (ex is RoutingModel.ExchangeWithQueueSinkInfo {QueueName: var qn }) {
+                                ids += ",sendsTo:" + qn;
+                            }
+                            <li class="rounded border p-2" data-highlighter-target="item" data-item-id="@ids">
+                                <div>
+                                    <i class="fa fa-network-wired"></i>
+                                    <code class="place-self-start">@ex.Name</code>
+                                </div>
+                                <div class="mt-2 flex flex-row gap-4 ml-6">
+                                    <span class="font-semibold">
+                                        @switch (ex.Type) {
+                                            case "fanOut":
+                                                <i class="fa fa-broadcast-tower"></i>
+                                                <span>Fan Out</span>
+                                                break;
+                                            case "direct":
+                                                <i class="fa fa-bullseye"></i>
+                                                <span>Direct</span>
+                                                break;
+                                            case "topic":
+                                                <i class="fa fa-hashtag"></i>
+                                                <span>Topic</span>
+                                                break;
+                                        }
+                                    </span>
+                                    @if (ex is RoutingModel.ExchangeWithQueueSinkInfo q) {
+                                        <div data-tooltip="Routes to a Queue" data-action="mouseenter->highlighter#highlight mouseleave->highlighter#unhighlight" data-highlighter-ids-param="queue:@q.QueueName">
+                                            <i class="fa fa-layer-group"></i>
+                                            <code>@q.QueueName</code>
+                                        </div>
+                                    } else if (ex is RoutingModel.ExchangeWithExchangeSinkInfo x) {
+                                        <div data-tooltip="Routes to another Exchange" data-action="mouseenter->highlighter#highlight mouseleave->highlighter#unhighlight" data-highlighter-ids-param="exchange:@x.ExchangeName,queue:@x.QueueName">
+                                            <i class="fa fa-network-wired"></i>
+                                            <code>@x.ExchangeName</code>
+                                        </div>
+                                    }
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                    <p class="mt-2 text-sm">The <code>_error</code> and <code>_skipped</code> exchanges are not shown unless there is a route bound to them.</p>
+                </div>
+            </div>
+        }
+
+        <h3 class="mt-4 text-xl font-semibold">Raw JSON from Bus Probe</h3>
+        <pre>
+@Model.RawJson
+        </pre>
+    </round-box>
+</page-body>

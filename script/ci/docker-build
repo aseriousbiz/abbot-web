@@ -1,0 +1,159 @@
+#!/bin/bash
+# CI script used for docker build jobs
+# Required variables:
+# * image_repository: The image repository name, without the registry prefix.
+# * dockerfile: The path to the Dockerfile to build.
+# Then, to simulate a GitHub Action you need these:
+# * To simulate a PR:
+#   * GITHUB_EVENT_NAME=pull_request
+#   * GITHUB_REF=refs/pull/<pr_number>/merge
+#   * GITHUB_HEAD_REF=<source_branch_name>
+#   * GITHUB_SHA=<sha>
+# * To simulate a push:
+#   * GITHUB_EVENT_NAME=push
+#   * GITHUB_REF=refs/heads/<branch_name>
+#   * GITHUB_REF_NAME=<branch_name>
+#   * GITHUB_HEAD_REF=<source_branch_name>
+#   * GITHUB_SHA=<sha>
+# * To simulate a merge group build:
+#   * GITHUB_EVENT_NAME=merge_group
+#   * GITHUB_REF=refs/heads/<branch_name>
+#   * GITHUB_HEAD_REF=<source_branch_name>
+#   * GITHUB_SHA=<sha>
+# Optional variables:
+# * image_registry: The name of the image registry to push to, defaults to abbotdevimages
+# * push: Set this to 1 to actually push the image to the registry
+# * force: Set this to 1 to rebuild the image even if it's already in the registry
+#
+# By default, this runs as a dry-run, so you need to specify PUSH=1 to push the image to the registry.
+#
+# We produce a docker image with the following tags and push them all to the registry:
+# - commit-<sha> - The commit sha that triggered the build. For PRs and Merge Groups this is the merged SHA with main, which will be the new HEAD if the branch is fast-forward merged.
+# - pr-<pr_number> - The PR number that triggered the build, if it's running in a PR build.
+# - head-<branch_name> - The HEAD branch name that triggered the build, if it's running in a PR build.
+# - branch-<branch_name> - The current branch name that triggered the build, if it's running in a push build.
+
+{ set +x; } 2>/dev/null
+source_dir="$( cd -P "$( dirname "$0" )" >/dev/null 2>&1 && pwd )"
+root_dir=$(cd $source_dir && cd ../../ && pwd)
+cd $root_dir
+
+set -euo pipefail
+
+source "$root_dir/script/helpers/_utils.sh"
+
+[ -z "${image_registry-}" ] && image_registry=abbotdevimages
+[ -z "${push-}" ] && push=0
+[ -z "${force-}" ] && force=0
+
+if [ -z "${image_repository-}" ]; then
+    fatal "image_repository is required"
+fi
+if [ -z "${dockerfile-}" ]; then
+    fatal "dockerfile is required"
+fi
+
+image_full_repository="$image_registry.azurecr.io/$image_repository"
+
+gh_group "Debug information..."
+echo "GITHUB_REF: ${GITHUB_REF-}"
+echo "GITHUB_HEAD_REF: ${GITHUB_HEAD_REF-}"
+echo "GITHUB_EVENT_NAME: ${GITHUB_EVENT_NAME-}"
+echo "GITHUB_SHA: ${GITHUB_SHA-}"
+echo "Current SHA: $(git rev-parse HEAD)"
+echo "Current Branch: $(git rev-parse --abbrev-ref HEAD)"
+gh_endgroup
+
+gh_group "Logging in to $image_registry..."
+az acr login -n $image_registry
+gh_endgroup
+
+gh_group "Computing Docker Image tags..."
+commit_tag="commit-$(echo $GITHUB_SHA)"
+additional_tags=()
+if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+    # PR build
+    # Add a tag by PR number
+    pr_number=$(echo $GITHUB_REF | cut -d '/' -f 3)
+
+    # Add a tag by the PR HEAD branch (this is the source branch of the PR).
+    head_name=$(clean_branch_name $GITHUB_HEAD_REF)
+
+    additional_tags+=("pr-$pr_number" "head-$head_name")
+elif [ "$GITHUB_EVENT_NAME" = "push" ]; then
+    # Merged to main
+    branch_name=$(clean_branch_name $GITHUB_REF_NAME)
+    additional_tags+=("branch-$branch_name")
+elif [ "$GITHUB_EVENT_NAME" != "merge_group" ]; then
+    fatal "Unknown event name: $GITHUB_EVENT_NAME"
+fi
+echo "Building Docker Image for $commit_tag and ${additional_tags[@]-}"
+gh_endgroup
+
+build=false
+gh_group "Checking if image exists..."
+# We need to `pull` it, even if we don't  so we can tag it later.
+if docker pull $image_full_repository:$commit_tag >/dev/null 2>&1; then
+    if [ "${force-}" != "1" ]; then
+        echo "Image already exists, skipping build."
+    else
+        echo "Forcing rebuild of image."
+        build=true
+    fi
+else
+    echo "Image does not exist, building."
+    build=true
+fi
+gh_endgroup
+
+if $build; then
+    gh_group "Building Docker Image..."
+    docker build \
+        --build-arg "BUILD_BRANCH=${GITHUB_REF_NAME-}" \
+        --build-arg "BUILD_SHA=${GITHUB_SHA-}" \
+        --build-arg "BUILD_HEAD_REF=${GITHUB_HEAD_REF-}" \
+        --build-arg "BUILD_PR=${pr_number-}" \
+        --label "github.sha=${GITHUB_SHA-}" \
+        --label "github.ref_name=${GITHUB_REF_NAME-}" \
+        --label "github.head_ref=${GITHUB_HEAD_REF-}" \
+        --label "github.actor=${GITHUB_ACTOR-}" \
+        --label "github.run_id=${GITHUB_RUN_ID-}" \
+        -f $dockerfile \
+        -t "$image_full_repository:$commit_tag" \
+        .
+    gh_endgroup
+fi
+
+# We do the tagging and pushing even if we didn't build the image, because we might have additional tags to add.
+gh_group "Tagging Docker Image..."
+if [ -n "${additional_tags-}" ]; then
+    for tag in "${additional_tags[@]}"; do
+        echo "Tagging $commit_tag as $tag"
+        docker tag "$image_full_repository:$commit_tag" "$image_full_repository:$tag"
+    done
+fi
+gh_endgroup
+
+if [ "${push-}" = "1" ]; then
+    gh_group "Pushing $commit_tag"
+    docker push "$image_full_repository:$commit_tag"
+    gh_endgroup
+
+    if [ -n "${additional_tags-}" ]; then
+        for tag in "${additional_tags[@]-}"; do
+            gh_group "Pushing $tag"
+            docker push "$image_full_repository:$tag"
+            gh_endgroup
+        done
+    fi
+else
+    echo "Skipping push because PUSH=1 was not specified."
+fi
+
+echo "Docker build complete."
+echo "Primary Image: $image_full_repository:$commit_tag"
+if [ -n "${additional_tags-}" ]; then
+    for tag in "${additional_tags[@]-}"; do
+        echo "Additional Tag: $image_full_repository:$tag"
+    done
+fi

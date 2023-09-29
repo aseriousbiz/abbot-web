@@ -1,0 +1,45 @@
+﻿{
+  Content: [
+    {
+      $type: TipTapParagraphNode,
+      Content: [
+        {
+          $type: TipTapEmojiNode,
+          Attributes: {
+            Id: smile,
+            Label: 😀
+          },
+          Type: emoji
+        },
+        {
+          $type: TipTapTextNode,
+          Text:  ,
+          Type: text
+        },
+        {
+          $type: TipTapChannelMentionNode,
+          Attributes: {
+            Id: C05EZ8GFNCC,
+            Label: Some Channel
+          },
+          Type: channel
+        },
+        {
+          $type: TipTapTextNode,
+          Text:  ,
+          Type: text
+        },
+        {
+          $type: TipTapUserMentionNode,
+          Attributes: {
+            Id: U02EMN2AYGH,
+            Label: @A friendly user
+          },
+          Type: mention
+        }
+      ],
+      Type: paragraph
+    }
+  ],
+  Type: doc
+}

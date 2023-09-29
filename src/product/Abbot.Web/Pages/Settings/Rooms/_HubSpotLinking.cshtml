@@ -1,0 +1,40 @@
+@model RoomPage
+@if (Model.HubSpotRoomLink is not { } roomLink)
+{
+    return;
+}
+
+@if (roomLink.DisplayName is { Length: > 0 } && roomLink.Link is not null) {
+    <form asp-page-handler="UnlinkHubSpotCompany" method="post" class="mt-2 flex gap-2 items-baseline">
+        This room is currently linked to
+        <a target="_blank" href="@roomLink.Link.WebUrl">
+            @roomLink.DisplayName <i class="fa fa-external-link"></i>
+        </a>
+        <button asp-authz-policy="@AuthorizationPolicies.CanManageConversations"
+                type="submit" class="btn btn-danger">
+           Remove this link
+       </button>
+    </form>
+} else {
+    <p class="mt-2">
+        This room is not linked to a HubSpot company.
+    </p>
+}
+
+<div asp-authz-policy="@AuthorizationPolicies.CanManageConversations">
+    <h3 class="mt-2 text-lg font-semibold">Link to a different HubSpot company</h3>
+    <p>Start typing and select a company from the popup to change the HubSpot company this room is linked to.</p>
+    <div class="mt-2 relative" data-controller="autocomplete" data-autocomplete-url-value="@Url.Page(null, "AutocompleteHubSpotCompanies")">
+        <div class="flex items-baseline">
+            <input data-action="autocomplete#lookup click->autocomplete#lookup"
+                   data-autocomplete-target="input"
+                   class="form-input w-full"
+                   placeholder="Start typing to search for HubSpot Companies...">
+            <div data-autocomplete-target="indicator" class="hidden -ml-6">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+            </div>
+        </div>
+        <div class="hidden absolute w-max z-10" data-autocomplete-target="results">
+        </div>
+    </div>
+</div>

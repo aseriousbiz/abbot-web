@@ -1,0 +1,44 @@
+@using Serious.Razor
+@model MarkdownEditorModel
+
+<div class="markdown-editor">
+    <tab-container
+        class="has-preview"
+        data-selected-tab="write"
+        data-preview-url="/api/markdown">
+        <div class="markdown-editor-header">
+            <div role="tablist" class="markdown-editor-tabs">
+                <button type="button" class="markdown-editor-tab write-tab" role="tab" aria-selected="true">Write</button>
+                <button type="button" class="markdown-editor-tab preview-tab" role="tab" aria-selected="false" tabindex="-1">Preview</button>
+            </div>
+            <markdown-toolbar for="@Html.Id(Model.For.Name)" class="markdown-toolbar">
+                <md-header data-tooltip="Add header text" class="material-icons has-tooltip-top has-tooltip-arrow">format_size</md-header>
+                <md-bold data-tooltip="Add bold text" class="material-icons has-tooltip-top has-tooltip-arrow">format_bold</md-bold>
+                <md-italic data-tooltip="Add italic text" class="material-icons has-tooltip-top has-tooltip-arrow">format_italic</md-italic>
+                <md-quote data-tooltip="Insert a quote" class="material-icons has-tooltip-top has-tooltip-arrow">format_quote</md-quote>
+                <md-code data-tooltip="Insert code" class="material-icons has-tooltip-top has-tooltip-arrow">code</md-code>
+                <md-link data-tooltip="Add a link" class="material-icons has-tooltip-top has-tooltip-arrow">link</md-link>
+                <md-unordered-list data-tooltip="Add a bulleted list" class="material-icons has-tooltip-top has-tooltip-arrow">format_list_bulleted</md-unordered-list>
+                <md-ordered-list data-tooltip="Add a numbered list" class="material-icons has-tooltip-top has-tooltip-arrow">format_list_numbered</md-ordered-list>
+            </markdown-toolbar>
+        </div>
+        <div role="tabpanel" data-tab="write" class="write-panel">
+            <div class="write-content">
+                @Model.Html.TextArea(
+                    Model.For.Name,
+                    Model.For.Model as string,
+                    @Constants.TextAreaRowCount,
+                    0,
+                    new {
+                        @class="form-control textarea",
+                        placeholder = Model.Placeholder
+                    })
+            </div>
+        </div>
+        <div role="tabpanel" data-tab="preview" class="preview-panel" hidden>
+            <div class="preview-content content" dataset-clear-on-submit="true">
+                <p>Nothing to preview</p>
+            </div>
+        </div>
+    </tab-container>
+</div>

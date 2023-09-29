@@ -1,0 +1,32 @@
+@page
+@{
+    Layout = "Shared/Layouts/_ErrorLayout";
+    ViewContext.SetPageInfo("Status", "Page Not Found");
+}
+
+<section class="relative md:w-1/2 mx-auto text-center flex flex-col items-center mt-16">
+    <img src="~/img/sad-abbot.svg"/>
+
+    <header class="static">
+        <h1 class="italic inline-block font-semibold text-6xl my-1">
+            Sorry!
+        </h1>
+
+        <div class="text-2xl text-left mt-2 ml-2 text-red-500 transform -translate-y-0.5 text-center md:text-left md:absolute md:inline-block ">
+            <p>404</p>
+            <p class="font-semibold leading-4 whitespace-nowrap">Not found</p>
+        </div>
+    </header>
+
+    <p class="text-2xl my-4">
+        The page you requested couldn’t be found.<br/>Perhaps we can help you.
+    </p>
+
+    <p class="block content">
+        <ul>
+            <li>Did you type the url manually? Double check the path.</li>
+            <li>Believe this is a mistake? <a class="text-blue-500" href="mailto:@WebConstants.SupportEmail">Contact us</a> with more details.</li>
+            <li>Lost? Head over to the <a class="text-blue-500" href="/">Abbot homepage</a>.</li>
+        </ul>
+    </p>
+</section>

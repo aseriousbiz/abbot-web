@@ -1,0 +1,61 @@
+@page
+@model Serious.Abbot.Pages.Playbooks.PlaybooksIndexPage
+@{
+    ViewContext.SetPageInfo("Playbooks", "Playbooks");
+}
+
+<page-header class="mx-4 my-3">
+    <div class="flex items-center mb-4">
+        <h1 class="grow">
+            Playbooks
+        </h1>
+        <div>
+            <a asp-page="Versions/Import" preserve-staff class="btn">
+                <i class="fa fa-upload"></i>
+                Import
+            </a>
+            @if (!Model.InStaffTools) {
+                <a asp-page="Create" class="btn btn-primary">Create</a>
+            }
+        </div>
+    </div>
+</page-header>
+
+<page-body class="mx-4 my-3 flex gap-3 h-full">
+    <section>
+        <h2 class="text-xl font-semibold">Your Playbooks</h2>
+        <form method="post" data-controller="input-submit">
+            <div class="flex py-2 gap-x-2 items-baseline w-full">
+                <input
+                    data-input-submit-target="submitter"
+                    show-clear-button
+                    clear-button-container-class="flex-grow"
+                    class="form-input w-full"
+                    asp-for="Filter"
+                    name="q"
+                    placeholder="Filter Playbooks by name or description"
+                    data-val="false"
+                    data-clear-input-target="input"/>
+                <button
+                    class="btn btn-primary"
+                    type="submit">
+                    Filter
+                </button>
+            </div>
+        </form>
+        <div id="@Model.PlaybooksListId">
+            <partial name="_PlaybookList" model="Model.Playbooks"/>
+        </div>
+    </section>
+    <section feature="@FeatureFlags.PlaybookUpcomingEvents">
+        <h2 class="text-xl font-semibold">Upcoming events</h2>
+        <div class="p-2 bg-white rounded-2xl border border-gray-200 mt-2">
+            <turbo-frame id="@UpcomingEventListViewModel.UpcomingEventsListId" src="@Url.Page(null, "Upcoming")">
+                <div class="text-center">
+                    <i class="fa fa-spinner fa-spin-pulse"></i>
+                    Loading...
+                </div>
+            </turbo-frame>
+        </div>
+    </section>
+</page-body>

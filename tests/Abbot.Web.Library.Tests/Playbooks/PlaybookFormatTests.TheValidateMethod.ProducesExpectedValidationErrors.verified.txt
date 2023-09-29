@@ -1,0 +1,11 @@
+﻿[
+  The start sequence 'non_existent_sequence' does not exist.,
+  The Sequence ID 'bad sequence' is not valid.,
+  The Step ID 'shared_id_1' is not unique.,
+  The Step ID 'shared_id_2' is not unique.,
+  Input name 'bad input name' on step 'bad_inputs' is not valid,
+  Branch name 'bad id' on step 'bad_inputs' is not valid,
+  Branch 'ok' on step 'bad_inputs' references invalid sequence name 'bad sequence',
+  Step 'bad_type' references invalid Step Type Name 'what even are types',
+  The Step ID 'bad id' is not valid.
+]

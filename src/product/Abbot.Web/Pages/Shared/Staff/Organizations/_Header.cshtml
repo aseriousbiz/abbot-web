@@ -1,0 +1,118 @@
+@model Organization
+
+<back-link asp-page="/Staff/Index">Back to Staff Tools</back-link>
+
+<page-header>
+    @Model.Name
+</page-header>
+
+<round-box>
+    <div class="flex">
+        <img id="org-avatar-current" class="w-16 h-16 border-gray-300 border-4 rounded-full" src="@Model.Avatar" />
+        <div class="flex flex-col ml-3">
+            <div class="font-semibold">
+                @Model.Name (ID: @Model.Id)
+            </div>
+            <div>A <span class="font-semibold">@Model.PlatformType</span> organization with Platform ID <code>@Model.PlatformId</code> on the <span class="font-semibold">@Model.PlanType</span> Plan.</div>
+            <div>Created <timeago datetime="@Model.Created"/></div>
+            @if (Model.Settings.SeriousCustomerId is not null) {
+                <a asp-page="/Customers/Edit" asp-route-id="@Model.Settings.SeriousCustomerId">View linked customer</a>
+            }
+        </div>
+    </div>
+</round-box>
+
+<nav class="sm:grid grid-cols-4 gap-4 my-2">
+    <ul class="col-span-3 flex text-sm my-2">
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Staff/Organizations/Status" asp-route-id="@Model.PlatformId" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                <i class="fa fa-cog"></i>
+                General
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Staff/Organizations/Users" asp-route-id="@Model.PlatformId" class="tabnav-btn" nav-active-class="tabnav-btn-active">
+                <i class="fa fa-users"></i>
+                Users
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Playbooks/Index" asp-route-staffOrganizationId="@Model.PlatformId" class="tabnav-btn" nav-active-class="tabnav-btn-active">
+                <i class="fa fa-book"></i>
+                Playbooks
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Staff/Organizations/Rooms" asp-route-id="@Model.PlatformId" class="tabnav-btn" nav-active-class="tabnav-btn-active">
+                <i class="fa fa-hashtag"></i>
+                Rooms
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Staff/Organizations/Conversations/Index" asp-route-id="@Model.PlatformId" class="tabnav-btn" nav-active-class="tabnav-btn-active">
+                <i class="fa fa-messages"></i>
+                Conversations
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Staff/Organizations/Hubs/Index" asp-route-id="@Model.PlatformId" class="tabnav-btn" nav-active-class="tabnav-btn-active">
+                <i class="fa fa-arrows-to-dot"></i>
+                Hubs
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Staff/Organizations/Activity/Index" asp-route-orgId="@Model.PlatformId" class="tabnav-btn" nav-active-class="tabnav-btn-active">
+                <i class="fa fa-wave-pulse"></i>
+                Activity
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Staff/Organizations/Integrations" asp-route-id="@Model.PlatformId" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                <i class="fa fa-puzzle-piece"></i>
+                Integrations
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Staff/Organizations/Billing" asp-route-id="@Model.PlatformId" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                <i class="fa fa-money-bills"></i>
+                Billing
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Staff/Organizations/Repair" asp-route-id="@Model.PlatformId" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                <i class="fa fa-screwdriver-wrench"></i>
+                Repair
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Staff/Organizations/Forms/Index" asp-route-id="@Model.PlatformId" class="tabnav-btn" nav-active-class="tabnav-btn-active">
+                <i class="fa fa-input-pipe"></i>
+                Forms
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Staff/Organizations/ApiExplorer" asp-route-id="@Model.PlatformId" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                <i class="fa fa-map"></i>
+                API Explorer
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Staff/Organizations/Skills" asp-route-id="@Model.PlatformId" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                <i class="fa fa-scroll"></i>
+                Skills
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Staff/Organizations/Import/Index" asp-route-id="@Model.PlatformId" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                <i class="fa fa-file-import"></i>
+                Import
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Staff/Organizations/Edit" asp-route-id="@Model.PlatformId" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                <i class="fa fa-pencil"></i>
+                Edit
+            </a>
+        </li>
+    </ul>
+</nav>

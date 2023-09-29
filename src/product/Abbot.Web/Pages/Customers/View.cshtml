@@ -1,0 +1,85 @@
+@page "{id:int}"
+@model Serious.Abbot.Pages.Customers.ViewPage
+
+@{
+    ViewContext.SetPageInfo("Customer", "View Customer");
+}
+
+<page-header>
+    <div class="flex items-center mb-4">
+        <a asp-page="Index">Customers</a><span class="mx-1">/</span> @Model.Customer.Name
+    </div>
+</page-header>
+
+<page-body>
+    <div class="flex">
+        <div class="grow flex flex-col gap-2">
+            <div class="flex gap-2 items-center">
+                @if (Model.Customer.TagAssignments.Any()) {
+                    <span class="font-semibold">Segments:</span>
+                    @foreach (var segment in Model.Customer.TagAssignments) {
+                        <a asp-page="Index" asp-route-q="@Serious.Filters.Filter.Create("segment", segment.Tag.Name)">
+                            <pill size="Small">@segment.Tag.Name</pill>
+                        </a>
+                    }
+                } else {
+                    <span class="font-semibold italic">Not assigned to any segments.</span>
+                }
+            </div>
+            <div class="flex gap-2 items-center">
+                @if (Model.Customer.Rooms.Any()) {
+                    <span class="font-semibold">Assigned Rooms:</span>
+                    @foreach (var room in Model.Customer.Rooms) {
+                        <pill size="Small" color="Blue">#@room.Name</pill>
+                    }
+                } else {
+                    <span class="font-semibold italic">Not assigned to any rooms.</span>
+                }
+            </div>
+        </div>
+        <div>
+            <a asp-page="Edit" asp-route-id="@Model.Customer.Id" class="btn">
+                <i class="fa fa-pencil"></i>
+                Edit
+            </a>
+        </div>
+    </div>
+
+    <section feature="@FeatureFlags.PlaybookUpcomingEvents">
+        <h2 class="text-xl font-semibold">Upcoming Playbook events</h2>
+        <div class="p-2 bg-white rounded-2xl border border-gray-200 mt-2">
+            <partial name="Playbooks/_UpcomingEventsList" model="Model.UpcomingPlaybookEvents" />
+        </div>
+    </section>
+
+    <h2 class="text-xl font-semibold">Recent Playbook runs</h2>
+    <div class="py-2 px-6 bg-white rounded-2xl border border-gray-200 mt-2">
+        <partial name="Playbooks/Runs/_PlaybookRunList" model="Model.RecentPlaybookRuns"/>
+    </div>
+
+    <h2 class="text-xl font-semibold">Customer Metadata</h2>
+    <div class="grid p-3 grid-cols-2 gap-2 bg-white rounded-2xl border border-gray-200 my-2">
+        <div class="contents text-sm text-gray-700">
+            <div>Name</div>
+            <div>Value</div>
+        </div>
+        @if (Model.Customer.Metadata.Any()) {
+            @foreach (var metadata in Model.Customer.Metadata) {
+                <div class="contents">
+                    <div class="font-semibold">@metadata.MetadataField.Name</div>
+                    <div>
+                        @if (metadata.Value is not null) {
+                            <span>@metadata.Value</span>
+                        } else {
+                            <span data-tooltip="This is the default value for this metadata" class="text-gray-500">@metadata.MetadataField.DefaultValue</span>
+                        }
+                    </div>
+                </div>
+            }
+        } else {
+            <div class="col-span-full">
+                <p>No Metadata Fields are configured yet.</p>
+            </div>
+        }
+    </div>
+</page-body>

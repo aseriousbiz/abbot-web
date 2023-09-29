@@ -1,0 +1,79 @@
+name: Deploy Abbot Frontend
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment"
+        required: true
+        type: environment
+      label:
+        description: "Image label"
+        default: "latest"
+        required: true
+        type: string
+
+env:
+  APP_DESCRIPTION: "Abbot Frontend"
+
+# Only allow one active deployment per environment
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  deploy-fe:
+    runs-on: ubuntu-latest
+    environment:
+      name: "${{ inputs.environment }}"
+      url: "${{ vars.ABBOT_FE_URL }}"
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: '{ "clientId": "${{ secrets.DEPLOYBOT_AZURE_AD_CLIENT_ID }}", "clientSecret": "${{ secrets.DEPLOYBOT_AZURE_AD_CLIENT_SECRET }}", "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}", "tenantId": "${{ secrets.AZURE_TENANT_ID }}" }'
+
+      - name: Login to abbotimages.azurecr.io
+        run: |
+          az acr login -n abbotimages -g abbot-global
+
+      - name: Generate a unique Deployment ID
+        run: |
+          echo "DEPLOYMENT_ID=$(uuidgen)" >> "$GITHUB_ENV"
+
+      - name: Tag the latest-deployed image on ACR
+        run: |
+          docker pull "abbotimages.azurecr.io/aseriousbiz/abbot/web:${{ inputs.label }}"
+          docker tag "abbotimages.azurecr.io/aseriousbiz/abbot/web:${{ inputs.label }}" "abbotimages.azurecr.io/aseriousbiz/abbot/web:deployed-${{ inputs.environment }}"
+          docker push "abbotimages.azurecr.io/aseriousbiz/abbot/web:deployed-${{ inputs.environment }}"
+
+      - name: Deploy to Deployment Slot
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: "${{ vars.ABBOT_FE_APP_NAME }}"
+          slot-name: "deployment"
+          images: "abbotimages.azurecr.io/aseriousbiz/abbot/web:deployed-${{ inputs.environment }}"
+          startup-command: "Abbot:DeploymentId=${{ env.DEPLOYMENT_ID }}"
+
+      - name: Wait for deployment to complete.
+        run: ./script/helpers/wait-for-deployment "https://${{ vars.ABBOT_FE_APP_NAME }}-deployment.azurewebsites.net/warmup/deployment-id" "$DEPLOYMENT_ID"
+      
+      - name: Swap slots
+        uses: azure/cli@v1
+        with:
+          inlineScript: |
+            az webapp deployment slot swap -g ${{ vars.ABBOT_RESOURCE_GROUP }} -n ${{ vars.ABBOT_FE_APP_NAME }} --slot deployment --target-slot production
+
+      - name: Wait for swap to complete.
+        run: ./script/helpers/wait-for-deployment "https://${{ vars.ABBOT_FE_APP_NAME }}.azurewebsites.net/warmup/deployment-id" "$DEPLOYMENT_ID"
+
+      # The deployment slot is now running old code, and participating in Hangfire jobs.
+      # So re-deploy the new code there to get everything lined up.
+      - name: Deploy again to Deployment Slot
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: "${{ vars.ABBOT_FE_APP_NAME }}"
+          slot-name: "deployment"
+          images: "abbotimages.azurecr.io/aseriousbiz/abbot/web:deployed-${{ inputs.environment }}"
+          startup-command: "Abbot:DeploymentId=${{ env.DEPLOYMENT_ID }}"

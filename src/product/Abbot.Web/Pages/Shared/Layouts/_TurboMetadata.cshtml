@@ -1,0 +1,35 @@
+@using Microsoft.Extensions.Hosting
+@using Microsoft.Extensions.Options
+@using Serious.Abbot.Live
+@inject IHostEnvironment HostEnvironment
+@inject IOptions<LiveOptions> LiveOptions
+
+@* Metadata that must always be rendered, even when rendering a Turbo Frame response (not required for Turbo Stream responses) *@
+@* When/if we start optimizing server responses to return only what's changed when a Turbo Frame is used, we need to keep these in the <head> of the response *@
+@{
+    var member = Context.GetCurrentMember();
+    var (category, name, title) = ViewContext.GetPageInfo();
+}
+<meta name="abbot-env" content="@HostEnvironment.EnvironmentName">
+<meta name="abbot-member-id" content="@member?.Id">
+<meta name="abbot-member-name" content="@member?.DisplayName">
+@if (member?.IsStaff() is true) {
+    <meta name="abbot-member-staff" content="true">
+}
+<staff-only>
+    <meta name="abbot-staff-mode" content="true">
+</staff-only>
+@if (member?.Organization.IsSerious() is true) {
+    <meta name="abbot-organization-is-serious" content="true">
+}
+<meta name="abbot-organization-id" content="@member?.OrganizationId">
+<meta name="abbot-organization-plan" content="@member?.Organization.PlanType">
+<meta name="abbot-organization-created" content="@member?.Organization.Created.ToMixPanelDateString()">
+<meta name="abbot-endpoint-name" content="@ViewContext.HttpContext.GetEndpoint()?.DisplayName">
+<meta name="abbot-page-category" content="@category">
+<meta name="abbot-page-name" content="@name">
+<meta name="abbot-page-title" content="@title">
+
+@if (LiveOptions.Value.Host is {Length: >0} liveHost) {
+    <meta name="abbot-live-host" content="@liveHost">
+}

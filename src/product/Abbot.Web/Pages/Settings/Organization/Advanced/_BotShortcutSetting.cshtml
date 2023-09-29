@@ -1,0 +1,34 @@
+@model IBotShortcutViewModel
+
+<h4 class="text-lg font-semibold mt-4">Bot Shortcut Character</h4>
+<span class="text-sm">This provides a shortcut to use to call an Abbot skill in place of mentioning Abbot.</span>
+@if (!Model.Organization.HasRequiredScope("channels:history")) {
+    <div class="rounded-sm bg-yellow-100 mt-4 p-4">
+        <span>Customizing the shortcut character requires updated permissions from Slack. Please follow the instructions in the header to approve these new permissions.</span>
+    </div>
+}
+else {
+    <div class="my-4">
+        <label>
+            <input type="radio" asp-for="Input.ShortcutCharacter" value=" "/> None. Disable this feature and require mentioning Abbot.
+        </label>
+        @foreach (var entry in new[] {
+            new { Name = "Dot character", Ch = '.' },
+            new { Name = "Exclamation mark", Ch = '!' },
+            new { Name = "Pipe character", Ch = '|' },
+            new { Name = "Backslash", Ch = '\\' },
+        }) {
+            <div class="my-1">
+                <label>
+                    <input type="radio" asp-for="Input.ShortcutCharacter" value="@entry.Ch"/>
+                    <span class="font-mono bg-gray-100 p-1 text-sm rounded">@(entry.Ch)</span>
+                    <span class="text-sm text-gray-500">@(entry.Name).</span>
+                    <p class="text-sm inline">
+                        Example: <span class="font-mono bg-gray-100 p-1 text-sm rounded">@(entry.Ch)help</span>
+                    </p>
+                </label>
+            </div>
+        }
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+}

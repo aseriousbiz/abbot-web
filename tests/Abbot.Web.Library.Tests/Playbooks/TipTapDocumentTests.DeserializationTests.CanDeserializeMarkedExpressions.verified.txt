@@ -1,0 +1,183 @@
+﻿{
+  Content: [
+    {
+      $type: TipTapParagraphNode,
+      Content: [
+        {
+          $type: TipTapTextNode,
+          Text: Unbold ,
+          Type: text
+        },
+        {
+          $type: TipTapTextNode,
+          Text: bold ,
+          Marks: {
+            $type: ReadOnlyCollection<TipTapMarkNode>,
+            $values: [
+              {
+                Type: bold
+              }
+            ]
+          },
+          Type: text
+        },
+        {
+          $type: TipTapUserMentionNode,
+          Attributes: {
+            Id: U03DYLAKR6U,
+            Label: dahlbyk
+          },
+          Marks: {
+            $type: ReadOnlyCollection<TipTapMarkNode>,
+            $values: [
+              {
+                Type: bold
+              }
+            ]
+          },
+          Type: mention
+        },
+        {
+          $type: TipTapTextNode,
+          Text:  ,
+          Marks: {
+            $type: ReadOnlyCollection<TipTapMarkNode>,
+            $values: [
+              {
+                Type: bold
+              }
+            ]
+          },
+          Type: text
+        },
+        {
+          $type: TipTapTextNode,
+          Text: in ,
+          Marks: {
+            $type: ReadOnlyCollection<TipTapMarkNode>,
+            $values: [
+              {
+                Type: bold
+              },
+              {
+                Type: italic
+              }
+            ]
+          },
+          Type: text
+        },
+        {
+          $type: TipTapChannelMentionNode,
+          Attributes: {
+            Id: C03EJAGQY0L,
+            Label: dahlbyk-playground
+          },
+          Marks: {
+            $type: ReadOnlyCollection<TipTapMarkNode>,
+            $values: [
+              {
+                Type: bold
+              },
+              {
+                Type: italic
+              }
+            ]
+          },
+          Type: channel
+        },
+        {
+          $type: TipTapTextNode,
+          Text:  with,
+          Marks: {
+            $type: ReadOnlyCollection<TipTapMarkNode>,
+            $values: [
+              {
+                Type: bold
+              },
+              {
+                Type: italic
+              }
+            ]
+          },
+          Type: text
+        },
+        {
+          $type: TipTapTextNode,
+          Text:  ,
+          Marks: {
+            $type: ReadOnlyCollection<TipTapMarkNode>,
+            $values: [
+              {
+                Type: bold
+              }
+            ]
+          },
+          Type: text
+        },
+        {
+          $type: TipTapTextNode,
+          Text: the ,
+          Marks: {
+            $type: ReadOnlyCollection<TipTapMarkNode>,
+            $values: [
+              {
+                $type: TipTapLinkMark,
+                Attributes: {
+                  Href: https://en.wikipedia.org/wiki/Weapon
+                },
+                Type: link
+              },
+              {
+                Type: bold
+              }
+            ]
+          },
+          Type: text
+        },
+        {
+          $type: TipTapHandlebarsNode,
+          Attributes: {
+            Id: outputs.weapon,
+            Label: outputs.weapon
+          },
+          Marks: {
+            $type: ReadOnlyCollection<TipTapMarkNode>,
+            $values: [
+              {
+                $type: TipTapLinkMark,
+                Attributes: {
+                  Href: https://en.wikipedia.org/wiki/Weapon
+                },
+                Type: link
+              },
+              {
+                Type: bold
+              }
+            ]
+          },
+          Type: handlebars
+        },
+        {
+          $type: TipTapTextNode,
+          Text:  still bold,
+          Marks: {
+            $type: ReadOnlyCollection<TipTapMarkNode>,
+            $values: [
+              {
+                Type: bold
+              }
+            ]
+          },
+          Type: text
+        },
+        {
+          $type: TipTapTextNode,
+          Text:  unbold.,
+          Type: text
+        }
+      ],
+      Type: paragraph
+    }
+  ],
+  Type: doc
+}

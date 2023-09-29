@@ -1,0 +1,48 @@
+@model Serious.Abbot.Pages.Settings.Rooms.AssigneeContainer
+@{
+    var formId = ViewData["form-id"];
+}
+
+<details class="dropdown relative" @if (formId is null) { <text>data-checkboxes-target="action" data-checkboxes-target="action"</text> }>
+    @if (formId is null) {
+        <summary class="btn btn-sm cursor-pointer">
+            <text>Assign</text>
+        </summary>
+    } else {
+        <summary class="pr-8 cursor-pointer">
+        @if (Model.CurrentAssignee is not null) {
+            <span class="transition-all">
+                <partial name="Shared/_SmallAvatar" model="Model.CurrentAssignee.User"/>
+            </span>
+        } else {
+            <span class="text-xs text-gray-600">Unassigned <i class="fa-solid fa-caret-down"></i></span>
+        }
+        </summary>
+    }
+
+    <div role="menu" class="dropdown-menu rounded border border-gray-300 bg-white absolute drop-shadow-md text-sm w-60 z-10">
+        <div class="flex flex-col shrink-0" data-controller="checkboxes" data-checkboxes-exclusive-value="true">
+            <div class="max-h-56 overflow-y-scroll">
+                @if (Model.Agents.Any()) {
+                    @foreach (var agent in Model.Agents) {
+                        <label class="flex items-center gap-x-2 px-3 py-2">
+                            <input type="radio" name="Assignee" value="@agent.User.PlatformUserId" form="@formId"/>
+                            <img src="@agent.User.Avatar" class="w-6 rounded-full" alt=""/>
+                            <span class="font-medium">@agent.DisplayName</span>
+                        </label>
+                    }
+                } else {
+                    <span>You do not have any agents.</span>
+                }
+            </div>
+
+            <div class="p-2 pr-4 font-medium whitespace-nowrap border-t">
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    asp-page-handler="SaveAssignee"
+                    form="@formId">Save assignee</button>
+            </div>
+        </div>
+    </div>
+</details>

@@ -1,0 +1,46 @@
+@model PackageItemViewModel
+
+<article class="border rounded border-gray-300 p-3 flex flex-col m-2 bg-white">
+    <div class="bg-blue-50">
+        <div class="p-2 text-gray-500 flex items-center">
+            <object data="@Model.Icon" type="image/png" class="rounded w-6 h-6 mr-2" aria-hidden="true">
+                <img src="/img/unknown-organization.png" alt="Icon for the package or the package organization">
+            </object>
+            by @Model.OrganizationName 
+        </div> 
+    </div>
+    
+    <div class="px-2 flex-grow flex flex-col">
+        <section class="my-2">
+            <h1>
+                <a asp-page="/Packages/Details"
+                asp-route-organization="@Model.OrganizationSlug"
+                asp-route-name="@Model.Name"
+                class="text-blue-500 font-mono font-bold">@Model.Name</a>
+
+                <span>@Model.Version</span>
+            </h1> 
+            <p>@Model.Description</p>
+        </section>
+        @if (!Model.Listed) {
+            <div class="text-sm text-red-500 my-1">
+                This package is unlisted for people in other organizations
+            </div>
+        }
+        
+        <div class="text-sm text-gray-500 flex mt-auto">
+            <p class="mr-4">
+                @if (Model.TotalInstalls > 0 && ViewContext.IsStaffMode()) {
+                    <a asp-page="/Staff/Packages" asp-route-id="@Model.Id">@Model.TotalInstalls.ToQuantity("install")</a>
+                } else {
+                    @Model.TotalInstalls.ToQuantity("install")
+                }
+            </p>
+            <p>
+                last updated
+                <timeago datetime="@Model.Modified"/>
+            </p>
+        </div>
+        
+    </div>
+</article>

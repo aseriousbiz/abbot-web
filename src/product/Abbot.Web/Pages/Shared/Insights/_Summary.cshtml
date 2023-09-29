@@ -1,0 +1,51 @@
+@model InsightsSummaryInfo
+@{
+    const string loadingIndicator = "…";
+}
+
+<section class="mx-4 flex gap-x-4">
+    <a class="p-4 rounded-xl hover:bg-white text-center font-bold text-red-500 hover:text-red-500"
+       asp-page="/Index" asp-route-state="Overdue">
+        <h2 class="font-semibold">Went Overdue</h2>
+        @if (Model is { OverdueCount:  var overdue }) {
+            <p class="text-xl font-medium">@overdue </p>
+        } else {
+            <p class="text-xl font-medium text-gray-500">@loadingIndicator</p>
+        }
+    </a>
+    <a class="p-4 rounded-xl text-black hover:text-blue-600 hover:bg-white text-center"
+       asp-page="/Index" asp-route-state="NeedsResponse">
+        <h2>Needed attention</h2>
+        @if (Model is { NeedsAttention: var needsAttention }) {
+            <p class="text-xl font-medium">@needsAttention</p>
+        } else {
+            <p class="text-xl font-medium text-gray-500">@loadingIndicator</p>
+        }
+    </a>
+    <a class="p-4 rounded-xl text-black hover:text-blue-600 hover:bg-white text-center"
+       asp-page="/Index" asp-route-state="Responded">
+        <h2>Responded</h2>
+        @if (Model is {RespondedCount: var responded }) {
+            <p class="text-xl font-medium">@responded</p>
+        } else {
+            <p class="text-xl font-medium text-gray-500">@loadingIndicator</p>
+        }
+    </a>
+    <a class="p-4 rounded-xl text-black hover:text-blue-600 hover:bg-white text-center"
+       asp-page="/Index" asp-route-state="NeedsResponse">
+        <h2>Opened conversations</h2>
+        @if (Model is { OpenConversations: var open }) {
+            <p class="text-xl font-medium">@open</p>
+        } else {
+            <p class="text-xl font-medium text-gray-500">@loadingIndicator</p>
+        }
+    </a>
+    <span class="p-4 rounded-xl text-black hover:text-blue-600 hover:bg-white text-center">
+        <h2>Tickets created</h2>
+        @if (Model is { TicketsCreated: var ticketsCreated }) {
+            <p class="text-xl font-medium">@ticketsCreated</p>
+        } else {
+            <p class="text-xl font-medium text-gray-500">@loadingIndicator</p>
+        }
+    </span>
+</section>

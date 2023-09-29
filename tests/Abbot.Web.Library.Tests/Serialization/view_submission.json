@@ -1,0 +1,113 @@
+{
+  "type": "view_submission",
+  "team": {
+    "id": "T013108BYLS",
+    "domain": "aseriousbiz"
+  },
+  "user": {
+    "id": "U012LKJFG0P",
+    "username": "haacked",
+    "name": "haacked",
+    "team_id": "T013108BYLS"
+  },
+  "api_app_id": "A01TG9GPJQ3",
+  "token": "TOKEN_REDACTED",
+  "trigger_id": "TRIGGER_ID_REDACTED",
+  "view": {
+    "id": "V03C4G5F04C",
+    "team_id": "T013108BYLS",
+    "type": "modal",
+    "blocks": [
+      {
+        "type": "input",
+        "block_id": "multiline",
+        "label": {
+          "type": "plain_text",
+          "text": "Enter something",
+          "emoji": true
+        },
+        "optional": false,
+        "dispatch_action": false,
+        "element": {
+          "type": "plain_text_input",
+          "action_id": "something",
+          "multiline": true,
+          "dispatch_action_config": {
+            "trigger_actions_on": [
+              "on_enter_pressed"
+            ]
+          }
+        }
+      },
+      {
+        "type": "input",
+        "block_id": "Mey",
+        "label": {
+          "type": "plain_text",
+          "text": "Select a channel",
+          "emoji": true
+        },
+        "optional": false,
+        "dispatch_action": false,
+        "element": {
+          "type": "conversations_select",
+          "response_url_enabled": true,
+          "action_id": "9=wa"
+        }
+      }
+    ],
+    "private_metadata": "",
+    "callback_id": "b:conversations",
+    "state": {
+      "values": {
+        "multiline": {
+          "something": {
+            "type": "plain_text_input",
+            "value": "Hello there"
+          }
+        },
+        "Mey": {
+          "9=wa": {
+            "type": "conversations_select",
+            "selected_conversation": "C01A3DGTSP9",
+            "response_url_enabled": true
+          }
+        }
+      }
+    },
+    "hash": "1650387248.18ENhxxh",
+    "title": {
+      "type": "plain_text",
+      "text": "Configure",
+      "emoji": true
+    },
+    "clear_on_close": false,
+    "notify_on_close": false,
+    "close": {
+      "type": "plain_text",
+      "text": "Close",
+      "emoji": true
+    },
+    "submit": {
+      "type": "plain_text",
+      "text": "Submit",
+      "emoji": true
+    },
+    "previous_view_id": null,
+    "root_view_id": "V03C4G5F04C",
+    "app_id": "A01TG9GPJQ3",
+    "external_id": "",
+    "app_installed_team_id": "T013108BYLS",
+    "bot_id": "B01U63BS0EL"
+  },
+  "response_urls": [
+    {
+      "block_id": "Mey",
+      "action_id": "9=wa",
+      "channel_id": "C01A3DGTSP9",
+      "response_url": "https://hooks.slack.com/app/T013108BYLS/3403556715862/NKxKwUZsOSgGQdBMRgOqXyh8"
+    }
+  ],
+  "is_enterprise_install": false,
+  "enterprise": null
+}

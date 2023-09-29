@@ -1,0 +1,7 @@
+@model SlackEventPage.UnencryptedEvent
+
+<div class="bg-gray-200 p-4 place-self-start my-4">
+    <i class="fa-solid fa-exclamation-triangle" aria-hidden="true"></i>
+    You are viewing the content because: <strong>@Model.Reason</strong>
+</div>
+<pre>@Model.Content</pre>

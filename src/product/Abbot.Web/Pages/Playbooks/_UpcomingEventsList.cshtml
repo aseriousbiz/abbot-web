@@ -1,0 +1,76 @@
+@using Serious.Abbot.Playbooks
+@model UpcomingEventListViewModel
+
+<turbo-frame id="@UpcomingEventListViewModel.UpcomingEventsListId">
+    @if (Model.Events.Any()) {
+        <ul class="divide-y border-slate-200">
+            @foreach (var evt in Model.Events) {
+                <li class="p-4 flex items-center gap-x-4">
+                    <div class="grow">
+                        <div class="flex items-center gap-x-1">
+                            @if (evt.PlaybookRun is not null) {
+                                <a class="font-medium"
+                                   asp-page="/Playbooks/Runs/View"
+                                   preserve-staff
+                                   asp-route-slug="@evt.Playbook.Slug"
+                                   asp-route-runId="@evt.PlaybookRun.CorrelationId">
+                                    Run of '@evt.PlaybookRun.Playbook.Name' (v@(evt.PlaybookRun.Version))
+                                    <partial name="_RunDispatchContext" model="evt.PlaybookRun"/>
+                                </a>
+                            } else {
+                                <a class="font-medium"
+                                   asp-page="/Playbooks/View"
+                                   preserve-staff
+                                   asp-route-slug="@evt.Playbook.Slug">
+                                    @evt.Playbook.Name
+                                </a>
+                            }
+                        </div>
+
+                        <div class="text-sm text-slate-500">
+                            @switch (evt.Type) {
+                                case UpcomingPlaybookEventType.Resume when evt.ExpectedTime is not null:
+                                    <p>
+                                        Resuming
+                                        <timeago datetime="evt.ExpectedTime"></timeago>
+                                    </p>
+                                    break;
+                                case UpcomingPlaybookEventType.Resume:
+                                    <p>
+                                        Resuming soon
+                                    </p>
+                                    break;
+                                case UpcomingPlaybookEventType.ScheduledDispatch:
+                                    <p>
+                                        Scheduled to run
+                                        <timeago datetime="evt.ExpectedTime"></timeago>
+                                    </p>
+                                    break;
+                                default:
+                                    <p></p>
+                                    break;
+                            }
+                        </div>
+                    </div>
+
+                    <div class="items-end">
+                        @if (evt.PlaybookRun is not null) {
+                            <partial name="Playbooks/Runs/_PlaybookRunStatus" model="evt.PlaybookRun"/>
+                        } else if (evt.Type is UpcomingPlaybookEventType.ScheduledDispatch) {
+                            <pill tooltip="The Playbook is scheduled to run." color="Gray" icon="fa-clock">
+                                Scheduled to run
+                                <timeago datetime="evt.ExpectedTime"></timeago>
+                            </pill>
+                        }
+                    </div>
+                </li>
+            }
+        </ul>
+    } else {
+        <div class="text-center p-8">
+            <h2 class="font-semibold text-xl">
+                No upcoming events!
+            </h2>
+        </div>
+    }
+</turbo-frame>

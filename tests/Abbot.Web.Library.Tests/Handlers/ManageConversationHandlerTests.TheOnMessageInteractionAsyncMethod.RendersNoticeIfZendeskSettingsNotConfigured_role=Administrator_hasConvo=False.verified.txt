@@ -1,0 +1,72 @@
+﻿{
+  OpenModals: {
+    $type: Dictionary<string, ViewUpdatePayload>,
+    the-trigger-id: {
+      Title: {
+        Emoji: true,
+        Text: Manage Conversation,
+        Type: plain_text
+      },
+      Close: {
+        Emoji: true,
+        Text: Close,
+        Type: plain_text
+      },
+      Blocks: [
+        {
+          $type: Section,
+          Text: {
+            $type: PlainText,
+            Emoji: true,
+            Text: ℹ️ Conversation Tracking,
+            Type: plain_text
+          },
+          Type: section
+        },
+        {
+          $type: Context,
+          Elements: {
+            $type: IContextBlockElement[],
+            $values: [
+              {
+                $type: MrkdwnText,
+                Verbatim: false,
+                Text: Conversation tracking is not enabled for this room.,
+                Type: mrkdwn
+              }
+            ]
+          },
+          Type: context
+        },
+        {
+          $type: Section,
+          Text: {
+            $type: MrkdwnText,
+            Verbatim: false,
+            Text: _Zendesk credentials are not configured._,
+            Type: mrkdwn
+          },
+          Accessory: {
+            $type: ButtonElement,
+            Text: {
+              Emoji: true,
+              Text: Configure,
+              Type: plain_text
+            },
+            Url: https://app.ab.bot/settings/organization/integrations,
+            Type: button
+          },
+          BlockId: zendesk_link,
+          Type: section
+        }
+      ],
+      PrivateMetadata: C0005|1111.0006|,
+      CallbackId: i:ManageConversationHandler,
+      ClearOnClose: false,
+      NotifyOnClose: false,
+      SubmitDisabled: false,
+      Type: modal
+    }
+  },
+  AnalyticsClient: {}
+}

@@ -1,0 +1,6 @@
+@using Serious.Abbot.Pages;
+@{
+    Layout = Model is StaffViewablePage staffPage && staffPage.InStaffTools
+        ? "Staff/Organizations/_Layout"
+        : "Layouts/_Layout";
+}

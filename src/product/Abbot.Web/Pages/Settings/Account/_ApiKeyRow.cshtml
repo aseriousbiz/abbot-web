@@ -1,0 +1,28 @@
+@using Humanizer
+@using Serious.Abbot.Infrastructure.TagHelpers
+@model ApiKeyViewModel
+
+<tr id="@Model.GetDomId()">
+    <td class="align-middle p-3">@Model.Name</td>
+    <td class="align-middle">
+        @if (Model.ShowCopyMessage)
+        {
+            <copy-box value="@Model.Token" />
+        }
+        else
+        {
+            <p class="font-mono text-gray-500 p-3">@Model.MaskedToken</p>
+        }
+    </td>
+    <td class="align-middle p-3">
+        <span data-tooltip="@Model.ExpirationDate">@Model.ExpirationDate.Humanize()</span>
+    </td>
+    <td class="align-middle p-3 flex gap-2">
+        <form method="post" asp-page-handler="Regenerate" asp-route-id="@Model.Id">
+            <button class="btn" type="submit" data-confirm="Are you sure you want to re-generate this token? The existing token will be invalidated.">Regenerate</button>
+        </form>
+        <form method="post" asp-page-handler="Delete" asp-route-id="@Model.Id">
+            <button class="btn btn-danger" type="submit" data-confirm="Are you sure you want to delete this token?">Delete</button>
+        </form>
+    </td>
+</tr>

@@ -1,0 +1,161 @@
+﻿{
+  target: {
+    PostedMessages: {
+      $type: List<MessageRequest>,
+      $values: [
+        {
+          Channel: Chub,
+          Timestamp: 0000000001.000000,
+          ThreadTs: hub.thread,
+          Blocks: {
+            $type: List<ILayoutBlock>,
+            $values: [
+              {
+                $type: Section,
+                Text: {
+                  $type: MrkdwnText,
+                  Verbatim: false,
+                  Text: I *H*: M,
+                  Type: mrkdwn
+                },
+                Type: section
+              },
+              {
+                $type: Context,
+                Elements: {
+                  $type: IContextBlockElement[],
+                  $values: [
+                    {
+                      $type: MrkdwnText,
+                      Verbatim: false,
+                      Text: *Assigned to this conversation*: <@Umention1> <@Umention2>,
+                      Type: mrkdwn
+                    }
+                  ]
+                },
+                Type: context
+              },
+              {
+                $type: Context,
+                Elements: {
+                  $type: IContextBlockElement[],
+                  $values: [
+                    {
+                      $type: MrkdwnText,
+                      Verbatim: false,
+                      Text: *First responders*: <@Umention1> <@Umention3>,
+                      Type: mrkdwn
+                    }
+                  ]
+                },
+                Type: context
+              }
+            ]
+          },
+          ReplyBroadcast: true,
+          Text: I H: M
+        }
+      ]
+    }
+  },
+  logs: {
+    $type: List<LogEvent>,
+    $values: [
+      {
+        CategoryName: Serious.Abbot.Eventing.ConversationNotificationsConsumer,
+        LogLevel: Information,
+        EventId: {
+          Id: 1,
+          Name: PublishedNotification
+        },
+        Message: Published TicketCreated Hub Notification to All: 0000000001.000000,
+        State: {
+          $type: LoggerMessage.LogValues<NotificationType, string,
+          $values: [
+            {
+              NotificationType: TicketCreated
+            },
+            {
+              NotificationDelivery: Hub
+            },
+            {
+              RecipientType: All
+            },
+            {
+              SlackTimestamp: 0000000001.000000
+            },
+            {
+              {OriginalFormat}: Published {NotificationType} {NotificationDelivery} Notification to {RecipientType}: {SlackTimestamp}
+            }
+          ]
+        },
+        Scopes: {
+          $type: List<object>,
+          $values: [
+            {
+              $type: LoggerMessage.LogValues<int, string,
+              $values: [
+                {
+                  OrganizationId: 1
+                },
+                {
+                  OrganizationPlatformId: Thome
+                },
+                {
+                  OrganizationSlug: testorg
+                },
+                {
+                  {OriginalFormat}: Organization: {OrganizationId}, {OrganizationPlatformId}, {OrganizationSlug}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<int, string>,
+              $values: [
+                {
+                  RoomId: 1
+                },
+                {
+                  RoomPlatformId: Croom
+                },
+                {
+                  {OriginalFormat}: Room: {RoomId}, {RoomPlatformId}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<int, int?,
+              $values: [
+                {
+                  HubId: 1
+                },
+                {},
+                {},
+                {
+                  {OriginalFormat}: Hub: {HubId}, {HubRoomId}, {HubRoomPlatformId}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<int, ConversationState,
+              $values: [
+                {
+                  ConversationId: 1
+                },
+                {
+                  ConversationState: New
+                },
+                {
+                  HubThreadId: hub.thread
+                },
+                {
+                  {OriginalFormat}: Conversation: {ConversationId}, {ConversationState}, {HubThreadId}
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

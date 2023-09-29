@@ -1,0 +1,424 @@
+@page
+@model Serious.Abbot.Pages.Skills.EditPage
+@{
+    var skill = Model.Skill;
+    ViewContext.SetPageInfo("Skills", "Skill Edit", $"Edit skill {skill.Name}");
+    var sourcePackage = Model.CurrentSourcePackageVersion?.Package;
+    bool disabled = !Model.Permissions.CanEditSkill;
+    var disabledCssClass = disabled ? "disabled-subtle" : null;
+    bool restrictedDisabled = !Model.Permissions.CanChangeRestricted;
+    var codeReadOnlyAttribute = Model.Permissions.CanEditCode ? null : "true";
+    bool consoleReadOnly = !Model.Permissions.CanRunCode;
+    ViewBag.IsEditor = true;
+}
+
+<div id="edit-package-skill" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <div class="p-2 bg-white">
+            <header>
+                <h2 class="px-2 bg-yellow-100 text-black text-base">
+                Changing the code for a package installed skill may cause problems later.
+                </h2>
+            </header>
+            <article class="p-2">
+                <p class="font-bold mb-2">
+                    Any changes made to the skill code could be overwritten by future package updates.
+                </p>
+                <p>
+                    If you understand the consequences and still want to change the code,
+                    click the following button.
+                </p>
+            </article>
+            <div class="sm:flex mt-2 p-2 items-center">
+                <button class="btn mr-2 flex-none" aria-label="close">Cancel</button>
+                <a href="?forceEdit=true" class="btn btn-primary flex-none">I know what I’m doing. Let me change the code.</a>
+            </div>
+        </div>
+    </div>
+    <button class="modal-close is-large is-success" aria-label="close"></button>
+</div>
+
+<div id="status-message" data-update-target="replace">
+    <partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+</div>
+
+<form class="sm:flex items-start mx-1 my-2"
+    method="post"
+    id="@Model.EditorFormId"
+    data-controller="confirm-exit"
+    data-confirm-exit-target="form"
+    data-confirm-exit-message-value="You have unsaved changes. Press OK to continue without saving."
+    data-version="@Program.BuildMetadata.InformationalVersion">
+    <input type="hidden" asp-for="Input.Id"/>
+    <input type="hidden" asp-for="Input.Language"/>
+    <input type="hidden" asp-for="Input.Type"/>
+
+    <div class="border border-gray-200 bg-gray-100 mx-1 text-sm flex-grow-0 sm:w-1/4 mt-2 sm:mt-0 flex-shrink-0">
+        <div id="@Model.SidebarDomId" class="border-b bg-white p-2">
+            <partial name="_SkillSidebar" />
+        </div>
+
+        <div class="mt-2">
+            <div class="border-t bg-white">
+                <div class="p-2">
+                    <header class="bg-blue-50 px-2">
+                        <h1 class="text-sm">
+                            Package
+                        </h1>
+                    </header>
+
+                    <section class="px-2 pt-2">
+                        @if (sourcePackage is null) {
+                            <div id="@Model.SkillPublishPackageSection">
+                                <partial name="_SkillPublishPackageSection" />
+                            </div>
+                        } else {
+                            <div>
+                                <p class="text-xs text-gray-500">
+                                    This skill was installed from the
+                                    <a asp-page="/Packages/Details"
+                                       asp-route-organization="@sourcePackage.Organization.Slug"
+                                       asp-route-name="@sourcePackage.Skill.Name"
+                                       class="font-mono text-blue-500 text-xs">
+                                        @sourcePackage.Organization.Slug/@sourcePackage.Skill.Name @Model.CurrentSourcePackageVersion?.ToVersionString()
+                                    </a> package.
+                                </p>
+
+                                @if (!Model.HasPackageUpdates)
+                                {
+                                    <p class="text-gray-500 mt-2">There are no updates available.</p>
+                                }
+                                else
+                                {
+                                    if (Model.Permissions.CanEditSkill)
+                                    {
+                                        <p class="font-semibold mt-2">
+                                            There are updates available!
+                                        </p>
+
+                                        <p id="@Model.SkillUpgradeLinkDomId" class="mb-4">
+                                            <partial name="_SkillUpgradeLink" model="skill" />
+                                        </p>
+                                    }
+                                    else
+                                    {
+                                        <strong>There are updates available!</strong>
+                                        <small class="has-text-grey">However, Edit permission is required to update the package. <partial name="Shared/_PermissionTooltip" model="Model.Skill"/></small>
+                                    }
+                                    if (skill.DivergesFromPackage())
+                                    {
+                                        <div class="p-2 text-xs my-2 rounded bg-yellow-100">
+                                            <p class="font-semibold">
+                                                This skill has custom changes.
+                                            </p>
+                                            <p class="">
+                                                These changes could be lost if the package is upgraded.
+                                            </p>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        }
+                    </section>
+                </div>
+            </div>
+
+            <div class="border-t bg-white">
+                <div class="p-2">
+                    <header id="@Model.SecretsSidebarHeaderDomId" class="bg-blue-50 pl-2 pr-1 flex items-center">
+                        <partial name="_SecretsSidebarHeader" model="@Model.Skill" />
+                    </header>
+
+                    <section class="px-2 pt-2">
+                        <p class="text-gray-500 text-xs">
+                            Secrets provide a secure way to supply skills with secret information that should not be hard-coded in the skill.
+                        </p>
+
+                        @if (Model.SecretCount > 0) {
+                            <ul class="divide-y">
+                                @foreach (var secret in Model.Skill.Secrets) {
+                                    var usage = Model.Language.FormatSecretUsage(secret.Name);
+                                    <li class="pt-2 pb-3">
+                                        <p class="mb-1">
+                                            @if (secret.Description != string.Empty) {
+                                                @secret.Description
+                                            } else {
+                                                <span class="text-gray-500">No description</span>
+                                            }
+                                        </p>
+                                        <copy-box value="@usage" />
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <tab-container class="flex-grow min-w-0">
+        <section class="border border-gray-200 mx-1 mt-2 sm:mt-0 bg-white">
+            <header class="px-2 m-2 bg-blue-50">
+                <h1 class="text-sm">
+                    Skill editor
+                </h1>
+            </header>
+
+            <div id="@Model.SkillNavigationTabsDomId">
+                <partial name="_SkillNavigationTabs" model="Model.Skill" />
+            </div>
+
+            <section role="tabpanel" aria-labelledby="skill-code">
+                <button id="fullscreen-close" class="button is-ghost">Exit full screen</button>
+                <section class="py-2 px-4">
+                    <div class="field code-editor-field">
+                        <div>
+                            <div id="recovered-changes" class="border shadow rounded-lg mb-4 p-2" style="display:none;">
+                                <header>
+                                    <h1 class="text-md px-2 bg-blue-50">Abbot stashed recent unsaved changes to this code.</h1>
+                                </header>
+                                <section class="p-2">
+                                    <p>You can recover these changes or continue editing to dismiss and ignore this message.</p>
+                                    <p>
+                                        <a href="/skills/@Model.Skill.Name/history/recovered">View changes</a>
+                                    </p>
+
+                                    <div class="mt-2">
+                                        <button id="ignore-changes" class="btn">Ignore</button>
+                                        <button id="recover-changes" class="btn btn-primary ml-2">Recover changes</button>
+                                    </div>
+                                </section>
+                            </div>
+                            @if (Model.Permissions.CanEditSkill)
+                            {
+                                <div class="bg-gray-700 px-2 py-1 desktop sm:flex items-center">
+                                    <p class="description text-gray-300">
+                                        <span id="fullscreen-shortcut">
+                                            <span class="desktop font-mono text-white inline-block px-1 border rounded border-gray-800 bg-gray-600 text-sm">
+                                                <span class="hidden" data-os="macOS">Cmd+M</span>
+                                                <span class="hidden" data-os="Windows">F11</span>
+                                            </span>
+
+                                            <span class="device">
+                                                Click
+                                            </span>
+                                        </span>
+                                        to toggle full screen editing
+                                    </p>
+
+                                    <div class="inline-block text-sm text-gray-300 ml-auto hide-on-fullscreen">
+                                        Last modified
+                                        <span class="text-white">
+                                            <timeago datetime="@skill.Modified"></timeago>
+                                        </span>
+                                        by
+                                        <span class="text-white">
+                                            <partial name="Shared/_SmallAvatar" model="skill.ModifiedBy" />
+                                            @skill.ModifiedBy.DisplayName
+                                        </span>
+                                    </div>
+                                </div>
+                                @if (Model.HasSourcePackage) {
+                                    @if (Model.Permissions.CanEditCode) {
+                                        <p class="px-2 bg-yellow-100 text-sm hide-on-fullscreen">
+                                            Warning! Changes to this skill can cause problems later.
+                                            <span class="has-tooltip-multiline" data-tooltip="Changes to the skill code could be overwritten by future package updates"><i class="fa-light fa-circle-question more-info"></i></span>
+                                        </p>
+                                    } else {
+                                        <p class="px-2 bg-yellow-100 text-sm hide-on-fullscreen">
+                                            Warning! Changes to this skill can can cause problems later.
+                                            <a class="font-bold" href="#" data-modal-id="edit-package-skill">Force edit.</a>
+                                        </p>
+                                    }
+                                }
+                                <span asp-validation-for="Input.Code"></span>
+                            }
+                            else
+                            {
+                                <small class="description has-text-danger-dark"><code class="permission">Edit</code> permission is required to edit this skill.
+                                    <partial name="Shared/_PermissionTooltip" model="Model.Skill"/>
+                                </small>
+                            }
+
+                            <div id="code-editor-underlay" class="is-size-1">
+                                <div class="validation-content">
+                                    <span asp-validation-for="Input.Code"></span>
+                                </div>
+                                <div class="content">
+                                    <code style="border: solid 1px #444">CTRL+M</code> or <code  style="border: solid 1px #444">SHIFT+ESC</code>
+                                    <br/>to exit full screen mode.
+                                </div>
+                            </div>
+                            <textarea
+                                    asp-for="Input.Code"
+                                    class="code-editor"
+                                    data-confirm-exit-target="editor"
+                                    data-skill-id="@Model.Skill.Id"
+                                    data-readonly="@codeReadOnlyAttribute"
+                                    data-language="@Model.Language">@Model.Input.Code</textarea>
+                            <input id="arguments" type="hidden" asp-for="Input.Arguments"/>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="border-t border-gray-200 p-2">
+                    <header class="px-2 bg-blue-50">
+                        <h1 class="text-sm">
+                            Abbot console
+                        </h1>
+                    </header>
+
+                    <div class="m-2 console-field">
+                        @if (!consoleReadOnly) {
+                            <div class="bg-gray-700 px-2 py-1 desktop">
+                                <p class="description text-gray-300">
+                                    Try out the skill using the console below. If the skill requires secrets that are not set, trying it out may fail.
+                                </p>
+                            </div>
+                        } else {
+                            <div class="bg-yellow-100 px-2 py-1 desktop hide-on-fullscreen">
+                                <p class="description text-black text-sm">
+                                    <span class="font-mono rounded inline-block px-1 bg-yellow-300">Use</span> permission required to run the skill in the console.&nbsp;<partial name="Shared/_PermissionTooltip" model="Model.Skill"/>
+                                </p>
+                            </div>
+                        }
+                        <div class="console-container control">
+                            <div id="console"
+                                 data-endpoint="@Url.Action("Invoke", "SkillEditor", new { area = "InternalApi", id = skill.Id})"
+                                 data-version="@Program.BuildMetadata.InformationalVersion">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <section role="tabpanel" aria-labelledby="skill-settings" class="py-2 px-4" hidden>
+                <div asp-validation-summary="ModelOnly"></div>
+                <div class="mb-4">
+                    <label class="font-bold" asp-for="Input.Name"></label>
+                    <p class="text-sm text-gray-500 mb-1">
+                        *Required. This is how you call the skill
+                    </p>
+                    <input class="form-input" id="skillName" asp-for="Input.Name" data-val-event="change" disabled="@disabled"/>
+                    <span asp-validation-for="Input.Name"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label class="font-bold" asp-for="Input.Description"></label>
+                    <p class="text-sm text-gray-500 mb-1">
+                        Let people know what the skill does. This also shows up when using the <span class="font-mono">help</span> skill.
+                    </p>
+                    <input class="form-input w-full" asp-for="Input.Description" disabled="@disabled"/>
+                </div>
+
+                <div class="mb-4">
+                    <label class="font-bold" asp-for="Input.Usage"></label>
+                    <p class="text-sm text-gray-500 mb-1 max-w-2xl">
+                        Provide examples of usage. Simple markdown formatting allowed such as using backpacks ( ` ) to surround the usage example and _ to surround the description of what the usage examples does.
+                    </p>
+                    <textarea
+                        class="form-input w-full h-64"
+                        asp-for="Input.Usage"
+                        disabled="@disabled"
+                        placeholder="Provide examples of usage. Simple markdown formatting allowed such as using backticks ` to surround the usage example and _ to surround the description of what the usage example does.">
+                    </textarea>
+                </div>
+
+                <div id="enabled-field" class="field" data-update-target="replace">
+                    <label class="form-label">
+                        <input class="checkbox" asp-for="Input.Enabled"/>
+                        Enabled
+                    </label>
+                </div>
+                <div>
+                    <a class="btn btn-danger" asp-page="/Skills/Delete" asp-route-skill="@Model.Skill.Name">Delete</a>
+                </div>
+
+                <hr>
+                <div id="scope-field" class="field" data-update-target="replace">
+                    <label class="form-label mb-0">Scope</label>
+                    <p class="text-gray-500 text-sm">
+                        Configure the scope to store skill state and skill brain data.
+                    </p>
+                    <div>
+                        <div class="control form-checkbox">
+                            <label class="radio">
+                                <input type="radio" asp-for="Input.Scope" value="Organization"/>
+                                <i class="fa-regular fa-users mt-1 mr-2 float-left icon has-text-grey"></i>
+                                Organization
+                                <small class="note has-text-grey">Skill state is shared across the organization. This is the default.</small>
+                            </label>
+                        </div>
+                        <div class="control form-checkbox">
+                            <label class="radio">
+                                <input type="radio" asp-for="Input.Scope" value="Room"/>
+                                <i class="fa-regular fa-door-open mt-1 mr-2 float-left icon has-text-grey"></i>
+                                Room
+                                <small class="note has-text-grey">Skill state is unique per room, for eg. a per-room incident tracker.</small>
+                            </label>
+                        </div>
+                        <div class="control form-checkbox">
+                            <label class="radio">
+                                <input type="radio" asp-for="Input.Scope" value="Conversation"/>
+                                <i class="fa-regular fa-comments mt-1 mr-2 float-left icon has-text-grey"></i>
+                                Conversation
+                                <small class="note has-text-grey">Skill state is unique per managed conversation.</small>
+                            </label>
+                        </div>
+                        <div class="control form-checkbox">
+                            <label class="radio">
+                                <input type="radio" asp-for="Input.Scope" value="User"/>
+                                <i class="fa-regular fa-user mt-1 mr-2 float-left icon has-text-grey"></i>
+                                User
+                                <small class="note has-text-grey">Skill state is unique per user. Only the user that first invokes the skill can interact with it. All users can run their own individual copies of the skill with their own data.</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                <div id="permission-field" class="field" data-update-target="replace">
+                    <label class="label">Permissions
+                        @{
+                            var tooltip = "Restricted skills are a Business Plan feature. ";
+                            tooltip += Model.Permissions.CanChangeRestricted
+                                ? "Try `@abbot help can` in chat to learn how to assign permissions."
+                                : "Only administrators may restrict or unrestrict a skill.";
+                        }
+                        <span class="has-tooltip-multiline" data-tooltip="@tooltip"><i class="fa-light fa-circle-question more-info"></i></span>
+                    </label>
+                    @if (!Model.Permissions.PlanAllowsPermissions)
+                    {
+                        <div class="notification is-warning is-light note">
+                            Permissions are a Business Plan feature. <a asp-page="/Plans/Index">Upgrade now to unlock it!</a>
+                        </div>
+                    }
+                    <div class="@disabledCssClass">
+                        <div class="control form-checkbox">
+                            <label class="radio">
+                                <input type="radio" class="mt-2" asp-for="Input.Restricted" value="false" disabled="@restrictedDisabled"/>
+                                <i class="fa-regular fa-book-open mt-1 mr-2 float-left icon has-text-grey"></i>
+                                Open
+                                <small class="note has-text-grey">Anyone in your organization can use and edit this skill.</small>
+                            </label>
+                        </div>
+                        <div class="control form-checkbox">
+                            <label class="radio">
+                                <input type="radio" class="mt-2" asp-for="Input.Restricted" value="true" disabled="@restrictedDisabled"/>
+                                <i class="fa-regular fa-lock-alt mt-1 mr-2 float-left icon has-text-danger"></i>
+                                Restricted
+                                <small class="note has-text-grey">Only users with permissions may use or edit this skill.</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </tab-container>
+</form>
+
+@section Meta {
+    <meta name="turbo-cache-control" content="no-cache">
+}

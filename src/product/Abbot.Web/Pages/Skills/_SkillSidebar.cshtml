@@ -1,0 +1,37 @@
+@model EditPage
+@{
+    bool disabled = !Model.CanEditSkill;
+}
+
+<header class="bg-blue-500 px-2">
+    <h1 class="text-white">
+        Skill:
+        <span>@Model.Skill.Name</span>
+    </h1>
+</header>
+
+<nav>
+    <ul class="m-2 font-mono" role="tablist">
+        <li class="mb-1">
+            Code
+        </li>
+
+        <li class="mb-1">
+            <a class="font-mono text-blue-500 hover:text-gray-700"
+               asp-page="Activity/Index"
+               asp-route-skill="@Model.Skill.Name">
+                View activity
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<div class="flex">
+    <a class="btn flex-grow mx-1" asp-page="Index">Cancel</a>
+
+    <button id="saveButton"
+            form="editorForm"
+            disabled="@disabled"
+            class="btn btn-primary flex-grow flex-shrink-0 mx-1"
+            type="submit">Save Changes</button>
+</div>

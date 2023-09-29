@@ -1,0 +1,84 @@
+﻿{
+  target: {},
+  logs: {
+    $type: List<LogEvent>,
+    $values: [
+      {
+        CategoryName: Serious.Abbot.Eventing.ConversationNotificationsConsumer,
+        LogLevel: Error,
+        EventId: {
+          Id: 4020,
+          Name: EntityNotFound
+        },
+        Message: Entity not found by Id (Id: 99, Type: Serious.Abbot.Entities.Hub),
+        State: {
+          $type: LoggerMessage.LogValues<object, Type>,
+          $values: [
+            {
+              EntityId: 99
+            },
+            {
+              EntityType: Hub
+            },
+            {
+              {OriginalFormat}: Entity not found by Id (Id: {EntityId}, Type: {EntityType})
+            }
+          ]
+        },
+        Scopes: {
+          $type: List<object>,
+          $values: [
+            {
+              $type: LoggerMessage.LogValues<int, string,
+              $values: [
+                {
+                  OrganizationId: 1
+                },
+                {
+                  OrganizationPlatformId: Thome
+                },
+                {
+                  OrganizationSlug: testorg
+                },
+                {
+                  {OriginalFormat}: Organization: {OrganizationId}, {OrganizationPlatformId}, {OrganizationSlug}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<int, string>,
+              $values: [
+                {
+                  RoomId: 1
+                },
+                {
+                  RoomPlatformId: Croom
+                },
+                {
+                  {OriginalFormat}: Room: {RoomId}, {RoomPlatformId}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<int, ConversationState,
+              $values: [
+                {
+                  ConversationId: 1
+                },
+                {
+                  ConversationState: New
+                },
+                {
+                  HubThreadId: 123
+                },
+                {
+                  {OriginalFormat}: Conversation: {ConversationId}, {ConversationState}, {HubThreadId}
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

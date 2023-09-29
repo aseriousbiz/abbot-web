@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+{ set +x; } 2>/dev/null
+source_dir="$( cd -P "$( dirname "$0" )" >/dev/null 2>&1 && pwd )"
+root_dir=$(cd $source_dir && cd ../ && pwd)
+cd $root_dir
+source script/helpers/_utils.sh
+
+DOTNET_MONITOR_PATH=${DOTNET_MONITOR_PATH:-~/.dotnet/tools/dotnet-monitor}
+
+if [ ! -f "$DOTNET_MONITOR_PATH" ]; then
+    echo "Couldn't find dotnet-monitor. Set DOTNET_MONITOR_PATH to the path to dotnet-monitor."
+    exit 1
+fi
+
+echo "Starting dotnet-monitor..."
+$DOTNET_MONITOR_PATH collect --urls "http://localhost:52323" --metricUrls "http://localhost:52325" --configuration-file-path ./docker/files/dotnet-monitor.config.json --no-auth

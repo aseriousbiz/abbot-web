@@ -1,0 +1,151 @@
+﻿{
+  Conversation: {
+    RoomId: 1,
+    FirstMessageId: 1111.0006,
+    ThreadIds: [
+      1111.0006
+    ],
+    Title: Test Conversation 6,
+    IsImported: false,
+    LastMessagePostedOn: 1999-01-02 03:04:05 Utc,
+    LastStateChangeOn: 1999-01-02 03:04:05 Utc,
+    State: New,
+    StartedById: 3,
+    Properties: {},
+    OrganizationId: 1,
+    Id: 1,
+    Created: 1999-01-02 03:04:05 Utc
+  },
+  OpenModals: {
+    $type: Dictionary<string, ViewUpdatePayload>,
+    the-trigger-id: {
+      Title: {
+        Emoji: true,
+        Text: Manage Conversation,
+        Type: plain_text
+      },
+      Close: {
+        Emoji: true,
+        Text: Close,
+        Type: plain_text
+      },
+      Blocks: [
+        {
+          $type: Section,
+          Text: {
+            $type: PlainText,
+            Emoji: true,
+            Text: 🌐 View this conversation on ab.bot,
+            Type: plain_text
+          },
+          Accessory: {
+            $type: ButtonElement,
+            Text: {
+              Emoji: true,
+              Text: View,
+              Type: plain_text
+            },
+            Url: https://app.ab.bot/conversations/1,
+            Type: button
+          },
+          BlockId: view_conversation,
+          Type: section
+        },
+        {
+          $type: Section,
+          Text: {
+            $type: PlainText,
+            Emoji: true,
+            Text: ✋ Assign this conversation,
+            Type: plain_text
+          },
+          Accessory: {
+            $type: ButtonElement,
+            Text: {
+              Emoji: true,
+              Text: Assign,
+              Type: plain_text
+            },
+            Value: 1,
+            Type: button
+          },
+          BlockId: i:AssignConversationModal,
+          Type: section
+        },
+        {
+          $type: Section,
+          Text: {
+            $type: PlainText,
+            Emoji: true,
+            Text: ✅ Close this conversation,
+            Type: plain_text
+          },
+          Accessory: {
+            $type: ButtonElement,
+            Text: {
+              Emoji: true,
+              Text: Close,
+              Type: plain_text
+            },
+            Value: 1,
+            ActionId: Closed,
+            Type: button
+          },
+          BlockId: open_close_conversation,
+          Type: section
+        },
+        {
+          $type: Section,
+          Text: {
+            $type: PlainText,
+            Emoji: true,
+            Text: 🚫 Stop tracking conversation,
+            Type: plain_text
+          },
+          Accessory: {
+            $type: ButtonElement,
+            Text: {
+              Emoji: true,
+              Text: Stop,
+              Type: plain_text
+            },
+            Value: 1,
+            Style: danger,
+            ActionId: Archived,
+            Type: button
+          },
+          BlockId: archive_unarchive,
+          Type: section
+        },
+        {
+          $type: Section,
+          Text: {
+            $type: MrkdwnText,
+            Verbatim: false,
+            Text: _Zendesk credentials are not configured._,
+            Type: mrkdwn
+          },
+          Accessory: {
+            $type: ButtonElement,
+            Text: {
+              Emoji: true,
+              Text: Configure,
+              Type: plain_text
+            },
+            Url: https://app.ab.bot/settings/organization/integrations,
+            Type: button
+          },
+          BlockId: zendesk_link,
+          Type: section
+        }
+      ],
+      PrivateMetadata: C0005|1111.0006|,
+      CallbackId: i:ManageConversationHandler,
+      ClearOnClose: false,
+      NotifyOnClose: false,
+      SubmitDisabled: false,
+      Type: modal
+    }
+  },
+  AnalyticsClient: {}
+}

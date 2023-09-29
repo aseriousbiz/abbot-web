@@ -1,0 +1,12 @@
+#!/bin/bash -ue
+{ set +x; } 2>/dev/null
+SOURCE=$0
+DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+ROOTDIR=$(cd $DIR && cd ../../ && pwd)
+
+if ! type az >/dev/null 2>&1; then
+  echo "azure-cli is not installed. Please install it first."
+  exit 1
+fi
+
+az ssh vm --hostname abbot-prod-ops.westus2.cloudapp.azure.com

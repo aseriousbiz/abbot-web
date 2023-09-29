@@ -1,0 +1,49 @@
+﻿{
+  target: {
+    Conversation: {
+      RoomId: 1,
+      FirstMessageId: 1111.0006,
+      ThreadIds: [
+        1111.0006
+      ],
+      Title: Test Conversation 6,
+      IsImported: false,
+      LastMessagePostedOn: 1999-01-02 03:04:05 Utc,
+      LastStateChangeOn: 1999-01-02 03:04:05 Utc,
+      State: New,
+      StartedById: 3,
+      Properties: {},
+      OrganizationId: 1,
+      Id: 1,
+      Created: 1999-01-02 03:04:05 Utc
+    }
+  },
+  logs: {
+    $type: List<LogEvent>,
+    $values: [
+      {
+        CategoryName: Serious.Abbot.Eventing.Entities.OrganizationFilter,
+        LogLevel: Error,
+        EventId: {
+          Id: 4020,
+          Name: EntityNotFound
+        },
+        Message: Entity not found by Id (Id: 99, Type: Serious.Abbot.Entities.Organization),
+        State: {
+          $type: LoggerMessage.LogValues<object, Type>,
+          $values: [
+            {
+              EntityId: 99
+            },
+            {
+              EntityType: Organization
+            },
+            {
+              {OriginalFormat}: Entity not found by Id (Id: {EntityId}, Type: {EntityType})
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

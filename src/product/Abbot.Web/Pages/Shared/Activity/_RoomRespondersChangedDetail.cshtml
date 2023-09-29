@@ -1,0 +1,88 @@
+@model Serious.Abbot.Pages.Activity.DetailsModel
+
+@{
+  var auditEvent = Model.AuditEvent.Require<RoomRespondersChangedEvent>();
+  var respondersDetails = auditEvent.ReadProperties<RespondersInfo>().Require();
+  var displayRoom = auditEvent.Room is { Length:> 0 } && auditEvent.Room[0] != '#'
+    ? $"#{auditEvent.Room}"
+    : auditEvent.Room;
+}
+
+<div class="p-4">
+  <header>
+    <h1 class="mb-2">Summary</h1>
+  </header>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <partial name="Shared/Activity/_OccurrenceDetails" model="auditEvent"/>
+    <div>
+      <h2 class="font-bold text-sm mb-1">Type</h2>
+      <p class="text-gray-500">
+        Room Response Times Changed
+      </p>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Actor</h2>
+      <partial name="Shared/Activity/_UserDetail" model="@auditEvent.Actor"/>
+    </div>
+  </div>
+</div>
+
+<div class="p-4 border-t">
+  <header>
+    <h1 class="text-gray-500 mb-2">Details</h1>
+  </header>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div>
+      <h2 class="font-bold text-sm mb-1">Channel</h2>
+      <p>
+        @if (displayRoom is { Length: > 0 }) {
+           <span title="@auditEvent.RoomId">@displayRoom</span>
+           if (auditEvent.RoomId is not null) {
+             <em>(@auditEvent.RoomId)</em>
+           }
+        }
+        else {
+          <span class="text-gray-500">Unknown</span>
+        }
+      </p>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Added</h2>
+      <div>
+        @if (respondersDetails.AddedResponders is { Count: > 0} added) {
+          foreach (var responder in added) {
+            <span title="@responder.PlatformUserId">@responder.Name</span>
+          }
+        } else {
+          <span class="text-gray-500">None</span>
+        }
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Removed</h2>
+      <div>
+        @if (respondersDetails.RemovedResponders is { Count: > 0} removed) {
+          foreach (var responder in removed) {
+            <span title="@responder.PlatformUserId">@responder.Name</span>
+          }
+        } else {
+          <span class="text-gray-500">None</span>
+        }
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Description</h2>
+      <div>
+        <markdown>
+          @auditEvent.Description
+        </markdown>
+      </div>
+    </div>
+  </div>
+</div>

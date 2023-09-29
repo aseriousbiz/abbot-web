@@ -1,0 +1,57 @@
+@page
+@model Serious.Abbot.Pages.Lists.IndexPage
+
+@{
+    Layout = "Shared/Layouts/_SkillListLayout";
+    ViewContext.SetPageInfo("Lists", "List Skills Home", "List Skills");
+}
+
+<page-header>
+    List Skills
+</page-header>
+
+<page-body>
+    <p>
+        These are a special type of skill that make it easy to store lists of items and then return a random item from
+        that list. These types of lists were so popular Abbot made them into a first-class citizen.
+    </p>
+
+    <round-box class="mt-4">
+        @if (!Model.Lists.Any()) {
+            <blankslate>
+                <h2 class="font-bold text-lg">Your organization does not have any lists yet.</h2>
+                <p class="mb-2">
+                    But <span class="font-bold">you</span> can change that.
+                </p>
+                <a href="/new/list" class="inline-block text-sm rounded-lg border-gray-200 py-1 px-2 border text-blue-500 font-semibold hover:text-gray-700 self-center flex-shrink-0 bg-white">
+                    Try creating one here…
+                </a>
+            </blankslate>
+        } else {
+            <div class="divide-y">
+                @foreach (var list in Model.Lists) {
+                    <div class="sm:flex py-4 items-center">
+                        <div class="flex">
+                            <div>
+                                <div class="mr-4">
+                                    <a class="font-mono text-blue-500 hover:text-gray-700"
+                                       asp-page="Edit" asp-route-name="@list.Name">
+                                        @list.Name
+                                    </a>
+                                </div>
+
+                                    
+                                @if (!string.IsNullOrWhiteSpace(list.Description))
+                                {
+                                    <p class="text-gray mt-1">@list.Description</p>
+                                }
+                            </div>
+                        </div>
+                        
+                        <p class="text-gray-500 ml-auto">@list.Entries.Count.ToQuantity("entry", "entries")</p>
+                    </div>
+                }
+            </div>
+        }
+    </round-box>
+</page-body>

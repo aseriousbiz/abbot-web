@@ -1,0 +1,123 @@
+@using Serious.Abbot.Playbooks
+@model PlaybookRunDetailsViewComponent.StepViewModel
+@{
+    // Note: A missing 'Type' value indicates a step in the definition isn't in the StepTypeCatalog
+    // That really only happens in local dev, but we should handle it gracefully.
+    // But don't fret too much about the scenarios where Type is null, since they shouldn't appear to customers.
+
+    var borderColor = Model.Type?.Kind switch {
+        StepKind.Action => "border-indigo-300",
+        StepKind.Trigger => "border-amber-200",
+        _ => "border-gray-200"
+    };
+    var iconBgColor = Model.Type?.Kind switch {
+        StepKind.Action => "bg-indigo-300",
+        StepKind.Trigger => "bg-amber-200",
+        _ => "bg-gray-200"
+    };
+    var iconTextColor = Model.Type?.Kind switch {
+        StepKind.Action => "text-indigo-800",
+        StepKind.Trigger => "text-amber-800",
+        _ => "text-gray-800"
+    };
+    var textColor = Model.Type?.Kind switch {
+        StepKind.Action => "text-indigo-500",
+        StepKind.Trigger => "text-amber-500",
+        _ => "text-gray-500"
+    };
+}
+
+<div class="flex flex-col gap-x-2 p-2 min-w-80 justify-items-center rounded-lg border @borderColor shadow-sm @(Model.Type?.StaffOnly is true ? "border-dotted bg-slate-100" : "bg-white")">
+    <div class="flex items-center gap-x-2">
+        <div class="rounded @iconBgColor p-2 flex items-center w-8 h-8">
+            @if (Model.Type is null) {
+                <i class="far fa-circle-question @iconTextColor"></i>
+            } else if (Model.Type.StaffOnly && !ViewContext.IsStaffMode()) {
+                <i class="fa-duotone fa-shield @iconTextColor"></i>
+            } else {
+                <i class="far @Model.Type.Presentation.Icon @iconTextColor"></i>
+            }
+        </div>
+
+        <div>
+            <div class="flex gap-2">
+                <span class="font-medium text-xs capitalize @textColor text-left">
+                    @(Model.Type?.Kind.ToString() ?? "Unknown")
+                </span>
+                <staff-only>
+                    <span class="text-xs text-gray-500">@Model.Step.Id</span>
+                </staff-only>
+            </div>
+
+            @if (Model.Type is null) {
+                <p class="font-semibold text-sm text-left">
+                    Unknown Step
+                </p>
+            } else if (Model.Type.StaffOnly && !ViewContext.IsStaffMode()) {
+                <p class="font-semibold text-sm text-left" data-tooltip="This step is visible to Abbot Staff only.">
+                    @Model.Type.Presentation.Label
+                </p>
+            } else {
+                <p class="font-semibold text-sm text-left">
+                    @Model.Type.Presentation.Label
+                </p>
+            }
+            @if (Model.Result is { CallBranch: {} calledBranch }) {
+                <p class="italic text-xs text-left">
+                    @calledBranch.Description
+                </p>
+            }
+        </div>
+
+        @if (Model.Type?.Kind == StepKind.Action) {
+            <div class="ml-auto pr-2">
+                @if (Model.Result is { Outcome: StepOutcome.Succeeded or StepOutcome.CompletePlaybook }) {
+                    <span class="text-green-500 no-underline" data-tooltip="The step completed successfully">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </span>
+                } else if (Model.Result is { Outcome: StepOutcome.Cancelled }) {
+                    <span class="text-yellow-500 no-underline" data-tooltip="The step was cancelled">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                    </span>
+                } else if (Model.Result is { Outcome: StepOutcome.Failed }) {
+                    <span class="text-red-500 no-underline" data-tooltip="The step failed">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                    </span>
+                } else if (Model.Result is { Outcome: StepOutcome.Suspended }) {
+                    <span class="no-underline text-gray-500" data-tooltip="The step is waiting to continue.">
+                        <i class="fa-solid fa-spinner fa-spin-pulse"></i>
+                    </span>
+                }
+            </div>
+        }
+    </div>
+
+    @if (Model.Type?.Kind == StepKind.Action) {
+        if (Model.Result is { Outcome: StepOutcome.Failed, Problem: not null }) {
+            <div class="border border-red-300 bg-red-50 p-2 mt-2 rounded">
+                <p class="font-semibold text-red-500">
+                    @Model.Result.Problem.Title
+                </p>
+
+                @if (Model.Result.Problem.Detail is { } detail) {
+                    foreach (var paragraph in detail.Split('\n')) {
+                        <p class="font-mono text-xs">
+                            @paragraph
+                        </p>
+                    }
+                }
+
+            </div>
+        } else if (Model.Result is { Outcome: StepOutcome.Suspended }) {
+            <div class="border border-slate-300 bg-slate-50 p-2 mt-2 rounded">
+                <p class="text-xs" data-tooltip="The step is waiting to continue.">
+                    Waiting…
+                </p>
+            </div>
+        }
+
+        if (Model.Result is { Notices: {} notices}) {
+            <partial name="Shared/Components/PlaybookRunDetails/_Notices" model="@notices" />
+        }
+    }
+</div>

@@ -1,0 +1,186 @@
+@page "/skills/{skill}/package"
+@model Serious.Abbot.Pages.Skills.Package.IndexModel
+
+@{
+    var verb = Model.PackageExists ? "Update" : "Create";
+    ViewContext.SetPageInfo("Skills", "Skill Package", "Skill Package");
+}
+
+@section Styles {
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="~/_content/Serious.Razor/dist/css/markdown-editor.css" asp-append-version="true">
+    <script src="~/_content/Serious.Razor/dist/js/markdown-editor.js" asp-append-version="true"></script>
+}
+
+<header class="m-4">
+    <div>
+        <div>
+            <a asp-page="/Skills/Edit" asp-route-skill="@Model.SkillName" class="text-blue-500">Back to Skill Editor</a>
+        </div>
+        <div class="">
+            <h1 class="text-2xl font-semibold">@verb Package for the <code class="text-lg">@Model.SkillName</code> Skill</h1>
+        </div>
+        @if (!Model.PackageExists) {
+            <p>
+                This will create and publish a package for this skill. A package is a snapshot of the skill in time that allows other organizations to install the skill via the package.
+            </p>
+        } else {
+            <p>
+                This will publish a new version of the package for this skill.
+            </p>
+        }
+    </div>
+    @if (!Model.ChangesExist) {
+        <div class="container">
+            <div class="notification is-warning" role="alert">
+                <strong>There are no changes to publish.</strong> You may only publish a new version of the package if the code, description, or usage text has been updated.
+            </div>
+        </div>
+    }
+</header>
+
+<section class="section m-4">
+    <div class="container">
+        <form method="post">
+            <div class="bubble-box border border-gray-300">
+                <div>
+                    <label class="text-lg font-semibold" asp-for="Input.Readme"></label>
+                    <div class="text-lg text-gray-500 -mt-2 mb-2">
+                        <description asp-for="Input.Readme" />
+                    </div>
+                </div>
+                <div>
+                    <markdowneditor
+                        asp-for="Input.Readme"
+                        placeholder="Describe what this package is about and any steps people using it need to know."/>
+                </div>
+            </div>
+
+            <div class="bubble-box border border-gray-300">
+                <div>
+                    <label class="text-lg font-semibold" asp-for="Input.ReleaseNotes"></label>
+
+                    <div class="text-lg text-gray-500 -mt-2 mb-2">
+                        <description asp-for="Input.ReleaseNotes"/>
+                    </div>
+                </div>
+
+                <div>
+                    <markdowneditor asp-for="Input.ReleaseNotes" placeholder="Tell the world what’s changed."/>
+                </div>
+            </div>
+
+        @if (Model.PackageExists) {
+            <div class="bubble-box border border-gray-300 p-4">
+                <header>
+                    <label class="text-lg font-semibold" asp-for="Input.ChangeType"></label>
+                    <div class="text-lg text-gray-500 -mt-2 mb-2">
+                        <description asp-for="Input.ChangeType"/>
+                    </div>
+                </header>
+                <div>
+                    <label class="block">
+                        <input type="radio" asp-for="Input.ChangeType" value="@ChangeType.Major.ToString()">
+                        This version has
+                        <span class="font-semibold">breaking changes</span>
+                    </label>
+
+                    <label class="block">
+                        <input type="radio" asp-for="Input.ChangeType" value="@ChangeType.Minor.ToString()">
+                        This version has
+                        <span class="font-semibold">new features</span>, but
+                        <span class="font-semibold">no breaking changes</span>
+                    </label>
+
+                    <label class="block">
+                        <input type="radio" asp-for="Input.ChangeType" value="@ChangeType.Patch.ToString()">
+                        This version only has <span class="font-semibold">bug fixes</span>
+                    </label>
+                </div>
+            </div>
+        } else {
+            <input type="hidden" asp-for="Input.ChangeType" value="@ChangeType.Major.ToString()">
+        }
+            <div class="field is-horizontal">
+                <div class="field-label">
+                </div>
+                <div class="field-body">
+                    <div class="field">
+                        <div class="control">
+                            <button class="btn btn-primary" data-modal-id="confirm-publish-modal">Publish package</button>
+                            <a asp-page="/Skills/Edit" asp-route-skill="@Model.SkillName" class="btn">Cancel</a>
+                        </div>
+                        <div class="control is-relative mt-5">
+                            <div asp-validation-summary="All"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+             <div id="confirm-publish-modal" class="modal">
+              <div class="modal-background"></div>
+              <div class="modal-content w-96 p-4 bg-white rounded">
+                  <header>
+                      <h1 class="font-semibold text-lg">Confirm publish</h1>
+                  </header>
+
+                  <section class="modal-card-body">
+                      <div class="text-sm" role="alert">
+                          <p class="my-2">
+                              By publishing this package, you acknowledge that you are licensing this code to others under
+                              the terms of the <a href="https://choosealicense.com/licenses/mit/" target="_blank">MIT License</a>
+                              and that you have the right to do so.
+                          </p>
+
+                          <p class="text-gray-500 my-2">
+                              Also, your organization's avatar will be associated with the package and publicly visible. To change the avatar, <a asp-page="/Account/Admin/Settings">go here</a>.
+                          </p>
+                      </div>
+
+                      @if (Model.PackageExists) {
+                          <div class="text-sm">
+                              @if (Model.ChangesExist) {
+                                  <h2 class="font-semibold">Summary of changes</h2>
+                                  <div>
+                                      <ul>
+                                          @if (Model.CodeChanged) {
+                                              <li>Skill code was updated</li>
+                                          }
+                                          @if (Model.DescriptionChanged) {
+                                              @if (Model.UpdatedDescription is { Length: > 0 }) {
+                                                  <li>Description was changed to <i>"@Model.UpdatedDescription"</i></li>
+                                              } else {
+                                                  <li>Description was changed to <i>empty</i></li>
+                                              }
+                                          }
+                                          @if (Model.UsageTextChanged) {
+                                              @if (Model.UpdatedUsageText is { Length: > 0 }) {
+                                                  <li>Usage text was changed to <i>"@Model.UpdatedUsageText"</i></li>
+                                              } else {
+                                                  <li>Usage Text was changed to <i>empty</i></li>
+                                              }
+                                          }
+                                      </ul>
+                                  </div>
+                              } else {
+                                  <h4 class="title is-4">There are no changes to publish.</h4>
+                              }
+
+                          </div>
+                      }
+                  </section>
+                  <footer class="mt-4">
+                      @if (Model.ChangesExist) {
+                          <button class="btn btn-primary" type="submit">Publish package</button>
+                      }
+                      else {
+                          <button class="btn btn-disabled" type="submit" disabled>Publish package</button>
+                      }
+
+                      <button class="btn" aria-label="close">Cancel</button>
+                  </footer>
+              </div>
+            </div>
+        </form>
+    </div>
+</section>

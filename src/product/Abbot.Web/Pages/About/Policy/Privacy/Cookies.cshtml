@@ -1,0 +1,68 @@
+@page
+
+@{
+    Layout = "Shared/Layouts/_Layout";
+    ViewContext.SetPageInfo("Policies", "Cookies", "Use of Cookies");
+    var cookies = new[]
+    {
+        (new[] { ".AspNetCore.Cookies" }, true, "Used to identify the logged in user."),
+        (new[] { ".AspNetCore.Antiforgery.*" }, true, "Used to prevent CSRF attacks."),
+        (new[] { ".Abbot.Correlation" }, true, "Used during OAuth authentication with other services to prevent CSRF attacks."),
+        (new[] { ".AspNet.Consent" }, false, "To track user consent to cookie policy."),
+        (new[] { "_ga", "_gid", "_gcl", "ajs" }, false, "Used for analytics."),
+    };
+}
+
+<page-header>
+    Cookies on Abbot
+</page-header>
+
+<page-body>
+    <round-box class="flex flex-col gap-2">
+        <p>Abbot uses cookies to make interactions with our service easy and meaningful. We use cookies (and similar technologies, like HTML5 localStorage) to keep you logged in, remember your preferences, provide information for future development of Abbot.</p>
+        <p>A cookie is a small piece of text that our web server stores on your computer or mobile device, which your browser sends to us when you return to our site. Cookies do not necessarily identify you if you are merely visiting Abbot; however, a cookie may store a unique identifier for each logged in user. We use cookies to keep you logged in, remember your preferences, and provide information for future development of Abbot. For security reasons, we use cookies to identify a device. By using our website, you agree that we can place these types of cookies on your computer or device. If you disable your browser or device’s ability to accept these cookies, you will not be able to log in or use Abbot’s services. On certain areas of the website.</p>
+        <p>Below is a listing of the cookies Abbot sets, along with a reason and whether or not the cookie is considered essential. Only essential cookies are used until you accept the cookie policy.</p>
+        <table>
+            <thead>
+            <tr>
+                <th>Name of Cookie</th>
+                <th>Essential?</th>
+                <th>Reason</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var (names, essential, reason) in cookies)
+            {
+                <tr>
+                    <td>
+                        @for (int i = 0; i < names.Length; i++)
+                        {
+                            <code>@names[i]</code>
+                            if (i < names.Length - 1)
+                            {
+                                @:,
+                            }
+                        }
+                    </td>
+                    @if (essential)
+                    {
+                        <td class="text-center">
+                            <i class="fa fa-circle-check mr-2 text-green-500"></i>Yes.
+                        </td>
+                    }
+                    else
+                    {
+                        <td class="text-center">
+                            <i class="fa fa-circle-minus mr-2 text-gray-500"></i>No.
+                        </td>
+                    }
+                    <td>@reason</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <p>Certain pages on our site may set other third party cookies. For example, a user may embed content, such as videos, from another site that sets a cookie. While we try to minimize these third party cookies, we can’t always control what cookies this third party content sets.</p>
+        <h2 class="font-semibold text-xl mt-4" id="google-analytics">Third-Party Analytics</h2>
+        <p>We use <a href="https://marketingplatform.google.com/about/analytics/">Google Analytics</a> and <a href="https://segment.com/">Segment</a> as third party analytics services, and to track our advertising campaigns on third party websites and services. We use these services to collect information about how our website performs and how our users, in general, navigate through and use Abbot. This helps us evaluate our users&#39; use of Abbot; compile statistical reports on activity; and improve our content and website performance. Google provides further information about its own privacy practices and <a href="https://tools.google.com/dlpage/gaoptout">offers a browser add-on to opt out of Google Analytics tracking</a>.</p>
+    </round-box>
+</page-body>

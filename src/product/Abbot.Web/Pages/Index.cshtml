@@ -1,0 +1,129 @@
+@page
+@using Serious.Abbot.Repositories
+@using Serious.Abbot.Live
+@model Serious.Abbot.Pages.HomePageModel
+
+@{
+    ViewContext.SetPageInfo("Conversations", $"{Model.StateFilter.Humanize()} Conversations");
+}
+
+<partial name="Shared/_ReadOnlyHeader" />
+
+<div class="flex">
+    <page-header>
+        Activity
+    </page-header>
+    <partial name="Shared/_StatusMessage" model="Model.StatusMessage" />
+</div>
+
+<page-body data-controller="save-url" data-save-url-key-value="conversations">
+    <div class="flex gap-x-4 items-center">
+        <div class="text-sm">
+            <label for="room-selector" class="font-semibold">Room</label>
+
+            <div class="form-select-wrapper flex-initial ml-1 mt-3">
+                <select id="room-selector" class="form-select" data-controller="dropdown" data-action="dropdown#navigateToSelectedValue" asp-items="Model.Rooms">
+                </select>
+            </div>
+        </div>
+
+        <div class="text-sm">
+            <label for="tag-selector" class="font-semibold">
+                Tag
+            </label>
+
+            <div class="form-select-wrapper flex-initial ml-1 mt-3">
+                <select id="tag-selector" class="form-select" data-controller="dropdown" data-action="dropdown#navigateToSelectedValue" asp-items="Model.Tags">
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <nav>
+        <ul class="flex gap-x-2 text-sm mx-2 -mb-2">
+            <li class="flex-shrink-0">
+                <a asp-all-route-data="Model.CurrentRouteData"
+                   asp-route-state="@ConversationStateFilter.Open"
+                   data-tooltip="All currently open conversations."
+                   class="tabnav-btn has-tooltip-right has-tooltip-arrow has-tooltip-multiline
+                        @(Model.StateFilter is ConversationStateFilter.Open ? "tabnav-btn-active" : "")">
+                    Open
+                    <span class="tabnav-badge">
+                        @Model.GetStateCount(ConversationStateFilter.Open).ToClampedString(99)
+                    </span>
+                </a>
+            </li>
+
+            <li class="flex-shrink-0">
+                <a asp-all-route-data="Model.CurrentRouteData"
+                   asp-route-state="@ConversationStateFilter.NeedsResponse"
+                   data-tooltip="Conversations that are waiting on a response from your team."
+                   class="tabnav-btn has-tooltip-top has-tooltip-arrow has-tooltip-multiline
+                        @(Model.StateFilter is ConversationStateFilter.NeedsResponse ? "tabnav-btn-active" : "")">
+                    Needs Attention
+                    <span class="tabnav-badge">
+                        @Model.GetStateCount(ConversationStateFilter.NeedsResponse).ToClampedString(99)
+                    </span>
+                </a>
+            </li>
+
+            <li class="flex-shrink-0">
+                <a asp-all-route-data="Model.CurrentRouteData"
+                   asp-route-state="@ConversationStateFilter.Responded"
+                   data-tooltip="Conversations that have received a response from your team and are now waiting on a response from the customer."
+                   class="tabnav-btn has-tooltip-top has-tooltip-arrow has-tooltip-multiline
+                        @(Model.StateFilter is ConversationStateFilter.Responded ? "tabnav-btn-active" : "")">
+                    Responded
+                    <span class="tabnav-badge">
+                        @Model.GetStateCount(ConversationStateFilter.Responded).ToClampedString(99)
+                    </span>
+                </a>
+            </li>
+
+            <li class="flex-shrink-0 ml-auto">
+                <a asp-all-route-data="Model.CurrentRouteData"
+                   asp-route-state="@ConversationStateFilter.Closed"
+                   data-tooltip="All conversations that have been closed, but not yet archived."
+                   class="tabnav-btn has-tooltip-top has-tooltip-arrow has-tooltip-multiline
+                        @(Model.StateFilter is ConversationStateFilter.Closed ? "tabnav-btn-active" : "")">
+                    Closed
+                    <span class="tabnav-badge">
+                        @Model.GetStateCount(ConversationStateFilter.Closed).ToClampedString(99)
+                    </span>
+                </a>
+            </li>
+
+            <li class="flex-shrink-0">
+                <a asp-all-route-data="Model.CurrentRouteData"
+                   asp-route-state="@ConversationStateFilter.All"
+                   data-tooltip="All conversations, including archived conversations."
+                   class="tabnav-btn has-tooltip-left has-tooltip-arrow has-tooltip-multiline
+                        @(Model.StateFilter is ConversationStateFilter.All ? "tabnav-btn-active" : "")">
+                    All
+                    <span class="tabnav-badge">
+                        @Model.GetStateCount(ConversationStateFilter.All).ToClampedString(99)
+                    </span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div>
+        <feature name="@FeatureFlags.ConversationListAutoRefresh">
+            <turbo-frame id="@HomePageModel.ConversationsListFrameDomId"
+                         data-controller="reload flash"
+                         data-action="flash:@(FlashName.ConversationListUpdated)->reload#reload"
+                         data-flash-groups-value="@FlashGroup.Organization(Model.Organization)"
+                         data-reload-interval-value="@Model.RefreshIntervalMilliseconds"
+                         src="@Url.Page(null, ViewContext.GetCurrentRouteValues())"
+                         target="_top">
+                <vc:conversation-list conversations="Model.Conversations" show-pager="true" show-view-all-link="false"/>
+            </turbo-frame>
+        </feature>
+        <feature name="@FeatureFlags.ConversationListAutoRefresh" negate="true">
+            <turbo-frame id="@HomePageModel.ConversationsListFrameDomId" target="_top">
+                <vc:conversation-list conversations="Model.Conversations" show-pager="true" show-view-all-link="false"/>
+            </turbo-frame>
+        </feature>
+    </div>
+</page-body>

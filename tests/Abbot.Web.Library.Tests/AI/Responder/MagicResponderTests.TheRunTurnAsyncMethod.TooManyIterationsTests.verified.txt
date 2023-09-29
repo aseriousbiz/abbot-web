@@ -1,0 +1,284 @@
+﻿{
+  Description: Fails because the maximum number of iterations is reached. The turn is not saved to the session.,
+  Session: {
+    DebugMode: false,
+    SessionId: test,
+    Organization: {
+      Name: Test Organization,
+      Domain: testorg.example.com,
+      PlanType: Unlimited,
+      TrialEligible: false,
+      PlatformId: Thome,
+      PlatformBotId: B0001,
+      PlatformBotUserId: U0002,
+      PlatformType: Slack,
+      ApiToken: {
+        Empty: false,
+        RequiresMigration: false
+      },
+      Avatar: https://avatars.slack-edge.com/2021-02-19/1758280923911_ab828c0314ecd23af8bc_68.png,
+      BotAppId: Aabbot,
+      BotAppName: Abbot App,
+      BotName: test-abbot,
+      BotAvatar: https://example.com/bot-avatar.png,
+      AutoApproveUsers: true,
+      Scopes: app_mentions:read,channels:history,channels:join,channels:manage,channels:read,chat:write,chat:write.customize,commands,conversations.connect:write,conversations.connect:manage,files:read,files:write,groups:history,groups:read,groups:write,im:history,im:read,im:write,mpim:history,mpim:read,mpim:write,reactions:read,reactions:write,team:read,users.profile:read,users:read,users:read.email,
+      ShortcutCharacter: ".",
+      ApiEnabled: false,
+      FallbackResponderEnabled: false,
+      Slug: testorg,
+      Settings: {
+        NotifyOnNewConversationsOnly: false,
+        OnboardingState: Unactivated
+      },
+      UserSkillsEnabled: true,
+      Enabled: true,
+      Id: 1,
+      Created: 1999-01-02 03:04:05 Utc
+    },
+    Room: {
+      Name: Test Room 4,
+      PlatformRoomId: C0004,
+      ManagedConversationsEnabled: false,
+      Persistent: true,
+      Shared: true,
+      RoomType: PublicChannel,
+      Deleted: false,
+      Archived: false,
+      BotIsMember: true,
+      Modified: 1999-01-02 03:04:05 Utc,
+      OrganizationId: 1,
+      Id: 1,
+      Created: 1999-01-02 03:04:05 Utc
+    },
+    ThreadId: thread-id,
+    Initiator: {
+      Active: true,
+      UserId: 3,
+      RealName: Test User One,
+      DisplayName: Test User 1,
+      Welcomed: false,
+      PlatformAdmin: false,
+      TimeZoneId: America/Vancouver,
+      IsGuest: false,
+      IsDefaultFirstResponder: false,
+      IsDefaultEscalationResponder: false,
+      Properties: {
+        Notifications: {
+          OnExpiration: true,
+          DailyDigest: false
+        },
+        WorkingDays: {
+          Monday: true,
+          Tuesday: true,
+          Wednesday: true,
+          Thursday: true,
+          Friday: true,
+          Saturday: false,
+          Sunday: false
+        }
+      },
+      TimeZone: {
+        $type: CachedDateTimeZone,
+        Id: America/Vancouver,
+        MinOffset: -08:12:28,
+        MaxOffset: -07
+      },
+      OrganizationId: 1,
+      Organization: {
+        Name: Test Organization,
+        Domain: testorg.example.com,
+        PlanType: Unlimited,
+        TrialEligible: false,
+        PlatformId: Thome,
+        PlatformBotId: B0001,
+        PlatformBotUserId: U0002,
+        PlatformType: Slack,
+        ApiToken: {
+          Empty: false,
+          RequiresMigration: false
+        },
+        Avatar: https://avatars.slack-edge.com/2021-02-19/1758280923911_ab828c0314ecd23af8bc_68.png,
+        BotAppId: Aabbot,
+        BotAppName: Abbot App,
+        BotName: test-abbot,
+        BotAvatar: https://example.com/bot-avatar.png,
+        AutoApproveUsers: true,
+        Scopes: app_mentions:read,channels:history,channels:join,channels:manage,channels:read,chat:write,chat:write.customize,commands,conversations.connect:write,conversations.connect:manage,files:read,files:write,groups:history,groups:read,groups:write,im:history,im:read,im:write,mpim:history,mpim:read,mpim:write,reactions:read,reactions:write,team:read,users.profile:read,users:read,users:read.email,
+        ShortcutCharacter: ".",
+        ApiEnabled: false,
+        FallbackResponderEnabled: false,
+        Slug: testorg,
+        Settings: {
+          NotifyOnNewConversationsOnly: false,
+          OnboardingState: Unactivated
+        },
+        UserSkillsEnabled: true,
+        Enabled: true,
+        Id: 1,
+        Created: 1999-01-02 03:04:05 Utc
+      },
+      Id: 3,
+      Created: 1999-01-02 03:04:05 Utc
+    },
+    ModelSettings: {
+      Model: cool-model,
+      Temperature: 1.0,
+      Prompt: {
+        Version: Version2,
+        Text: Be magical
+      }
+    },
+    SystemPrompt:
+---
+[system]
+Be magical
+---
+  },
+  PostedMessages: {
+    $type: List<MessageRequest>,
+    $values: [
+      {
+        Channel: C0004,
+        Timestamp: 0000000001.000000,
+        ThreadTs: thread-id,
+        Blocks: {
+          $type: ILayoutBlock[],
+          $values: [
+            {
+              $type: Section,
+              Text: {
+                $type: MrkdwnText,
+                Verbatim: false,
+                Text: _Sorry. I couldn't figure out the answer to your question._,
+                Type: mrkdwn
+              },
+              Type: section
+            }
+          ]
+        },
+        ReplyBroadcast: false,
+        Text: _Sorry. I couldn't figure out the answer to your question._
+      }
+    ]
+  },
+  ReceivedChatPrompts: {
+    $type: List<IReadOnlyList<ChatMessage>>,
+    $values: [
+      {
+        $type: List<ChatMessage>,
+        $values: [          
+---
+[system]
+Be magical
+---
+          
+---
+[user]
+Test User 1 (ID: <@Uhome>) sent: hey bud
+
+Respond ONLY with the AbbotLang JSON Object that can advance this conversation.
+---
+        ]
+      },
+      {
+        $type: List<ChatMessage>,
+        $values: [          
+---
+[system]
+Be magical
+---
+          
+---
+[user]
+Test User 1 (ID: <@Uhome>) sent: hey bud
+
+Respond ONLY with the AbbotLang JSON Object that can advance this conversation.
+---
+          
+---
+[assistant]
+{
+  "thought": "I should search rem",
+  "action": [
+    {
+      "terms": [
+        "iter1"
+      ],
+      "command": "rem.search"
+    }
+  ]
+}
+---
+          
+---
+[user]
+There are NO memories matching ANY of the provided terms.
+
+Respond ONLY with the AbbotLang JSON Object that can advance this conversation.
+---
+        ]
+      },
+      {
+        $type: List<ChatMessage>,
+        $values: [          
+---
+[system]
+Be magical
+---
+          
+---
+[user]
+Test User 1 (ID: <@Uhome>) sent: hey bud
+
+Respond ONLY with the AbbotLang JSON Object that can advance this conversation.
+---
+          
+---
+[assistant]
+{
+  "thought": "I should search rem",
+  "action": [
+    {
+      "terms": [
+        "iter1"
+      ],
+      "command": "rem.search"
+    }
+  ]
+}
+---
+          
+---
+[user]
+There are NO memories matching ANY of the provided terms.
+
+Respond ONLY with the AbbotLang JSON Object that can advance this conversation.
+---
+          
+---
+[assistant]
+{
+  "thought": "I didn't find what I'm looking for, I'll try different terms.",
+  "action": [
+    {
+      "terms": [
+        "iter2"
+      ],
+      "command": "rem.search"
+    }
+  ]
+}
+---
+          
+---
+[user]
+There are NO memories matching ANY of the provided terms.
+
+Respond ONLY with the AbbotLang JSON Object that can advance this conversation.
+---
+        ]
+      }
+    ]
+  }
+}

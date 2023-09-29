@@ -1,0 +1,80 @@
+@using Serious.Abbot.Messaging
+@using Serious.AspNetCore.TagHelpers
+@model Serious.Abbot.Pages.Activity.DetailsModel
+@inject IMessageRenderer MessageRenderer
+
+@{
+  var auditEvent = Model.AuditEvent.Require<AnnouncementEvent>();
+  var announcementInfo = auditEvent.ReadProperties<AnnouncementInfo>().Require();
+  var organizationDomain = Model.Organization.Domain;
+  var sourceRoomUrl = SlackFormatter.RoomUrl(
+    organizationDomain,
+    announcementInfo.SourceRoom.PlatformRoomId);
+  var sourceMessageUrl = SlackFormatter.MessageUrl(
+    organizationDomain,
+    announcementInfo.SourceRoom.PlatformRoomId,
+    announcementInfo.SourceMessageId);
+  var renderedMessage = announcementInfo.Text is { Length: > 0 } text
+    ? await MessageRenderer.RenderMessageAsync(text, Model.Organization)
+    : null;
+}
+
+<div class="p-4">
+
+  <header>
+    <h1 class="mb-2 mt-4 text-gray-500">Summary</h1>
+  </header>
+
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div>
+      <h2 class="font-bold text-sm mb-1">Source Room</h2>
+      <div>
+        <a href="@sourceRoomUrl">@announcementInfo.SourceRoom.Name</a>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Source Message</h2>
+      <div>
+        <a href="@sourceMessageUrl">@announcementInfo.SourceMessageId</a>
+        @if (renderedMessage is not null) {
+          <message-renderer message="@renderedMessage" />
+        }
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Scheduled Start Date</h2>
+      <div>
+        @if (announcementInfo.ScheduledDateUtc is null) {
+          <span>Sent immediately</span>
+        } else {
+          <timeago datetime="@announcementInfo.ScheduledDateUtc.Value" />
+        }
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Rooms</h2>
+      <div>
+        <ul>
+          @foreach (var announcementMessage in announcementInfo.Messages) {
+            var roomUrl = SlackFormatter.RoomUrl(organizationDomain, announcementMessage.PlatformRoomId);
+            <li>
+              <a href="@roomUrl">#@announcementMessage.Name</a>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Actor</h2>
+      <div>
+        <partial name="Shared/Activity/_UserDetail" model="@auditEvent.Actor"/>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,60 @@
+@page "{feature?}"
+@model Serious.Abbot.Pages.Staff.Tools.AIPage
+
+@{
+    ViewContext.SetPageInfo("Staff", "Staff AI Tools");
+}
+
+<partial name="Staff/_Header"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+<partial name="_Header"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-xl font-semibold">AI Settings</h2>
+        <div>
+            Select an AI Feature to view/edit settings:
+            <div class="form-select-wrapper inline-block">
+                <select class="form-select" asp-items="Model.Features" data-controller="dropdown" data-action="dropdown#navigateToSelectedValue">
+                </select>
+            </div>
+        </div>
+        @if (Model.ModelSettings is not null) {
+            <form method="post">
+                <editor for="ModelSettings" view-data-models="@Model.ModelsList"/>
+                <button type="submit" class="btn btn-primary mt-5">Save</button>
+
+                <h2 class="mt-5 text-xl font-semibold">AI Tester</h2>
+
+                <div class="mt-2">
+                    <label class="block mb-2 text-sm font-medium text-gray-900 label" asp-for="TestContent">
+                        Enter a question or text to test.
+                        @if(Model.ActiveFeature is not null) {
+                            <span>This value will be inserted into the <code>{Conversation}</code> or <code>{Message}</code> placeholder of the prompt above.</span>
+                        }
+                    </label>
+                    <div>
+                        <textarea asp-for="TestContent"
+                            rows="4"
+                            class="block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500">
+                        </textarea>
+                    </div>
+                </div>
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 label" asp-for="ConversationState">Conversation State (if applicable)</label>
+                    <div>
+                        <select asp-for="ConversationState"
+                            asp-items="@Html.GetEnumSelectList<ConversationState>()"
+                            class="block p-2 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500">
+                        </select>
+                    </div>
+                </div>
+
+                <button asp-page-handler="Test" type="submit" class="btn btn-primary mt-5">Test</button>
+
+                <ul id="@Model.OpenAIResults" class="mt-5 p-2 border-2">
+                </ul>
+            </form>
+        }
+    </round-box>
+</page-body>

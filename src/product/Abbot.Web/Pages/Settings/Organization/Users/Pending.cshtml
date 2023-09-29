@@ -1,0 +1,85 @@
+@page
+@model Serious.Abbot.Pages.Settings.Organization.Users.PendingPage
+
+@{
+    ViewContext.SetPageInfo("Settings", "Pending Users", "Wait List");
+    var approveDisabled = Model.HasEnoughPurchasedSeats ? null : "disabled";
+    var approveTooltip = Model.HasEnoughPurchasedSeats
+        ? "Approving the user adds them to the Agent role."
+        : "You do not have enough purchased seats to approve this user.";
+}
+
+<partial name="../_Header" model="Model.Viewer"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-xl font-semibold"><a asp-page="Index">Users</a> / Wait List</h2>
+        <p class="mt-4">
+            These are users who have authenticated to this site with their Slack account but have not been approved by
+            an Administrator.
+        </p>
+
+        <div class="border border-gray-300 rounded-lg bg-white mt-2">
+            @if (!Model.PendingUsers.Any())
+            {
+                <blankslate>
+                    <p>There are no pending users.</p>
+                </blankslate>
+            } else {
+                if (!Model.HasEnoughPurchasedSeats) {
+                    <partial name="_NotEnoughSeatsMessage" />
+                }
+                <ul class="border-gray-300 divide-y">
+                    @foreach (var user in Model.PendingUsers) {
+                        <li class="p-4">
+                            <div class="flex items-center">
+                                <div class="-mb-2">
+                                    <partial name="Shared/_Avatar" model="@user.User"/>
+                                </div>
+
+                                <div class="ml-2">
+                                    <h1 class="font-semibold">
+                                        @user.DisplayName
+                                    </h1>
+
+                                    <ul class="text-gray-500 flex list-disc list-outside text-sm">
+                                        <li class="mr-4 overflow-hidden">
+                                            <span class="text-black" title="@Model.Platform Username">
+                                                @user.DisplayName
+                                            </span>
+
+                                            <span title="@Model.Platform User Id">
+                                                (@user.User.PlatformUserId)
+                                            </span>
+                                        </li>
+
+                                        <li class="ml-1 mr-4">
+                                            @user.User.Email
+                                        </li>
+
+                                        <li class="ml-1 mr-4">
+                                            Joined <timeago datetime="@user.Created"/>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <form method="post" class="ml-auto">
+                                    <input type="hidden" asp-for="Input.Id" value="@user.User.PlatformUserId" />
+                                    <span data-tooltip="@approveTooltip">
+                                        <input type="submit" value="Approve" class="btn btn-primary btn-sm"  disabled="@approveDisabled" />
+                                    </span>
+                                    <a class="btn btn-danger btn-sm" asp-page="ArchiveUser" asp-route-id="@user.User.PlatformUserId" data-tooltip="Denying the user will archive them.">Deny</a>
+                                </form>
+                            </div>
+                        </li>
+                    }
+                </ul>
+
+                <div class="p-3">
+                    <partial name="Shared/_Paginator" model="@Model.PendingUsers"/>
+                </div>
+            }
+        </div>
+    </round-box>
+</page-body>

@@ -1,0 +1,8 @@
+{
+  "Room": {
+    "Id": "C01234",
+    "Name": "room-name"
+  },
+  "Value": "<#C01234|room-name>",
+  "OriginalText": "<#C01234|room-name>"
+}

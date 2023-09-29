@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(DefaultTargetFramework)</TargetFramework>
+    <AzureFunctionsVersion>v4</AzureFunctionsVersion>
+    <OutputType>Exe</OutputType>
+    <_FunctionsSkipCleanOutput>true</_FunctionsSkipCleanOutput>
+    <RootNamespace>Serious.Abbot.Functions</RootNamespace>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Fizzler.Systems.HtmlAgilityPack" />
+    <PackageReference Include="MarkdownLog" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Abstractions" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" OutputItemType="Analyzer" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Serious.Ink.Engine" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="host.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="local.settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\libraries\Serious.Slack.Messages\Serious.Slack.Messages.csproj" />
+    <ProjectReference Include="..\..\product\Abbot.Common\Abbot.Common.csproj" />
+    <ProjectReference Include="..\..\product\Abbot.ScriptReferences\Abbot.ScriptReferences.csproj" />
+    <ProjectReference Include="..\..\scripting\Abbot.Scripting.Interfaces\Abbot.Scripting.Interfaces.csproj" />
+  </ItemGroup>
+
+  <Target Name="RunFunctions">
+    <Exec WorkingDirectory="$(OutputPath)" Command="func start --no-build --csharp --port 7071" />
+  </Target>
+</Project>

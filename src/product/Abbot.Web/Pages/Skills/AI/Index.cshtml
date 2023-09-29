@@ -1,0 +1,158 @@
+@page "/skills/{skill}/ai/{handler?}/{exemplarId?}"
+@model Serious.Abbot.Pages.Skills.AI.IndexPageModel
+@{
+    ViewContext.SetPageInfo("Skill AI", "Skill AI Settings", "AI Settings");
+}
+<div class="sm:flex items-start mx-1 my-2">
+    <div class="border border-gray-200 bg-gray-100 mx-1 text-sm flex-grow-0 sm:w-1/4 mt-2 sm:mt-0">
+        <div class="border-b bg-white p-2">
+            <header class="bg-blue-500 px-2">
+                <h1 class="text-white">
+                    Skill:
+                    <span>@Model.SkillName</span>
+                </h1>
+            </header>
+
+            <nav>
+                <ul class="m-2 font-mono" role="tablist">
+                    <li class="mb-1">
+                        Code
+                    </li>
+
+                    <li class="mb-1">
+                        <a class="font-mono text-blue-500 hover:text-gray-700"
+                           asp-page="../Activity/Index"
+                           asp-route-skill="@Model.SkillName">
+                            View activity
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <div class="flex-grow">
+        <section class="border border-gray-200 mx-1 mt-2 sm:mt-0">
+            <header class="px-2 m-2 bg-blue-50">
+                <h1 class="text-sm">
+                    Skill editor
+                </h1>
+            </header>
+
+            <partial name="Skills/_SkillNavigationTabs" model="Model.Skill" />
+
+            <section class="m-4">
+                <header>
+                    <div class="max-w-3xl mb-2">
+                        <h2 class="font-bold text-lg">
+                            <i class="fa fa-robot"></i> AI
+                            <span class="preview-pill text-lg">
+                                Preview
+                            </span>
+                        </h2>
+
+                        <p class="mb-2">
+                            Abbot can automatically provide some AI features for your skill.
+                            If you enable these features, you'll need to provide some example messages that Abbot can use to train the AI.
+                        </p>
+                    </div>
+                </header>
+
+                <section class="mt-4">
+                    <h3 class="font-semibold text-md">Exemplars</h3>
+                    <p>
+                        To use AI features, configure some example messages that should trigger your skill.
+                        The more examples you provide, the more accurate the matching will be.
+                        For each example, you can provide the exact arguments that you'd expect to be passed to the skill if that example message was observed.
+                        You can test your model at the bottom of this page.
+                    </p>
+                    <div class="mt-2 w-full grid gap-2" style="grid-template-columns: 1fr 1fr max-content;">
+                        <div class="font-semibold">Example message</div>
+                        <div class="font-semibold">Arguments</div>
+                        <div></div>
+                        @foreach (var exemplar in Model.Skill.Exemplars) {
+                            <turbo-frame id="exemplar_@exemplar.Id" class="contents">
+                                @if (Model.EditingExemplarId == exemplar.Id) {
+                                    <form class="contents" asp-page-handler="Edit" asp-route-exemplarId="@exemplar.Id">
+                                        <span>
+                                            <textarea class="form-input" asp-for="Exemplar"></textarea>
+                                        </span>
+                                        <span>
+                                            <input class="form-input" asp-for="ExpectedArguments">
+                                        </span>
+                                        <div class="inline-block">
+                                            <button type="submit" class="btn btn-primary">Save</button>
+                                            <a asp-page="Index" data-confirm="Are you sure you want to cancel editing?" class="btn btn-secondary">Cancel</a>
+                                        </div>
+                                    </form>
+                                } else {
+                                    <span class="italic">
+                                        @exemplar.Exemplar
+                                    </span>
+                                    <span class="font-mono">
+                                        @exemplar.Properties.Arguments
+                                    </span>
+                                    <div class="inline-block">
+                                        <a asp-page-handler="Edit" asp-route-exemplarId="@exemplar.Id" class="btn btn-primary">Edit</a>
+                                        <form class="inline-block" asp-page-handler="Delete" asp-route-exemplarId="@exemplar.Id" data-turbo-frame="_top">
+                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                        </form>
+                                    </div>
+                                }
+                            </turbo-frame>
+                        }
+                        <form class="contents" asp-page-handler="Create">
+                            <span>
+                                <textarea asp-for="Exemplar" placeholder="An example chat message" class="form-input w-full"></textarea>
+                            </span>
+                            <span>
+                                <input asp-for="ExpectedArguments" placeholder="The exact argument string to provide to the skill" class="form-input w-full">
+                            </span>
+                            <div class="inline-block">
+                                <button type="submit" class="btn btn-primary">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <turbo-frame>
+                    <section class="mt-4">
+                        <h3 class="font-semibold text-md flex flex-row items-middle gap-2">
+                            <autocheckbox asp-page-handler="UpdateSettings" name="argumentExtraction" initial-value="Model.Skill.Properties.ArgumentExtractionEnabled == true">
+                                Argument Extraction
+                            </autocheckbox>
+                        </h3>
+                        <p class="mt-1">
+                            If enabled, Abbot will use the example messages you've provided to automatically extract arguments from chat messages.
+                            Your skill will receive the original text of the skill invocation in <code>Bot.CommandText</code> property, but the <code>Bot.Arguments</code> property will be populated with the extracted arguments.
+                            Users can bypass AI argument extraction by appending <code>!</code> to the end of your skill name, like <code>@@@(Model.Organization.BotName) @(Model.Skill.Name)!</code>
+                            @if (Model.Organization.ShortcutCharacter != ' ') {
+                                <text>or <code>@(Model.Organization.ShortcutCharacter)@(Model.Skill.Name)!</code></text>
+                            }
+                        </p>
+                        <p class="mt-1">
+                            Messages still have to be directed at your skill, for example
+                            <code>@@@(Model.Organization.BotName) @(Model.Skill.Name) This is a test message</code>
+                            @if (Model.Organization.ShortcutCharacter != ' ') {
+                                <text>or <code>@(Model.Organization.ShortcutCharacter)@(Model.Skill.Name) This is a test message</code></text>
+                            }
+                        </p>
+                        <p class="mt-1">
+                            You can test the extraction logic by entering a message below.
+                            Abbot will attempt to extract arguments from the message and display the results.
+                        </p>
+                        <form asp-page-handler="TestExtractor">
+                            <div class="form-input flex flex-col font-mono gap-2">
+                                <span>@@@(Model.Organization.BotName) @(Model.Skill.Name)</span>
+                                <textarea class="bg-gray-50" asp-for="TestMessage" placeholder="Test message here"></textarea>
+                            </div>
+                            <button class="btn btn-primary">Test</button>
+                        </form>
+                        <pre class="mt-2" id="@IndexPageModel.TestExtractorResultId">
+                        </pre>
+                    </section>
+                </turbo-frame>
+            </section>
+        </section>
+    </div>
+</div>

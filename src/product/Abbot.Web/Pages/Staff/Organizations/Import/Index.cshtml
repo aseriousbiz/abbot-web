@@ -1,0 +1,21 @@
+@page "/staff/organizations/{id}/import"
+@model Serious.Abbot.Pages.Staff.Organizations.Import.IndexPageModel
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Import Home");
+}
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <div id="@Model.UploadedFileDomId">
+            @if (Model.UploadedFile is null && Model.LookupFile is null) {
+                <partial name="_UploadForm" />
+            } else if (Model.LookupFile is not null) {
+                <partial name="_LookupFile" />
+            } else if (Model.UploadedFile is not null) {
+                <partial name="_UploadedFile" />
+            }
+        </div>
+    </round-box>
+</page-body>

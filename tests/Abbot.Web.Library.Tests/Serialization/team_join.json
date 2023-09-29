@@ -1,0 +1,53 @@
+{
+  "token":"TOKEN123",
+  "team_id":"T12345678",
+  "api_app_id":"A12345678",
+  "type": "event_callback",
+  "event_id": "Ev12345678",
+  "event_time": 12345678,
+  "authorizations": [
+    {
+      "enterprise_id": null,
+      "team_id": "T01CT0CT415",
+      "user_id": "U02SM9Y2W48",
+      "is_bot": true,
+      "is_enterprise_install": false
+    }
+  ],
+  "is_ext_shared_channel": false,
+  "event": {
+  "type": "team_join",
+  "user": {
+    "id": "U12345678",
+    "name": "haacked",
+    "color": "4bbe2e",
+    "is_bot": false,
+    "is_app_user": false,
+    "deleted": false,
+    "profile": {
+      "avatar_hash": "hash123",
+      "image_original": "https://example.com/original-image.png",
+      "image_24": "https://example.com/image-24.jpg",
+      "image_32": "https://example.com/image-32.jpg",
+      "image_48": "https://example.com/image-48.jpg",
+      "image_72": "https://example.com/image-72.jpg",
+      "image_192": "https://example.com/image-192.jpg",
+      "image_512": "https://example.com/image-512.jpg",
+      "image_1024": "https://example.com/image-1024.jpg",
+      "first_name": "John",
+      "last_name": "Doe",
+      "status_text": "Hello World",
+      "status_emoji": "smile",
+      "real_name": "John Doe",
+      "display_name": "John Doe",
+      "real_name_normalized": "John Doe",
+      "display_name_normalized": "John Doe",
+      "email": "jon.doe@example.com",
+      "team": "T12345678"
+    },
+    "updated": 12345678
+  },
+  "cache_ts": 12345678,
+  "event_ts": "1641492387.003100"
+}
+}

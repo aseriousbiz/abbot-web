@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\product\Abbot.Web.Library\Abbot.Web.Library.csproj" />
+      <ProjectReference Include="..\Abbot.Web.Library.TestHelpers\Abbot.Web.Library.TestHelpers.csproj" />
+      <ProjectReference Include="..\Abbot.Web.Library.Tests.ScriptGlobals\Abbot.Web.Library.Tests.ScriptGlobals.csproj" />
+      <ProjectReference Include="..\Serious.TestHelpers\Serious.TestHelpers.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="DiffPlex" />
+        <PackageReference Include="Microsoft.AspNetCore.Http" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="NSubstitute" />
+        <PackageReference Include="xunit.analyzers" />
+        <PackageReference Include="xunit.core" />
+        <PackageReference Include="xunit.runner.visualstudio">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="xunit.assert" />
+        <PackageReference Include="coverlet.collector">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Meziantou.Xunit.ParallelTestFramework" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Playbooks\TestDefinitions\**\*.json" />
+      <EmbeddedResource Include="SlackChannelData\**\*.json" />
+      <EmbeddedResource Include="Serialization\**\*.json" />
+      <EmbeddedResource Include="..\..\config\Slack\manifest.json" Link="Serialization\manifest.json" />
+    </ItemGroup>
+</Project>

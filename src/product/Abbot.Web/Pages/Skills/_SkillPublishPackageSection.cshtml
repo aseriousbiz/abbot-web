@@ -1,0 +1,51 @@
+@model EditPage
+
+@if (!Model.HasPackage) {
+    <p class="mb-1">
+        Package up a skill to share it with other organizations.
+    </p>
+
+    <p>
+        @if (Model.CanEditSkill) {
+            <a class="btn btn-sm" asp-page="Package/Index" asp-route-skill="@Model.Skill.Name">Publish package</a>
+        } else {
+            <small class="has-text-grey">Edit permission is required to publish a restricted skill. <partial name="Shared/_PermissionTooltip" model="Model.Skill.Name" /></small>
+        }
+    </p>
+} else {
+    var packageVersion = Model.PackageVersion;
+    if (packageVersion is not null) {
+        <p class="mb-2">
+            This skill has a published package (version <code>@packageVersion.ToVersionString()</code> published <code><timeago datetime="@packageVersion.Created"/></code>).
+        </p>
+    }
+    <p>
+        <a asp-page="/Packages/Details"
+           class="text-blue-600"
+           asp-route-name="@Model.Skill.Name"
+           asp-route-organization="@Model.OrganizationSlug">
+            View package listing
+        </a>
+    </p>
+    <p>
+        <a asp-page="/Packages/Edit"
+           class="text-blue-600"
+           asp-route-name="@Model.Skill.Name"
+           asp-route-organization="@Model.OrganizationSlug">
+            Edit package metadata
+        </a>
+    </p>
+    @if (Model.HasUnpublishedChanges) {
+        @if (Model.CanEditSkill) {
+            <div class="mt-2">
+                <a asp-page="Package/Index"
+                   asp-route-skill="@Model.Skill.Name"
+                   class="btn btn-sm">Publish new version of the package</a>
+            </div>
+        } else {
+            <small class="has-text-grey"><code class="permission">Edit</code> permission is required to publish a new version of a restricted skill. <partial name="Shared/_PermissionTooltip" model="Model.Skill.Name" /></small>
+        }
+    } else {
+        <em>No changes to publish</em>
+    }
+}

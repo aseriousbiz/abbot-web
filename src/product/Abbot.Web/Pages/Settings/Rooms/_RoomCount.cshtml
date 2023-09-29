@@ -1,0 +1,7 @@
+@model Serious.Abbot.Repositories.RoomCount
+
+@if (Model.FilteredCount is {} filteredCount) {
+    <span class="tabnav-badge">@filteredCount/@Model.TotalCount</span>
+} else {
+    <span class="tabnav-badge">@Model.TotalCount</span>
+}

@@ -1,0 +1,36 @@
+﻿{
+  OpenModals: {
+    $type: Dictionary<string, ViewUpdatePayload>,
+    the-trigger-id: {
+      Title: {
+        Emoji: true,
+        Text: Manage Conversation,
+        Type: plain_text
+      },
+      Close: {
+        Emoji: true,
+        Text: Close,
+        Type: plain_text
+      },
+      Blocks: [
+        {
+          $type: Section,
+          Text: {
+            $type: PlainText,
+            Emoji: true,
+            Text: Sorry, there are no actions you can take on this message.,
+            Type: plain_text
+          },
+          Type: section
+        }
+      ],
+      PrivateMetadata: ||,
+      CallbackId: i:ManageConversationHandler,
+      ClearOnClose: false,
+      NotifyOnClose: false,
+      SubmitDisabled: false,
+      Type: modal
+    }
+  },
+  AnalyticsClient: {}
+}

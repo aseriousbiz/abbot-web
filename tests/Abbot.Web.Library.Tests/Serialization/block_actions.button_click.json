@@ -1,0 +1,83 @@
+{
+  "type": "block_actions",
+  "user": {
+    "id": "U012LKJFG0P",
+    "username": "haacked",
+    "name": "haacked",
+    "team_id": "T013108BYLS"
+  },
+  "api_app_id": "A01TG9GPJQ3",
+  "token": "REDACTED",
+  "container": {
+    "type": "message",
+    "message_ts": "1647316032.343199",
+    "channel_id": "C01A3DGTSP9",
+    "is_ephemeral": false
+  },
+  "trigger_id": "3240154453733.1103008406706.8424349a3ec19a84d43b3e373c9db8e4",
+  "team": {
+    "id": "T013108BYLS",
+    "domain": "aseriousbiz"
+  },
+  "is_enterprise_install": false,
+  "channel": {
+    "id": "C01A3DGTSP9",
+    "name": "haacked-playground"
+  },
+  "message": {
+    "type": "message",
+    "subtype": "bot_message",
+    "text": "Pass the `--force` flag to delete red?",
+    "ts": "1647316032.343199",
+    "username": "abbot-haacked-dev",
+    "icons": {
+      "image_48": "https://s3-us-west-2.amazonaws.com/slack-files2/bot_icons/2021-12-07/2825973053425_48.png"
+    },
+    "bot_id": "B01U63BS0EL",
+    "app_id": "A01TG9GPJQ3",
+    "team": "T013108BYLS",
+    "blocks": [
+      {
+        "type": "section",
+        "block_id": "p3r",
+        "text": {
+          "type": "mrkdwn",
+          "text": "Click the button to confirm you want to forget `red`?",
+          "verbatim": false
+        }
+      },
+      {
+        "type": "actions",
+        "block_id": "b:forget:3",
+        "elements": [
+          {
+            "type": "button",
+            "action_id": "confirm",
+            "text": {
+              "type": "plain_text",
+              "text": "Yes",
+              "emoji": true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "state": {
+    "values": {}
+  },
+  "response_url": "https://hooks.slack.com/actions/T013108BYLS/3236395806518/rvX1JsO2K8wwoYviRjFEzK0F",
+  "actions": [
+    {
+      "action_id": "confirm",
+      "block_id": "b:forget:3",
+      "text": {
+        "type": "plain_text",
+        "text": "Yes",
+        "emoji": true
+      },
+      "type": "button",
+      "action_ts": "1647358353.658564"
+    }
+  ]
+}

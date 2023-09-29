@@ -1,0 +1,68 @@
+@model Serious.Abbot.Pages.Activity.DetailsModel
+
+@{
+  var auditEvent = Model.AuditEvent as TriggerChangeEvent
+        ?? throw new InvalidOperationException($"AuditEvent is not a {nameof(TriggerChangeEvent)}.");
+  var displayRoom = auditEvent.Room is { Length:> 0 } && auditEvent.Room[0] != '#'
+    ? $"#{auditEvent.Room}"
+    : auditEvent.Room;
+
+    var eventType = auditEvent is HttpTriggerChangeEvent
+        ? "HTTP"
+        : "Scheduled";
+}
+
+<div class="p-4">
+  <header>
+    <h1 class="mb-2">Summary</h1>
+  </header>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div>
+          <partial name="Shared/Activity/_OccurrenceDetails" model="auditEvent" />
+      </div>
+      
+      <div>
+          <h2 class="font-bold text-sm mb-1">Type</h2>
+          <div>
+            @eventType Trigger Change
+          </div>
+      </div>
+      
+     <div>
+        <h2 class="font-bold text-sm mb-1">Actor</h2>
+        <div>
+            <partial name="Shared/Activity/_UserDetail" model="@auditEvent.Actor" />
+        </div>
+     </div>
+      
+     <div>
+        <h2 class="font-bold text-sm mb-1">Skill</h2>
+        <div>
+            <partial name="Shared/Activity/_SkillDetails" />
+        </div>
+     </div>
+      
+     <div>
+        <h2 class="font-bold text-sm mb-1">Channel</h2>
+        <div>
+            @if (displayRoom is { Length: > 0 }) {
+                <text>@displayRoom</text>
+            } else {
+                <span class="text-gray-500">Unknown</span>
+            }
+        </div>
+     </div>
+      
+     <div>
+        <h2 class="font-bold text-sm mb-1">Trigger Creator</h2>
+        <div>
+            @if (Model.Trigger is not null) {
+                <partial name="Shared/Activity/_UserDetail" model="@Model.Trigger.Creator" />
+            } else {
+                <span class="text-gray-500">Unknown</span>
+            }
+        </div>
+     </div>
+  </div>
+</div>

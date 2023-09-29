@@ -1,0 +1,85 @@
+@model Serious.Abbot.Pages.Activity.DetailsModel
+
+<div>
+    <partial name="Shared/Activity/_CommonAuditEventDetails" model="Model" />
+    @if (Model.DetailsAvailable) {
+        switch (Model.AuditEvent) {
+            case AnnouncementEvent:
+                <partial name="Shared/Activity/_AnnouncementEventDetails" />
+                break;
+            case InstallationEvent:
+                <partial name="Shared/Activity/_InstallationEventDetails" />
+                break;
+            case PackageEvent:
+                <partial name="Shared/Activity/_PackageEventDetails" />
+                break;
+            case BillingEvent:
+                <partial name="Shared/Activity/_BillingEventDetails" />
+                break;
+            case BuiltInSkillRunEvent:
+                <partial name="Shared/Activity/_BuiltInSkillRunEventDetail" />
+                break;
+            case ConversationTitleChangedEvent:
+                <partial name="Shared/Activity/_ConversationTitleChangedEventDetail" />
+                break;
+            case SkillInfoChangedAuditEvent:
+                <partial name="Shared/Activity/_SkillInfoChangedEventDetails" />
+                break;
+            case ScheduledTriggerChangeEvent:
+                <partial name="Shared/Activity/_ScheduledTriggerChangeDetails" />
+                break;
+            case HttpTriggerChangeEvent:
+                <partial name="Shared/Activity/_HttpTriggerChangeDetails" />
+                break;
+            case ScheduledTriggerRunEvent:
+                <partial name="Shared/Activity/_ScheduledTriggerRunDetails" />
+                break;
+            case HttpTriggerRunEvent:
+                <partial name="Shared/Activity/_HttpTriggerRunDetails" />
+                break;
+            case RoomResponseTimesChangedEvent:
+                <partial name="Shared/Activity/_RoomResponseTimesChangedDetail" />
+                break;
+            case RoomRespondersChangedEvent:
+                <partial name="Shared/Activity/_RoomRespondersChangedDetail" />
+                break;
+            case SkillRunAuditEvent:
+                <partial name="Shared/Activity/_SkillRunEventDetails" />
+                break;
+            case SkillEditSessionAuditEvent:
+                <partial name="Shared/Activity/_SkillEditSessionDetails" />
+                break;
+            case SkillNotFoundEvent:
+                <partial name="Shared/Activity/_SkillNotFoundDetails" />
+                break;
+            case SkillSecretEvent:
+                <partial name="Shared/Activity/_SkillSecretEventDetails" />
+                break;
+            case StaffViewedCodeAuditEvent:
+                <partial name="Shared/Activity/_StaffViewedCodeEventDetails" />
+                break;
+            case StaffViewedSlackEventContent:
+                <partial name="Shared/Activity/_StaffSlackEventDetails" />
+                break;
+            case HubAuditEvent:
+                <partial name="Shared/Activity/_HubAuditEventDetails" />
+                break;
+                
+            @* Razor doesn't like "{}" in switch statements :( *@
+            case AuditEvent evt when evt.Type.Subject is "Conversation":
+                <partial name="Shared/Activity/_ConversationEventDetails" />
+                break;
+        }
+        <partial name="Shared/Activity/_CommonAuditEventDetailsFooter" />
+    } else {
+        <div class="text-center bg-yellow-100 rounded p-4">
+            <i class="fa-regular fa-lock"></i>
+            <h3 class="font-bold">
+                You don't have permission to view this.
+            </h3>
+            <p>
+                Activity Log Details are only available to Administrators and the user that initiated the event.
+            </p>
+        </div>
+    }
+</div>

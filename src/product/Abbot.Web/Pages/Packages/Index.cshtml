@@ -1,0 +1,86 @@
+@page
+@model Serious.Abbot.Pages.Packages.IndexModel
+
+@{
+    ViewContext.SetPageInfo("Packages", "Packages Home", "Skill Packages");
+
+    var filter = Request.Query["filter"].FirstOrDefault();
+
+    if (filter == string.Empty)
+    {
+        filter = null;
+    }
+}
+
+<div>
+    <header class="">
+        <div class="container py-6">
+            <h1 class="text-5xl text-center font-bold mb-4 px-2">Skill Packages</h1>
+            <div class="max-w-screen-md mx-auto text-center px-2">
+                <p>Skill Packages are a convenient way to share and install skills between teams.</p>
+                <p>
+                    Once you have installed a Skill Package, you can modify the code to customize it any way you like.
+                    We'll let you know if any of the Packages you install have upgrades available.
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <section class="px-2">
+        <header>
+            <div class="container max-w-screen-xl px-2">
+                <div class="flex p-2 rounded border items-center bg-white">
+                    <form method="get" class="filter flex-grow">
+                        <div class="header-filter flex">
+                            <input class="form-input flex-grow mr-2" type="text" placeholder="Search for a skill" name="filter" value="@Model.Filter">
+                            <input type="submit" class="btn btn-primary" value="Search skills"/>
+                        </div>
+                    </form>
+
+                    <details class="dropdown ml-2">
+                        <summary class="form-select-wrapper">
+                            <div class="form-select">
+                                Sort by:
+                                @Model.Sort
+                            </div>
+                        </summary>
+                        <div class="dropdown-menu right-0 top-8" role="menu">
+                            <div class="dropdown-content">
+                                <a asp-route-filter="@filter"
+                                   asp-route-sort="Name"
+                                   class="dropdown-item">Name</a>
+                                <a asp-route-filter="@filter"
+                                   asp-route-sort="Installs"
+                                   class="dropdown-item">Installs</a>
+                                <a asp-route-filter="@filter"
+                                   asp-route-sort="Organization"
+                                   class="dropdown-item">Organization</a>
+                                <a asp-route-filter="@filter"
+                                   asp-route-sort="Updated"
+                                   class="dropdown-item">Last Updated</a>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <p class="mx-3 mt-2 mb-4">
+                    Showing
+                    <strong>@Model.Packages.Count.ToQuantity("package", "packages")</strong>
+                    out of
+                    <strong>@Model.TotalPackageCount.ToString("n0") total</strong>
+                </p>
+            </div>
+        </header>
+
+        <section class="section pt-0">
+            <div class="container">
+                <div class="sm:grid grid-cols-2">
+                    @foreach (var package in Model.Packages) {
+                        <partial name="Shared/Packages/_PackageTile" model="@package" />
+                    }
+                </div>
+                <partial name="_Paginator" model="@Model.Packages"/>
+            </div>
+        </section>
+    </section>
+</div>

@@ -1,0 +1,19 @@
+<Project>
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+    <PropertyGroup>
+        <TargetFramework>$(DefaultTargetFramework)</TargetFramework>
+        <IsPackable>true</IsPackable>
+        <Nullable>enable</Nullable>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <CodeAnalysisRuleSet>$(RootDir)CodeAnalysisRuleset.xml</CodeAnalysisRuleSet>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+        <PackageIcon>abbot-nuget-icon-gray.png</PackageIcon>
+        <Authors>$(Company)</Authors>
+        <GitVersionBaseDirectory>$(MSBuildThisFileDirectory)</GitVersionBaseDirectory>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="$(RootDir)\assets\abbot-nuget-icon-gray.png" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath=""/>
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,21 @@
+@page "/staff/organizations/{orgId}/hubs/{id}/{handler?}"
+@model Serious.Abbot.Pages.Staff.Organizations.Hubs.ViewModel
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Hub Detail");
+}
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<back-link asp-page="./Index" asp-route-id="@Model.Organization.PlatformId">Back to hubs list</back-link>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">Hub: @Model.Hub.Name</h2>
+        <p>
+            Attached to room:
+            <a asp-page="../Room" asp-route-orgId="@Model.Organization.PlatformId" asp-route-id="@Model.Hub.Room.PlatformRoomId">
+                #@Model.Hub.Room.Name
+            </a>
+        </p>
+    </round-box>
+</page-body>

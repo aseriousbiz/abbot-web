@@ -1,0 +1,29 @@
+@model IReadOnlyList<PlaybookRun>
+@if (Model.Any()) {
+    <ul class="divide-y border-slate-200">
+        @foreach (var run in Model) {
+            <li class="py-4 flex gap-2 items-center">
+                <div class="grow">
+                    <div class="-mb-1">
+                        <a class="font-medium"
+                           asp-page="/Playbooks/Runs/View"
+                           preserve-staff
+                           asp-route-slug="@run.Playbook.Slug"
+                           asp-route-runId="@run.CorrelationId">
+                            Run of @run.Playbook.Name (v@(run.Version))
+                            <partial name="_RunDispatchContext" model="run"/>
+                        </a>
+                    </div>
+
+                    <span class="text-sm text-slate-500">
+                        Started <timeago datetime="run.StartedAt ?? run.Created"/>
+                    </span>
+                </div>
+
+                <div class="items-end">
+                    <partial name="Playbooks/Runs/_PlaybookRunStatus" model="run"/>
+                </div>
+            </li>
+        }
+    </ul>
+}

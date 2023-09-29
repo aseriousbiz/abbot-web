@@ -1,0 +1,100 @@
+{
+  "token": "REDACTED_TOKEN",
+  "team_id": "T00012121",
+  "api_app_id": "A0000000001",
+  "event": {
+    "type": "message",
+    "text": "just two",
+    "files": [
+      {
+        "id": "F02V4RF1N91",
+        "created": 1642804743,
+        "timestamp": 1642804743,
+        "name": "image.png",
+        "title": "image.png",
+        "mimetype": "image/png",
+        "filetype": "png",
+        "pretty_type": "PNG",
+        "user": "U50100000",
+        "editable": false,
+        "size": 67615,
+        "mode": "hosted",
+        "is_external": false,
+        "external_type": "",
+        "is_public": true,
+        "public_url_shared": false,
+        "display_as_bot": false,
+        "username": "",
+        "url_private": "https://files.slack.com/files-pri/T00012121-F02V4RF1N91/image.png",
+        "url_private_download": "https://files.slack.com/files-pri/T00012121-F02V4RF1N91/download/image.png",
+        "media_display_type": "unknown",
+        "thumb_64": "https://files.slack.com/files-tmb/T00012121-F02V4RF1N91-59e89e465f/image_64.png",
+        "thumb_80": "https://files.slack.com/files-tmb/T00012121-F02V4RF1N91-59e89e465f/image_80.png",
+        "thumb_360": "https://files.slack.com/files-tmb/T00012121-F02V4RF1N91-59e89e465f/image_360.png",
+        "thumb_360_w": 360,
+        "thumb_360_h": 72,
+        "thumb_480": "https://files.slack.com/files-tmb/T00012121-F02V4RF1N91-59e89e465f/image_480.png",
+        "thumb_480_w": 480,
+        "thumb_480_h": 96,
+        "thumb_160": "https://files.slack.com/files-tmb/T00012121-F02V4RF1N91-59e89e465f/image_160.png",
+        "thumb_720": "https://files.slack.com/files-tmb/T00012121-F02V4RF1N91-59e89e465f/image_720.png",
+        "thumb_720_w": 720,
+        "thumb_720_h": 145,
+        "thumb_800": "https://files.slack.com/files-tmb/T00012121-F02V4RF1N91-59e89e465f/image_800.png",
+        "thumb_800_w": 800,
+        "thumb_800_h": 161,
+        "thumb_960": "https://files.slack.com/files-tmb/T00012121-F02V4RF1N91-59e89e465f/image_960.png",
+        "thumb_960_w": 960,
+        "thumb_960_h": 193,
+        "thumb_1024": "https://files.slack.com/files-tmb/T00012121-F02V4RF1N91-59e89e465f/image_1024.png",
+        "thumb_1024_w": 1024,
+        "thumb_1024_h": 206,
+        "original_w": 1624,
+        "original_h": 326,
+        "thumb_tiny": "AwAJADDS796D0HWlooAZn3NPoooAQ/jSjpRRQB//2Q\u003d\u003d",
+        "permalink": "https://flyio.slack.com/files/U50100000/F02V4RF1N91/image.png",
+        "permalink_public": "https://slack-files.com/T00012121-F02V4RF1N91-119eb402b3",
+        "has_rich_preview": false
+      }
+    ],
+    "upload": false,
+    "user": "U50100000",
+    "display_as_bot": false,
+    "ts": "1642804744.335800",
+    "blocks": [
+      {
+        "type": "rich_text",
+        "block_id": "ttsC6",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "text",
+                "text": "just two"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "client_msg_id": "b6cf703d-e1a7-434e-82f7-5fb97fe700a5",
+    "channel": "C50000000",
+    "subtype": "file_share",
+    "event_ts": "1642804744.335800",
+    "channel_type": "channel"
+  },
+  "type": "event_callback",
+  "event_id": "Ev0000000006",
+  "event_time": 1642804744,
+  "authorizations": [
+    {
+      "team_id": "T00012121",
+      "user_id": "U0BOTID0000",
+      "is_bot": true,
+      "is_enterprise_install": false
+    }
+  ],
+  "is_ext_shared_channel": false,
+  "event_context": "4-REDACTED_EVENT_CONTEXT"
+}

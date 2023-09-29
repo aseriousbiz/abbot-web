@@ -1,0 +1,189 @@
+name: Build Abbot
+
+on:
+  push:
+    branches:
+      - main
+      - lab/**
+
+    # No need to deploy if these paths are the only ones that changed.
+    paths-ignore:
+      - docs/**
+
+  # Run on pull requests.
+  pull_request:
+
+  # Run when a merge group is updated.
+  # https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue#triggering-merge-group-checks-with-github-actions
+  merge_group:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v3.1.0
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET 7 and 6
+        uses: actions/setup-dotnet@v3.0.3
+        with:
+          dotnet-version: |
+            7.0.103
+            6.0.x
+
+      - name: Restore NuGet Packages
+        run: dotnet restore Abbot.sln --locked-mode
+
+      - name: Build
+        run: dotnet build Abbot.sln --configuration Release --no-restore --nologo
+
+      - name: Run Tests
+        run: dotnet test Abbot.sln --logger "trx;LogFileName=test-results.trx" --configuration Release --no-build --nologo
+
+      - name: Collect Test Results
+        if: ${{ github.actor != 'dependabot[bot]' }}
+        uses: dorny/test-reporter@v1
+        with:
+          name: "xUnit Tests"
+          path: "tests/*/TestResults/test-results.trx"
+          reporter: 'dotnet-trx'
+
+      - name: Upload Test Snapshots
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: verify-test-results
+          path: |
+            **/*.received.*
+
+  build_js:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout main branch
+      uses: actions/checkout@v3.1.0
+
+    - name: Setup Node.js 16
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16.x'
+
+    - name: Abbot.Web - npm install
+      working-directory: src/product/Abbot.Web
+      run: npm ci
+
+    - name: Abbot.Web - npm run release
+      working-directory: src/product/Abbot.Web
+      run: npm run release
+
+    - name: Serious.Razor - npm install
+      working-directory: src/product/Serious.Razor
+      run: npm ci
+
+    - name: Serious.Razor - npm run release
+      working-directory: src/product/Serious.Razor
+      run: npm run release
+
+  format:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout main branch
+      uses: actions/checkout@v3.1.0
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET 7 and 6
+      uses: actions/setup-dotnet@v3.0.3
+      with:
+        dotnet-version: |
+          7.0.103
+          6.0.x
+
+    - name: Restore NuGet Packages
+      run: dotnet restore ${{ env.APP_SOLUTION }} --locked-mode
+
+    - name: Set up dotnet-format problem matcher
+      run: echo "::add-matcher::$GITHUB_WORKSPACE/.github/problemMatchers/dotnet-format.json"
+
+    - name: Setup Node.js 16
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16.x'
+
+    - name: Set up eslint-compact problem matcher
+      run: echo "::add-matcher::$GITHUB_WORKSPACE/.github/problemMatchers/eslint-compact.json"
+
+    - name: Format!
+      run: script/fmt --check
+
+  docker_fe:
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v3.1.0
+        with:
+          fetch-depth: 0
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: '{ "clientId": "${{ secrets.DEPLOYBOT_AZURE_AD_CLIENT_ID }}", "clientSecret": "${{ secrets.DEPLOYBOT_AZURE_AD_CLIENT_SECRET }}", "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}", "tenantId": "${{ secrets.AZURE_TENANT_ID }}" }'
+
+      - name: Build aseriousbiz/abbot/web
+        env:
+          image_registry: abbotimages
+          image_repository: aseriousbiz/abbot/web
+          dockerfile: docker/abbot-web.Dockerfile
+          push: 1
+        run: |
+          script/ci/docker-build
+
+      - name: Display image tag
+        run: |
+          echo "Ready to deploy aseriousbiz/abbot/web:commit-${{ github.sha }}"
+
+  docker_runner_dotnet:
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v3.1.0
+        with:
+          fetch-depth: 0
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: '{ "clientId": "${{ secrets.DEPLOYBOT_AZURE_AD_CLIENT_ID }}", "clientSecret": "${{ secrets.DEPLOYBOT_AZURE_AD_CLIENT_SECRET }}", "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}", "tenantId": "${{ secrets.AZURE_TENANT_ID }}" }'
+
+      - name: Build aseriousbiz/abbot/runner-dotnet
+        env:
+          image_registry: abbotimages
+          image_repository: aseriousbiz/abbot/runner-dotnet
+          dockerfile: docker/abbot-skills-dotnet.Dockerfile
+          push: 1
+        run: |
+          script/ci/docker-build
+
+      - name: Display image tag
+        run: |
+          echo "Ready to deploy aseriousbiz/abbot/runner-dotnet:commit-${{ github.sha }}"
+
+  trigger_deployment:
+    if: github.event_name == 'push' && github.ref_name == 'main'
+    needs: [ docker_fe, docker_runner_dotnet ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Runner Deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run deploy_runner_dotnet.yaml -R "${{github.repository}}" -f environment=production -f label="commit-${{ github.sha }}"
+
+      - name: Trigger Frontend Deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run deploy_fe.yaml -R "${{github.repository}}" -f environment=production -f label="commit-${{ github.sha }}"

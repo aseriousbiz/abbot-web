@@ -1,0 +1,47 @@
+@page
+@model Serious.Abbot.Pages.Staff.Tools.CleanupPage
+@{
+    ViewContext.SetPageInfo("Staff", "Cleanup");
+}
+
+<partial name="Staff/_Header"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+<partial name="_Header"/>
+
+<round-box>
+    <h1>Duplicate tags</h1>
+    <table class="text-sm text-left text-gray-500 dark:text-gray-400">
+        <thead>
+        <tr>
+            <th class="px-3">Org</th>
+            <th class="px-3">Tag Name</th>
+            <th class="px-3">Count</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+
+        @foreach (var dupe in Model.DuplicateTags) {
+           <tr>
+                <td class="px-3">@dupe.OrganizationName (Id: @dupe.OrganizationId)</td>
+                <td class="px-3">@dupe.Name</td>
+                <td class="px-3">@dupe.Count</td>
+                <td>
+                    <form method="post">
+                        <input type="hidden" asp-for="OrganizationId" value="@dupe.OrganizationId" />
+                        <input type="hidden" asp-for="TagNameToFix" value="@dupe.Name" />
+                        <button class="btn btn-primary" type="submit">Fix</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+
+    </table>
+</round-box>
+
+<round-box class="mt-3">
+    <h1>Members to Delete</h1>
+
+    <partial name="Staff/Organizations/_UsersTable" model="Model.Members" view-data='@new ViewDataDictionary(ViewData) { { "show-org", true } }' />
+</round-box>

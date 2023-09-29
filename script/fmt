@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+#/ Usage: script/fmt [-c|--check] [<check-type>]
+#/ Description: Runs formatters on the codebase.
+#/ Options:
+#/   -c, --check - Run in check mode. Will return a non-zero exit code if anything needs reformatting.
+#/
+#/ Arguments:
+#/   <check-type> - The type of check to run. Can be one of: 'all', 'dotnet', or 'js'. Defaults to 'all'.
+{ set +x; } 2>/dev/null
+source_dir="$( cd -P "$( dirname "$0" )" >/dev/null 2>&1 && pwd )"
+root_dir=$(cd $source_dir && cd ../ && pwd)
+cd $root_dir
+source script/helpers/_utils.sh
+
+check=false
+
+check_type=all
+while (( "$#" )); do
+    key="$1"
+    shift
+    case "$key" in
+        -c|--check)
+            check=true
+            ;;
+        -\?|-h|--help)
+            grep '^#/' <"$0" | cut -c4-
+            exit
+            ;;
+        *)
+            check_type="$key"
+            ;;
+    esac
+done
+
+should_check() {
+    local target=$1
+    if [[ "$check_type" == "all" ]]; then
+        return 0
+    elif [[ "$check_type" == "$target" ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+if $check; then
+    echo "Running in check mode: Will return a non-zero exit code if anything needs reformatting."
+else
+    echo "Running in reformat mode: Will automatically reformat files if they need reformatting."
+fi
+
+success=true
+
+if should_check "dotnet"; then
+    if type dotnet >/dev/null 2>&1; then
+        dotnet_args=("--exclude=./src/product/Abbot.Web/Migrations")
+        if $check; then
+            dotnet_args+=("--verify-no-changes")
+        fi
+        echo "Running .NET Formatters..."
+
+        # Run just 'whitespace' and 'style' formatters, not 'analyzer' formatters!
+        if ! dotnet format whitespace "Abbot.sln" "${dotnet_args[@]}"; then
+            success=false
+        fi
+        if ! dotnet format style "Abbot.sln" "${dotnet_args[@]}"; then
+            success=false
+        fi
+    elif $check; then
+        echo ".NET CLI is not installed!" 1>&2
+        exit 1
+    fi
+fi
+
+if should_check "js"; then
+    if type npm >/dev/null 2>&1; then
+        if $check; then
+            npm_command="lint"
+        else
+            npm_command="lint:fix"
+        fi
+
+        echo "Running ECMAScript/TypeScript Formatters..."
+
+        cd "./src/product/Abbot.Web"
+        npm ci
+        if ! npm run "$npm_command"; then
+            success=false
+        fi
+    elif $check; then
+        echo "NPM is not installed!" 1>&2
+        exit 1
+    fi
+fi
+
+if $success; then
+    echo "You're all good!"
+else
+    echo "Formatting is no good! Run 'script/fmt' to fix" 1>&2
+    exit 1
+fi

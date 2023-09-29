@@ -1,0 +1,123 @@
+@page "/Conversations/{conversationId:int}/{handler?}"
+@model Serious.Abbot.Pages.Conversations.ViewPage
+
+@{
+    ViewContext.SetPageInfo("Conversations", "Conversation Details");
+}
+
+<partial name="Shared/_ReadOnlyHeader"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<back-link asp-page="Index">All conversations</back-link>
+
+<div class="mb-3">
+    <h1 class="text-2xl font-medium my-auto text-black flex items-baseline gap-3">
+        <message-renderer message="@Model.Title" />
+    </h1>
+</div>
+
+<page-body>
+    <div class="flex items-center gap-2">
+        <a href="@Model.Conversation.GetFirstMessageUrl()" target="_blank" class="btn">
+            Open conversation in Slack
+            <i class="fa-regular fa-up-right-from-square ml-1"></i>
+        </a>
+    </div>
+
+    <div class="sm:grid grid-cols-3 gap-2 w-3/4 text-sm max-w-xl">
+        <div class="sm:contents my-2">
+            <div class="font-medium text-gray-500 flex items-center">Opened by</div>
+            <div class="font-medium col-span-2 flex gap-1 items-center sm:justify-end">
+                <avatar size="Small" member="Model.Conversation.StartedBy" show-foreign-org-badge="false"/>
+                <div>
+                    @@@Model.Conversation.StartedBy.DisplayName
+
+                    <span class="text-xs text-gray-500">
+                        @if (Model.Conversation.StartedBy.IsGuest) {
+                            <text>(a guest in</text>
+                        } else {
+                            <text>(from</text>
+                        }
+                        @Model.Conversation.StartedBy.Organization.Name)
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="sm:contents my-2">
+            <div class="font-medium text-gray-500 flex items-center">
+                Date opened
+            </div>
+            <div class="font-medium sm:text-right col-span-2">
+                @Model.Conversation.Created.Humanize()
+            </div>
+        </div>
+
+        <div class="sm:contents my-2">
+            <div class="font-medium text-gray-500 flex items-center">
+                Room
+            </div>
+            <div class="font-medium sm:text-right col-span-2" title="Room ID: @Model.Conversation.Room.PlatformRoomId">
+                #@Model.Conversation.Room.Name
+            </div>
+        </div>
+        
+        @if (Model.Conversation.Assignees.Any())
+        {
+            <div class="sm:contents my-2">
+                <div class="font-medium text-gray-500 flex items-center">Assignee</div>
+                <div class="font-medium col-span-2 flex gap-1 items-center sm:justify-end">
+                    @foreach(var assignee in Model.Conversation.Assignees) {
+                        <avatar size="Small" member="assignee" show-foreign-org-badge="false"/>
+                        <div>
+                            @assignee.DisplayName
+                        </div>
+                        
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <round-box>
+        <div class="flex items-baseline">
+            <h2 class="font-semibold m-2 text-lg">
+                Conversation log
+                <partial name="Shared/_ReadOnlyBadge"/>
+            </h2>
+            <staff-only>
+                <form method="get" class="m-2 ml-auto text-sm" data-controller="click-submit">
+                    <label class="label">
+                        <input type="checkbox"
+                               name="hide-staff"
+                               checked="@Request.Query.ContainsKey("hide-staff")"
+                               data-click-submit-target="submitter" />
+                        Hide Staff Messages
+                    </label>
+                </form>
+            </staff-only>
+        </div>
+
+        <partial name="Timeline/_ConversationLog" model="Model.Conversation"/>
+
+        <form class="mt-4 p-3 flex gap-x-2" asp-page-handler="state">
+            @{
+                var disabled = !Model.Organization.HasPlanFeature(PlanFeature.ConversationTracking);
+            }
+            @switch (Model.Conversation.State) {
+                case ConversationState.Closed:
+                    <button name="action" value="@ViewPage.StateChangeAction.Reopen" type="submit" class="btn @(disabled ? "btn-disabled" : "btn-primary")" disabled="@disabled">Reopen Conversation</button>
+                    <button name="action" value="@ViewPage.StateChangeAction.Archive" type="submit" class="btn @(disabled ? "btn-disabled" : "btn-danger")" disabled="@disabled">Stop Tracking Conversation</button>
+                    break;
+                case ConversationState.Archived:
+                    <button name="action" value="@ViewPage.StateChangeAction.Unarchive" type="submit" class="btn @(disabled ? "btn-disabled" : "btn-danger")" disabled="@disabled">Unarchive Conversation</button>
+                    break;
+                case var c when c.IsOpen():
+                    <button name="action" value="@ViewPage.StateChangeAction.Close" type="submit" class="btn @(disabled ? "btn-disabled" : "btn-danger")" disabled="@disabled">Close Conversation</button>
+                    break;
+                default:
+                    throw new UnreachableException($"Unexpected Conversation State: {Model.Conversation.State}");
+            }
+        </form>
+    </round-box>
+</page-body>

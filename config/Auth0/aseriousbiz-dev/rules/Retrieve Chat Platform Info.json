@@ -1,0 +1,8 @@
+{
+  "id": "rul_ytKId7OSAuSRuGmM",
+  "enabled": true,
+  "script": "./Retrieve Chat Platform Info.js",
+  "name": "Retrieve Chat Platform Info",
+  "order": 2,
+  "stage": "login_success"
+}

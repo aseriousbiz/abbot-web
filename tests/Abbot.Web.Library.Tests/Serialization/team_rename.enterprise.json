@@ -1,0 +1,25 @@
+{
+  "token": "REDACTED_TOKEN",
+  "team_id": "T013108BYLS",
+  "enterprise_id": "E02V6NXUF2Q",
+  "api_app_id": "A01TG9GPJQ3",
+  "event": {
+    "type": "team_rename",
+    "name": "Serious Sandbox 3",
+    "team_id": "T046W0NCR4P",
+    "event_ts": "1667016505.007200"
+  },
+  "type": "event_callback",
+  "event_id": "Ev048QL3RBB6",
+  "event_time": 1667016505,
+  "authorizations": [
+    {
+      "enterprise_id": "E02V6NXUF2Q",
+      "team_id": "T046W0NCR4P",
+      "user_id": "U03A5C1LA9F",
+      "is_bot": true,
+      "is_enterprise_install": false
+    }
+  ],
+  "is_ext_shared_channel": false
+}

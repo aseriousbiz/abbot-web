@@ -1,0 +1,117 @@
+﻿{
+  target: {
+    Conversation: {
+      RoomId: 1,
+      FirstMessageId: 1111.0006,
+      ThreadIds: [
+        1111.0006
+      ],
+      Title: Test Conversation 6,
+      IsImported: false,
+      LastMessagePostedOn: 1999-01-02 03:04:05 Utc,
+      LastStateChangeOn: 1999-01-02 03:04:05 Utc,
+      State: New,
+      StartedById: 3,
+      Properties: {},
+      OrganizationId: 1,
+      Id: 1,
+      Created: 1999-01-02 03:04:05 Utc
+    }
+  },
+  logs: {
+    $type: List<LogEvent>,
+    $values: [
+      {
+        CategoryName: Serious.Abbot.Eventing.AttachConversationToHubConsumer,
+        LogLevel: Error,
+        EventId: {
+          Id: 4020,
+          Name: EntityNotFound
+        },
+        Message: Entity not found by Id (Id: 3, Type: Serious.Abbot.Entities.Member),
+        State: {
+          $type: LoggerMessage.LogValues<object, Type>,
+          $values: [
+            {
+              EntityId: 3
+            },
+            {
+              EntityType: Member
+            },
+            {
+              {OriginalFormat}: Entity not found by Id (Id: {EntityId}, Type: {EntityType})
+            }
+          ]
+        },
+        Scopes: {
+          $type: List<object>,
+          $values: [
+            {
+              $type: LoggerMessage.LogValues<int, string,
+              $values: [
+                {
+                  OrganizationId: 1
+                },
+                {
+                  OrganizationPlatformId: Thome
+                },
+                {
+                  OrganizationSlug: testorg
+                },
+                {
+                  {OriginalFormat}: Organization: {OrganizationId}, {OrganizationPlatformId}, {OrganizationSlug}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<int, string>,
+              $values: [
+                {
+                  RoomId: 1
+                },
+                {
+                  RoomPlatformId: C0004
+                },
+                {
+                  {OriginalFormat}: Room: {RoomId}, {RoomPlatformId}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<int, ConversationState,
+              $values: [
+                {
+                  ConversationId: 1
+                },
+                {
+                  ConversationState: New
+                },
+                {},
+                {
+                  {OriginalFormat}: Conversation: {ConversationId}, {ConversationState}, {HubThreadId}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<int, int?,
+              $values: [
+                {
+                  HubId: 1
+                },
+                {
+                  HubRoomId: 2
+                },
+                {
+                  HubRoomPlatformId: Chub
+                },
+                {
+                  {OriginalFormat}: Hub: {HubId}, {HubRoomId}, {HubRoomPlatformId}
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

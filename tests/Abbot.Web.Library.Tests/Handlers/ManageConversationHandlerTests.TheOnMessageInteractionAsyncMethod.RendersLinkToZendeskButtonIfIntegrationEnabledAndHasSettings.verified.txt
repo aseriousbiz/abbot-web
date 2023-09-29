@@ -1,0 +1,114 @@
+﻿{
+  OpenModals: {
+    $type: Dictionary<string, ViewUpdatePayload>,
+    the-trigger-id: {
+      Title: {
+        Emoji: true,
+        Text: Manage Conversation,
+        Type: plain_text
+      },
+      Close: {
+        Emoji: true,
+        Text: Close,
+        Type: plain_text
+      },
+      Blocks: [
+        {
+          $type: Section,
+          Text: {
+            $type: PlainText,
+            Emoji: true,
+            Text: ℹ️ Conversation Tracking,
+            Type: plain_text
+          },
+          Accessory: {
+            $type: ButtonElement,
+            Text: {
+              Emoji: true,
+              Text: Track Conversation,
+              Type: plain_text
+            },
+            Value: C0004:1111.0005,
+            ActionId: TrackConversation,
+            Type: button
+          },
+          BlockId: TrackConversation,
+          Type: section
+        },
+        {
+          $type: Context,
+          Elements: {
+            $type: IContextBlockElement[],
+            $values: [
+              {
+                $type: MrkdwnText,
+                Verbatim: false,
+                Text: This message is not associated with a Conversation. That may be because it was posted by a bot, by someone from your organization, or during a time when Conversation Tracking was not enabled.,
+                Type: mrkdwn
+              }
+            ]
+          },
+          Type: context
+        },
+        {
+          $type: Section,
+          Text: {
+            $type: PlainText,
+            Emoji: true,
+            Text: 🎫 Create a Zendesk ticket for this conversation,
+            Type: plain_text
+          },
+          Accessory: {
+            $type: ButtonElement,
+            Text: {
+              Emoji: true,
+              Text: Create Ticket,
+              Type: plain_text
+            },
+            Value: C0004:1111.0005,
+            ActionId: i:CreateZendeskTicketFormModal:1,
+            Type: button
+          },
+          BlockId: i:CreateZendeskTicketFormModal:1,
+          Type: section
+        }
+      ],
+      PrivateMetadata: C0004|1111.0005|,
+      CallbackId: i:ManageConversationHandler,
+      ClearOnClose: false,
+      NotifyOnClose: false,
+      SubmitDisabled: false,
+      Type: modal
+    }
+  },
+  AnalyticsClient: {
+    Tracked: {
+      (3, Integration Enabled): {
+        feature: Integrations,
+        integration: Zendesk,
+        organization: 1,
+        organization_name: Test Organization,
+        plan: Unlimited,
+        platform_id: Thome
+      }
+    }
+  },
+  AuditEvents: {
+    $type: List<AuditEventBase>,
+    $values: [
+      {
+        $type: AdminAuditEvent,
+        Discriminator: AdminAuditEvent,
+        Identifier: Guid_1,
+        ActorId: 3,
+        Description: Enabled Zendesk integration.,
+        Details: Enabled Zendesk integration.,
+        StaffOnly: false,
+        HasDetails: false,
+        OrganizationId: 1,
+        Id: 1,
+        Created: 1999-01-02 03:04:05.001 Utc
+      }
+    ]
+  }
+}

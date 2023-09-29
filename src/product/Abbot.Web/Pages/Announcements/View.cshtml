@@ -1,0 +1,180 @@
+@page "{id:int}"
+@using Serious.AspNetCore.TagHelpers
+@model ViewPage
+
+@{
+    var announcement = Model.Announcement;
+    var title = announcement.Text is not null
+        ? $"View Announcement: {announcement.Text.TruncateToLength(64, true)}"
+        : "View Announcement";
+
+    ViewContext.SetPageInfo("Announcements", "View Announcement", title);
+}
+
+<back-link asp-page="Index">Back to announcements</back-link>
+
+<page-header>
+    View Announcement
+</page-header>
+
+<page-body>
+    <header class="mt-1">
+        <partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+    </header>
+
+    <round-box>
+        <div class="sm:flex items-center">
+            <div class="flex items-start">
+                <div class="flex-shrink-0 mr-2">
+                    <avatar member="@Model.Author"/>
+                </div>
+
+                <div>
+                    <div class="text-gray-500 text-sm">
+                        <span class="font-semibold text-black">
+                            @@@Model.Author?.DisplayName
+                        </span>
+                        <partial name="_ScheduleStatus" model="(announcement, Model.Viewer)"/>
+                        <partial name="_TargetsList" model="@announcement" />
+                    </div>
+
+                    <div class="rendered-message mt-2">
+                        <message-renderer
+                            message="@Model.RenderedAnnouncement"
+                            render-links="true"
+                            render-newlines="true"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- This only shows up for scheduled announcements / announcements that haven't been posted to multiple channels -->
+            @if (Model.Announcement.DateStartedUtc is null && Model.MessageUrl is not null) {
+                <div class="ml-auto">
+                    <a href="@Model.MessageUrl" class="btn">View in Slack →</a>
+                    <button data-modal-id="unschedule-modal" class="btn btn-danger">Unschedule Announcement</button>
+                </div>
+            }
+        </div>
+    </round-box>
+
+    <section class="my-4">
+        <h2 class="text-sm text-gray-500 font-semibold mx-2">
+            Responses
+        </h2>
+
+        @foreach (var announcementMessage in Model.AnnouncementMessages) {
+            var replies = announcementMessage.Replies;
+            var reactions = announcementMessage.Reactions;
+            <round-box class="my-4">
+                <h3 class="font-medium">#@announcementMessage.Room.Name</h3>
+
+                @if (announcementMessage.MessageId is not null) {
+                    <div class="my-4">
+                        <h3 class="text-sm font-semibold">
+                            @reactions.Count.ToQuantity("reaction")
+                        </h3>
+
+                        @if (reactions.Count > 0)
+                        {
+                            <ul class="my-2">
+                                @foreach (var reaction in reactions)
+                                {
+                                    <li class="flex items-center my-1">
+                                        <div class="flex bg-gray-100 rounded-lg px-2 py-1 inline-block text-sm mr-2 items-center" data-tooltip=":@reaction.Emoji.Name:">
+                                            <emoji emoji="reaction.Emoji" />&nbsp;@reaction.Count
+                                        </div>
+                                        <div>
+                                            <partial name="Shared/_SimpleAvatarStack" model="@reaction.Users"/>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="text-sm text-gray-500">
+                                No reactions yet
+                            </p>
+                        }
+                    </div>
+
+                    <div class="my-4">
+                        <h3 class="text-sm font-semibold">
+                            @replies.Count.ToQuantity("reply", "replies")
+                        </h3>
+
+                        @if (replies.Count > 0)
+                        {
+                            <ul>
+                                @foreach (var reply in replies)
+                                {
+                                    var renderedReply = await Model.RenderReplyAsync(reply.Text);
+                                    <li class="flex my-4">
+                                        <partial name="Shared/_Avatar" model="@reply.From"/>
+                                        <div class="ml-2">
+                                            <header class="text-sm font-semibold">
+                                                @@@reply.From.DisplayName
+                                                <span class="text-gray-500 font-normal">
+                                                    <timeago datetime="@reply.PostedAt"/>
+                                                </span>
+                                            </header>
+                                            <p class="text-sm">
+                                                <message-renderer
+                                                    message="@renderedReply"
+                                                    render-links="true"
+                                                    render-newlines="true"/>
+                                            </p>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else {
+                            <p class="text-sm text-gray-500">
+                                No replies yet
+                            </p>
+                        }
+                    </div>
+                }
+                else if (announcementMessage.ErrorMessage is { } errorMessage)
+                {
+                    <div class="is-warning">
+                        An error occurred attempting to post to this channel: <code>@Model.TranslateSlackError(errorMessage)</code>
+                    </div>
+                }
+            </round-box>
+        }
+    </section>
+
+    <dialog class="modal bg-gray-900 bg-opacity-75" id="unschedule-modal">
+        <div class="rounded-lg p-2 border m-4 bg-white shadow-md max-w-lg"
+             role="dialog" aria-labelledby="dialogTitle" aria-describedby="dialogDescription">
+            <header class="bg-red-100 text-red-600 px-2 flex items-center">
+                <h1 id="dialogTitle" class="font-bold">Unschedule Announcement?</h1>
+                <button class="hover:text-gray-900 flex p-1 my-1 ml-auto w-6 justify-center" aria-label="close">
+                    <i class="fa-solid fa-xmark" aria-label></i>
+                </button>
+            </header>
+            <section class="p-2">
+                <p>
+                    Are you sure you want to unschedule this announcement?
+                    The message will no longer be posted to any channels.
+                </p>
+            </section>
+            <footer class="flex p-4 mt-auto">
+                <div class="ml-auto">
+                    <form method="post">
+                        <button class="btn hover:bg-gray-100 text-gray-800" aria-label="close">Cancel</button>
+                        <button type="submit" class="btn btn-danger ml-2 modal-success-button">Unschedule</button>
+                    </form>
+                </div>
+            </footer>
+        </div>
+    </dialog>
+</page-body>
+
+<!--
+ScheduledDateUtc: @announcement.ScheduledDateUtc
+DateStartedUtc:   @announcement.DateStartedUtc
+DateCompletedUtc: @announcement.DateCompletedUtc
+-->

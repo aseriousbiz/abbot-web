@@ -1,0 +1,22 @@
+@model DiffPlex.DiffBuilder.Model.DiffPaneModel
+@if (Model is {Lines.Count: > 0}) {
+    <div class="diff-pane dark-diff-theme">
+        <table>
+            @foreach (var diffLine in Model.Lines) {
+                <tr>
+                    <td class="line-number @diffLine.Type">
+                        @(diffLine.Position.HasValue ? diffLine.Position.ToString() : " ")
+                    </td>
+                    <td class="change-type @diffLine.Type">
+                        @diffLine.Type.GetDiffChangeTypeCharacter()
+                    </td>
+                    <td class="line @diffLine.Type">
+                        <span class="line-text">
+                            <partial name="Shared/Diff/_DiffLine" model="diffLine"/>
+                        </span>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+}

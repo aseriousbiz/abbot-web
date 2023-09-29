@@ -1,0 +1,43 @@
+@page
+@{
+    ViewContext.SetPageInfo("Account", "Tips");
+}
+
+<page-body>
+    <h1>Tooltip Tests</h1>
+    <ul class="p-5">
+        <li>
+            <span data-tooltip="This is a normal tooltip">Normal</span>
+        </li>
+        <li>
+            <span data-tooltip="This is a multi-line tooltip that has a lot of text" class="has-tooltip-multiline">Multiline</span>
+        </li>
+        <li>
+            <span data-tooltip="This is a multi-line tooltip that has a lot of text" class="has-tooltip-multiline has-tooltip-arrow">Multiline with arrow</span>
+        </li>
+        <li>
+            <span data-tooltip="This is a top arrow" class="has-tooltip-top">Top</span>
+        </li>
+        <li>
+            <span data-tooltip="This is a top arrow" class="has-tooltip-arrow">Top Arrow</span>
+        </li>
+        <li>
+            <span data-tooltip="This is a bottom tooltip" class="has-tooltip-bottom">Bottom</span>
+        </li>
+        <li>
+            <span data-tooltip="This is a bottom tooltip" class="has-tooltip-bottom has-tooltip-arrow">Bottom Arrow</span>
+        </li>
+        <li>
+            <span data-tooltip="This is a left tooltip" class="has-tooltip-left">Left</span>
+        </li>
+        <li>
+            <span data-tooltip="This is a left tooltip" class="has-tooltip-left has-tooltip-arrow">Left Arrow</span>
+        </li>
+        <li>
+            <span data-tooltip="This is a right tooltip" class="has-tooltip-right">Right</span>
+        </li>
+        <li>
+            <span data-tooltip="This is a right tooltip" class="has-tooltip-right has-tooltip-arrow">Right Arrow</span>
+        </li>
+    </ul>
+</page-body>

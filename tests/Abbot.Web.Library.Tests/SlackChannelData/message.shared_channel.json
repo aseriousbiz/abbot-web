@@ -1,0 +1,47 @@
+{
+  "token": "TOKEN_REDACTED",
+  "team_id": "T00012121",
+  "api_app_id": "A048NMJC6DC",
+  "event": {
+    "client_msg_id": "800d4319-2cdf-4b15-8783-d1a0eec5dd7e",
+    "type": "message",
+    "text": "No, this is a funny test.",
+    "user": "U000000F11",
+    "ts": "1671073262.391279",
+    "blocks": [
+      {
+        "type": "rich_text",
+        "block_id": "X9cY",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "text",
+                "text": "No, this is a funny test."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "team": "T000998899",
+    "channel": "C00000002",
+    "event_ts": "1671073262.391279",
+    "channel_type": "channel"
+  },
+  "type": "event_callback",
+  "event_id": "Ev04F48562CE",
+  "event_time": 1671073262,
+  "authorizations": [
+    {
+      "enterprise_id": null,
+      "team_id": "T00012121",
+      "user_id": "U048NMKTUKG",
+      "is_bot": true,
+      "is_enterprise_install": false
+    }
+  ],
+  "is_ext_shared_channel": true,
+  "event_context": "4-eyJldCI6Im1lc3NhZ2UiLCJ0aWQiOiJUMDEzMTA4QllMUyIsImFpZCI6IkEwNDhOTUpDNkRDIiwiY2lkIjoiQzAzMDYwU05RREMifQ"
+}

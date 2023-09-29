@@ -1,0 +1,21 @@
+@model SkillPattern
+
+<div class="inline-block">
+    @if (!Model.Enabled) {
+        <span class="ml-2 font-mono text-yellow-600 text-xs text-gray-500 uppercase" data-tooltip="This pattern is disabled.">
+            Disabled
+        </span>
+    }
+
+    @if (Model.CaseSensitive) {
+        <span class="mr-2 font-mono text-xs text-gray-500 uppercase" data-tooltip="This pattern is case sensitive.">
+            (Case Sensitive)
+        </span>
+    }
+
+    @if (Model.AllowExternalCallers) {
+        <span class="mr-2 font-mono text-xs text-gray-500 uppercase" data-tooltip="This pattern matches messages by supportees such as external users, guest users, or non-agents in community rooms.">
+            (Matches Supportees)
+        </span>
+    }
+</div>

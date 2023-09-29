@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="Aboard Code Analysis Rules" ToolsVersion="15.0">
+
+    <Rules AnalyzerId="Roslynator.CSharp.Analyzers" RuleNamespace="Roslynator.CSharp.Analyzers">
+        <!-- CA2007 Do not directly await a Task: Does not apply to asp.net core because it does not have a SynchronizationContext -->
+        <Rule Id="CA2007" Action="None" />
+        <!-- Do not pass literals as localized parameters: Enable this rule if we enable localization -->
+        <Rule Id="CA1303" Action="None" />
+        <!-- Validate arguments of public methods: We have nullable reference types turned on and we're not a library. -->
+        <Rule Id="CA1062" Action="None" />
+        <!-- Collection properties should be read only: True, except for EF Core models. -->
+        <Rule Id="CA2227" Action="None" />
+        <!-- Nested types should not be visible: This is a common pattern for input types that we model bind to and they have to be public. -->
+        <Rule Id="CA1034" Action="None" />
+        <!-- Identifiers should not match keywords: Yeah, not a big concern for us. -->
+        <Rule Id="CA1716" Action="None" />
+    </Rules>
+
+    <!-- Specify default action that should be applied to all analyzers except those explicitly specified. -->
+    <IncludeAll Action="Error" />
+</RuleSet>

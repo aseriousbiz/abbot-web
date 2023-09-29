@@ -1,0 +1,102 @@
+@page "/staff/organizations/{id}/conversations"
+@model Serious.Abbot.Pages.Staff.Organizations.Conversations.IndexModel
+
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Conversation Tools", "Conversation Tools");
+}
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-xl font-semibold" id="conversation-settings">Conversation Settings</h2>
+        <div class="mt-5">
+            <label class="checkbox">
+                @if (Model.AllowAIEnhancements) {
+                    <span>✅</span>
+                } else {
+                    <span>❌</span>
+                }
+                <span>Allow AI Enhancements</span>
+            </label>
+            <label class="checkbox">
+                @if (Model.AllowReactionResponses) {
+                    <span>✅</span>
+                } else {
+                    <span>❌</span>
+                }
+                <span>Allow Emoji Reactions Responses</span>
+            </label>
+            <label class="checkbox ml-5">
+                @if (Model.AllowTicketReactions) {
+                    <span>✅</span>
+                } else {
+                    <span>❌</span>
+                }
+                <span>Allow Ticket Reactions</span>
+            </label>
+        </div>
+    </round-box>
+
+    <round-box>
+        <h2 class="text-3xl font-semibold">Recent Conversations</h2>
+        <div class="mt-4 grid grid-cols-2 md:grid-cols-[auto_auto_auto_max-content] gap-2">
+        @foreach (var conversation in Model.RecentConversations) {
+            <a asp-page="../Room"
+               asp-route-orgId="@Model.Organization.PlatformId"
+               asp-route-id="@conversation.Room.PlatformRoomId">
+                #@conversation.Room.Name
+            </a>
+            <a
+               asp-page="../Member"
+               asp-route-orgId="@conversation.StartedBy.Organization.PlatformId"
+               asp-route-id="@conversation.StartedBy.User.PlatformUserId">
+                <avatar member="@conversation.StartedBy" viewer-organization="@Model.Organization" class="mr-1" />
+                @@@conversation.StartedBy.DisplayName
+            </a>
+            <div>
+                <pill size="Small" color="Gray">@conversation.State.Humanize()</pill>
+                <div class="text-sm text-gray-500"><timeago datetime="@conversation.LastStateChangeOn" /></div>
+            </div>
+            <form method="post" asp-page-handler="FindByConvoId">
+                <button class="btn btn-primary" type="submit">View Conversation</button>
+                <input type="hidden" asp-for="ConversationId" value="@conversation.Id" />
+            </form>
+        }
+        </div>
+    </round-box>
+
+    <round-box>
+        <h2 class="text-3xl font-semibold">Find Conversation</h2>
+        <form asp-page-handler="FindByConvoId" method="post" class="flex gap-2 items-baseline">
+            <label asp-for="ConversationId"></label>
+            <input class="form-input" asp-for="ConversationId">
+            <input class="form-input" asp-for="Reason" placeholder="Optional reason">
+            <button data-confirm="This may be sensitive information. This event, along with your identity and the reason provided, will be logged for auditing purposes. Continue?" class="btn btn-primary" type="submit">Find by Conversation ID</button>
+            <span asp-validation-for="ConversationId"></span>
+        </form>
+        <form asp-page-handler="FindByMessage" method="post" class="mt-5 flex gap-2 items-baseline">
+            <label asp-for="MessageId"></label>
+            <input class="form-input" asp-for="MessageId" placeholder="ID or Slack message URL">
+            <input class="form-input" asp-for="Reason" placeholder="Optional reason">
+            <button data-confirm="This may be sensitive information. This event, along with your identity and the reason provided, will be logged for auditing purposes. Continue?" class="btn btn-primary" type="submit">Find by Message ID</button>
+            <span asp-validation-for="MessageId"></span>
+        </form>
+        <form asp-page-handler="FindByLink" method="post" class="mt-5 flex gap-2 items-baseline">
+            <div class="form-select-wrapper">
+                <select class="form-select" asp-for="LinkType" asp-items="Model.AllLinkTypes"></select>
+            </div>
+            <input class="form-input" asp-for="LinkedId" placeholder="ID or substring"></input>
+            <input class="form-input" asp-for="Reason" placeholder="Optional reason">
+            <button data-confirm="This may be sensitive information. This event, along with your identity and the reason provided, will be logged for auditing purposes. Continue?" class="btn btn-primary" type="submit">Find by Linked Identity</button>
+            <span asp-validation-for="LinkType"></span>
+            <span asp-validation-for="LinkedId"></span>
+        </form>
+
+        <div id="@IndexModel.ConversationDetailId" class="mt-5">
+            @if (Model.Conversation is not null) {
+                <partial name="_ConversationDetail" model="Model.Conversation"/>
+            }
+        </div>
+    </round-box>
+</page-body>

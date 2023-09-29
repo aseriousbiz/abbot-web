@@ -1,0 +1,46 @@
+@model Serious.Abbot.Pages.Shared.Filters.FilterModel
+@{
+    Layout = "Filters/_FilterLayout";
+
+    Dictionary<TaskItemStatus, (string, string, string)> taskStatuses = new() {
+        [TaskItemStatus.None] = ("text-gray-500", "fa-circle", "Open"),
+        [TaskItemStatus.InProgress] = ("text-yellow-600", "fa-circle-half-stroke", "In Progress"),
+        [TaskItemStatus.Open] = ("text-gray-500", "fa-circle", "Open"),
+        [TaskItemStatus.Closed] = ("text-green-600", "fa-circle-check", "Closed"),
+        [TaskItemStatus.Blocked] = ("text-red-600", "fa-circle-exclamation", "Blocked"),
+    };
+    var currentFilter = Model.Current;
+    var field = Model.Field;
+    var currentFilterValue = Enum.TryParse<TaskItemStatus>(currentFilter[field]?.Value, out var status)
+        ? status
+        : TaskItemStatus.None;
+    var statusItems = Model.Options;
+}
+
+<ul class="max-h-56 overflow-y-scroll">
+    @foreach (var option in statusItems) {
+        var taskItemStatus = Enum.TryParse<TaskItemStatus>(option.Value, out var statusOption)
+            ? statusOption
+            : TaskItemStatus.None;
+        var (_, statusIcon, _) = taskStatuses[taskItemStatus];
+        TaskItemStatus? taskItemStatusRouteValue = taskItemStatus is TaskItemStatus.None ? null : taskItemStatus;
+        const string notClosedLabel = "Not Closed";
+        var label = taskItemStatus is 0 ? notClosedLabel : $"{taskItemStatus}";
+        <li class="m-0 border-y-1 border-gray-50">
+            <a asp-page="/Tasks/Index"
+               asp-all-route-data="ViewContext.GetCurrentRouteValues()"
+               asp-route-q="@currentFilter.WithReplaced(field, $"{taskItemStatusRouteValue}")"
+               class="flex items-center gap-x-2 px-3 py-2 text-gray-700">
+                <span class="w-2 mr-1">
+                    @if (currentFilterValue == taskItemStatus) {
+                        <i class="fa-solid fa-check"></i>
+                    }
+                </span>
+                @if (label is not notClosedLabel) {
+                    <i class="fa-regular @statusIcon m-1"></i>
+                }
+                <span class="font-normal">@label</span>
+            </a>
+        </li>
+    }
+</ul>

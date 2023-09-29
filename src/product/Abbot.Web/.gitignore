@@ -1,0 +1,7 @@
+# filtering out javascript files that can be temporarily created
+# from ts files in certain IDEs
+assets/components/*.js
+assets/components/*.js.map
+assets/*.js
+assets/*.js.map
+!assets/install.js

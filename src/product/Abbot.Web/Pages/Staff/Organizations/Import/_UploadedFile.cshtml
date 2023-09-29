@@ -1,0 +1,47 @@
+@model IndexPageModel
+
+@{
+    Expect.NotNull(Model.UploadedFile);
+}
+
+<form method="post">
+    <h1 class="font-semibold text-3xl mt-3">Uploaded File</h1>
+    <p class="p-3">
+        Uncheck the rows that should not be imported. At the top of each column, select the data type for that column.
+        When done, click the "Lookup Data" button to validate the data.
+    </p>
+    <div>
+        <button type="submit" class="btn btn-primary" asp-page-handler="Lookup">Lookup Data</button>
+        <button type="submit" class="btn ml-2" form="clear-form">Clear</button>
+    </div>
+    <table class="w-full mt-1">
+        <thead>
+            <tr>
+                <th></th>
+                @foreach (var col in Model.UploadedFile.Columns) {
+                    <th class="text-left p-3">
+                        <select name="ImportColumns" asp-items="@col.GetSelectListItems()">
+                        </select>
+                    </th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var row in Model.UploadedFile.Rows) {
+            var potentiallyHasDataChecked = row.HasPotentialData ? "checked" : null;
+            <tr>
+                <td>
+                    <input name="importRows" value="@row.Index" type="checkbox" checked="@potentiallyHasDataChecked" />
+                </td>
+                @foreach (var cell in row.Cells) {
+                    <td class="border-t p-3 text-left">
+                        @cell.Value
+                    </td>
+                }
+            </tr>
+        }
+        </tbody>
+    </table>
+</form>
+<form id="clear-form" name="clear-form" method="post" asp-page-handler="Clear">
+</form>

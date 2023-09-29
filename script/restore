@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+#/ Usage: script/restore
+#/ Description: Restores NuGet and NPM versions.
+{ set +x; } 2>/dev/null
+source_dir="$( cd -P "$( dirname "$0" )" >/dev/null 2>&1 && pwd )"
+root_dir=$(cd $source_dir && cd ../ && pwd)
+cd $root_dir
+source script/helpers/_utils.sh
+
+echo "Restoring NuGet packages..."
+dotnet restore Abbot.sln
+
+echo "Restoring NPM packages for Abbot.Web..."
+cd "$root_dir/src/product/Abbot.Web" > /dev/null
+npm install
+npm rebuild node-sass
+
+echo "Restoring NPM packages for Serious.Razor..."
+cd "$root_dir/src/product/Serious.Razor" > /dev/null
+npm install
+npm rebuild node-sass

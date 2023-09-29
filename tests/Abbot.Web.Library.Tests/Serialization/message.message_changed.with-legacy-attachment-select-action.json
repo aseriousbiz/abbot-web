@@ -1,0 +1,162 @@
+{
+  "token": "xxx",
+  "team_id": "Tredacted",
+  "context_team_id": "Tredacted",
+  "context_enterprise_id": null,
+  "api_app_id": "Aredacted",
+  "event": {
+    "type": "message",
+    "subtype": "message_changed",
+    "message": {
+      "client_msg_id": "d434bd5c-b2fd-4762-8063-d7309dd7b8e0",
+      "type": "message",
+      "text": "redacted message text",
+      "user": "Uredacted",
+      "blocks": [
+        {
+          "type": "rich_text",
+          "block_id": "XWDe",
+          "elements": [
+            {
+              "type": "rich_text_section",
+              "elements": [
+                {
+                  "type": "link",
+                  "url": "https:\/\/example.com"
+                },
+                {
+                  "type": "text",
+                  "text": " is a good link"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "team": "Tredacted",
+      "attachments": [
+        {
+          "id": 1,
+          "footer_icon": "https:\/\/example.com\/icon.png",
+          "ts": 1679413691,
+          "color": "E03E2F",
+          "bot_id": "Bredacted",
+          "app_unfurl_url": "https:\/\/example.com\/unfurl",
+          "is_app_unfurl": true,
+          "app_id": "Aredacted",
+          "fallback": "Fallback",
+          "text": "Text",
+          "title": "Title",
+          "title_link": "https:\/\/example.com\/title",
+          "callback_id": "Callback",
+          "footer": "Footer",
+          "mrkdwn_in": [ "text" ],
+          "actions": [
+            {
+              "id": "1",
+              "name": "resolve_dialog",
+              "text": "Resolve...",
+              "type": "button",
+              "value": "resolve_dialog",
+              "style": ""
+            },
+            {
+              "id": "2",
+              "name": "status",
+              "text": "Ignore",
+              "type": "button",
+              "value": "ignored",
+              "style": ""
+            },
+            {
+              "id": "3",
+              "name": "assign",
+              "text": "Select Assignee...",
+              "type": "select",
+              "data_source": "static",
+              "option_groups": [
+                {
+                  "text": "Teams",
+                  "options": [
+                    {
+                      "text": "#team",
+                      "value": "team:id"
+                    }
+                  ]
+                },
+                {
+                  "text": "People",
+                  "options": [
+                    {
+                      "text": "Person 1",
+                      "value": "user:1"
+                    },
+                    {
+                      "text": "Person 2",
+                      "value": "user:2"
+                    }
+                  ]
+                }
+              ],
+              "selected_options": [
+                {
+                  "value": "user:1",
+                  "text": "Person 1"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "ts": "1679413948.859479"
+    },
+    "previous_message": {
+      "client_msg_id": "d434bd5c-b2fd-4762-8063-d7309dd7b8e0",
+      "type": "message",
+      "text": "Previous message text",
+      "user": "Uredacted",
+      "ts": "1679413948.859479",
+      "blocks": [
+        {
+          "type": "rich_text",
+          "block_id": "XWDe",
+          "elements": [
+            {
+              "type": "rich_text_section",
+              "elements": [
+                {
+                  "type": "link",
+                  "url": "https:\/\/example.com\/prev"
+                },
+                {
+                  "type": "text",
+                  "text": " is also a good link"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "team": "Tredacted"
+    },
+    "channel": "Credacted",
+    "hidden": true,
+    "ts": "1679413950.125600",
+    "event_ts": "1679413950.125600",
+    "channel_type": "channel"
+  },
+  "type": "event_callback",
+  "event_id": "Ev04V1T9KFPW",
+  "event_time": 1679413950,
+  "authorizations": [
+    {
+      "enterprise_id": null,
+      "team_id": "Tredacted",
+      "user_id": "Uredacted",
+      "is_bot": true,
+      "is_enterprise_install": false
+    }
+  ],
+  "is_ext_shared_channel": false,
+  "event_context": "redacted event context"
+}

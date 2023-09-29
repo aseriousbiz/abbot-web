@@ -1,0 +1,316 @@
+rules:
+  - name: Retrieve Chat Platform Info
+    script: ./rules/Retrieve Chat Platform Info.js
+    stage: login_success
+    enabled: true
+    order: 2
+rulesConfigs: []
+hooks: []
+pages:
+  - name: login
+    enabled: true
+    html: ./pages/login.html
+resourceServers: []
+clients:
+  - name: Abbot - Dev
+    allowed_clients: []
+    allowed_logout_urls:
+      - 'https://localhost:4979/'
+      - 'https://ipv4.fiddler:4979/'
+    app_type: regular_web
+    callbacks:
+      - 'https://localhost:4979/callback'
+      - 'https://ipv4.fiddler:4979/callback'
+    client_aliases: []
+    cross_origin_auth: false
+    custom_login_page_on: true
+    description: Abbot Dev Environment
+    grant_types:
+      - authorization_code
+      - implicit
+      - refresh_token
+      - client_credentials
+    initiate_login_uri: 'https://ab.bot/login'
+    is_first_party: true
+    is_token_endpoint_ip_header_trusted: false
+    jwt_configuration:
+      alg: RS256
+      lifetime_in_seconds: 36000
+      secret_encoded: false
+    native_social_login:
+      apple:
+        enabled: false
+      facebook:
+        enabled: false
+    oidc_conformant: true
+    refresh_token:
+      expiration_type: non-expiring
+      idle_token_lifetime: 2592000
+      infinite_idle_token_lifetime: true
+      infinite_token_lifetime: true
+      leeway: 0
+      token_lifetime: 31557600
+      rotation_type: non-rotating
+    sso_disabled: false
+    token_endpoint_auth_method: client_secret_post
+  - name: Discord-DirectLine-Dev
+    allowed_clients: []
+    allowed_logout_urls:
+      - 'https://discord-directline-haack-dev.azurewebsites.net/'
+      - 'https://localhost:5001/'
+    app_type: regular_web
+    callbacks:
+      - 'https://discord-directline-haack-dev.azurewebsites.net/callback'
+      - 'https://localhost:5001/callback'
+    client_aliases: []
+    cross_origin_auth: false
+    custom_login_page_on: true
+    grant_types:
+      - authorization_code
+      - implicit
+      - refresh_token
+      - client_credentials
+    initiate_login_uri: 'https://discord-directline-haack-dev.azurewebsites.net/login'
+    is_first_party: true
+    is_token_endpoint_ip_header_trusted: false
+    jwt_configuration:
+      alg: RS256
+      lifetime_in_seconds: 36000
+      secret_encoded: false
+    logo_uri: 'https://ab.bot/img/abbot-avatar.png'
+    native_social_login:
+      apple:
+        enabled: false
+      facebook:
+        enabled: false
+    oidc_conformant: true
+    refresh_token:
+      rotation_type: non-rotating
+      expiration_type: non-expiring
+    sso_disabled: false
+    token_endpoint_auth_method: client_secret_post
+  - name: auth0-deploy-cli-extension
+    cross_origin_auth: false
+    custom_login_page_on: true
+    grant_types:
+      - authorization_code
+      - implicit
+      - refresh_token
+      - client_credentials
+    is_first_party: true
+    is_token_endpoint_ip_header_trusted: false
+    jwt_configuration:
+      alg: RS256
+      lifetime_in_seconds: 36000
+      secret_encoded: false
+    oidc_conformant: true
+    refresh_token:
+      expiration_type: non-expiring
+      leeway: 0
+      infinite_token_lifetime: true
+      infinite_idle_token_lifetime: true
+      token_lifetime: 31557600
+      idle_token_lifetime: 2592000
+      rotation_type: non-rotating
+    sso_disabled: false
+    token_endpoint_auth_method: client_secret_post
+databases:
+  - name: Username-Password-Authentication
+    strategy: auth0
+    enabled_clients: []
+    is_domain_connection: false
+    options:
+      mfa:
+        active: true
+        return_enroll_settings: true
+      passwordPolicy: good
+      strategy_version: 2
+      brute_force_protection: true
+    realms:
+      - Username-Password-Authentication
+connections:
+  - name: aseriousbiz
+    strategy: google-apps
+    display_name: A Serious Business
+    enabled_clients:
+      - auth0-deploy-cli-extension
+      - Discord-DirectLine-Dev
+    is_domain_connection: false
+    options:
+      email: true
+      scope:
+        - email
+        - profile
+      domain: aseriousbusiness.com
+      profile: true
+      icon_url: 'https://ab.bot/img/abbot-avatar.png'
+      client_id: 103794818224-rkt96r3top0gftrneb483qsgcpbugbcl.apps.googleusercontent.com
+      ext_groups: false
+      ext_is_admin: false
+      client_secret: 6KEGMygwbpMS7dlZmjusZRKm
+      tenant_domain: aseriousbusiness.com
+      ext_agreed_terms: false
+      ext_is_suspended: false
+      admin_access_token: >-
+        ya29.a0AfH6SMDaeEoqCds1mxnGcNSH73_dhR9WbeKYBmlOrlPMpGOyI7jIfOMWCXstgq435o8HMzhfZa3F8IK3u638BQfIK-iOYd_ztAk27yN65jGPSVC8IpCmdRywSGx2600T6RHBvB7y5UUkGwxZ-VHxUB-mj5kpS-18vn9Fxo2JS8s
+      admin_refresh_token: >-
+        1//04a0wAgUfB1QICgYIARAAGAQSNwF-L9Ird3-u8QLElI7pIzyzWMqN-dm43Pk2BTK06fFPVJttouoG1lzJez-SkLoPAtiYwl6CqlU
+      handle_login_from_social: true
+      admin_access_token_expiresin: '2020-12-13T20:37:07.127Z'
+  - name: discord
+    strategy: oauth2
+    enabled_clients:
+      - Abbot - Dev
+      - auth0-deploy-cli-extension
+    is_domain_connection: false
+    options:
+      scope: identify email
+      scripts:
+        fetchUserProfile: |-
+          /*
+          This is "Fetch User Profile Script" we use in Auth0 under:
+
+          Tenant: aseriousbiz -> Connections -> Social -> `discord`
+           */
+
+          function(accessToken, ctx, cb) {
+              request.get({
+                  url: 'https://discord.com/api/users/@me',
+                  headers: {
+                      'Authorization': 'Bearer ' + accessToken
+                  }
+              }, function(err, resp, body) {
+                  if (err) return cb(err);
+                  if (resp.statusCode !== 200) return cb(new Error(body));
+
+                  const user = JSON.parse(body);
+
+                  const profile = {
+                      platform_user_id: user.id,
+                      id: user.id,
+                      name: user.username,
+                      nickname: user.username,
+                      picture: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`,
+                      locale: user.locale,
+                      email: user.email
+                  };
+                  cb(null, profile);
+              });
+          }
+      tokenURL: 'https://discord.com/api/oauth2/token'
+      client_id: '785945994097197137'
+      client_secret: onqzRHgrbMCToRCblhhLhz7uzH2KYsOc
+      authorizationURL: 'https://discord.com/api/oauth2/authorize'
+  - name: slack
+    strategy: oauth2
+    enabled_clients:
+      - Abbot - Dev
+      - auth0-deploy-cli-extension
+    is_domain_connection: false
+    options:
+      scope: 'identity.basic, identity.email, identity.avatar, identity.team'
+      scripts:
+        fetchUserProfile: |-
+          /*
+          This is "Fetch User Profile Script" we use in Auth0 under:
+
+          Tenant: aseriousbiz -> Connections -> Social -> `abbot-slack`
+           */
+
+          function(accessToken, ctx, cb) {
+              request.get({
+                  url: 'https://slack.com/api/users.identity',
+                  qs: {
+                      token: accessToken
+                  }
+              }, function(err, resp, body) {
+                  if (err) return cb(err);
+                  if (resp.statusCode !== 200) return cb(new Error(body));
+
+                  const slackResponse = JSON.parse(body);
+                  if (!slackResponse.ok) return cb(new Error(body));
+
+                  const profile = slackResponse.user;
+                  profile.platform_user_id = slackResponse.user.id;
+                  profile.slack_id = slackResponse.user.id;
+                  profile.team = slackResponse.team;
+                  profile.picture = slackResponse.user.image_32;
+                  cb(null, profile);
+              });
+          }
+      tokenURL: 'https://slack.com/api/oauth.access'
+      client_id: '1103008406706.1108577904386'
+      client_secret: 53a6cf53f6c5930f68091d22b7e2c615
+      authorizationURL: 'https://slack.com/oauth/authorize'
+tenant:
+  enabled_locales:
+    - en
+  flags:
+    new_universal_login_experience_enabled: true
+    universal_login: true
+    disable_clickjack_protection_headers: false
+    unpaginated_requests: true
+  picture_url: 'https://ab.bot/img/logo-abbot-login-58x58.png'
+  universal_login:
+    colors:
+      page_background: '#000000'
+      primary: '#4E93D9'
+emailProvider: {}
+emailTemplates: []
+clientGrants:
+  - client_id: Abbot - Dev
+    audience: 'https://aseriousbiz-dev.us.auth0.com/api/v2/'
+    scope:
+      - 'read:users'
+      - 'update:users'
+      - 'delete:users'
+      - 'create:users'
+      - 'read:users_app_metadata'
+      - 'update:users_app_metadata'
+      - 'delete:users_app_metadata'
+      - 'create:users_app_metadata'
+      - 'read:user_idp_tokens'
+      - 'read:roles'
+      - 'create:roles'
+      - 'delete:roles'
+      - 'update:roles'
+guardianFactors:
+  - name: duo
+    enabled: false
+  - name: email
+    enabled: false
+  - name: otp
+    enabled: false
+  - name: push-notification
+    enabled: false
+  - name: sms
+    enabled: false
+  - name: webauthn-roaming
+    enabled: false
+guardianFactorProviders: []
+guardianFactorTemplates: []
+guardianPolicies:
+  policies: []
+guardianPhoneFactorSelectedProvider:
+  provider: auth0
+guardianPhoneFactorMessageTypes:
+  message_types: []
+roles:
+  - name: Administrator
+    description: Users who may administer their organization.
+    permissions: []
+  - name: Member
+    description: Accepted users who may use this site.
+    permissions: []
+  - name: Staff
+    description: 'Employees of A Serious Business, Inc.'
+    permissions: []
+branding:
+  colors:
+    page_background: '#000000'
+    primary: '#4E93D9'
+  logo_url: 'https://ab.bot/img/logo-abbot-login-58x58.png'
+prompts:
+  universal_login_experience: new
+migrations: {}
+actions: []

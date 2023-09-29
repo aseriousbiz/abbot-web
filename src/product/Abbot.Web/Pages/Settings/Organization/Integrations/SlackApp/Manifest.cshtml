@@ -1,0 +1,81 @@
+﻿@page "{handler?}"
+@model Serious.Abbot.Pages.Settings.Organization.Integrations.SlackApp.ManifestModel
+
+@{
+    ViewContext.SetPageInfo("Integrations", "Custom Slack App Manifest");
+}
+
+<partial name="../_Header" model="Model.Viewer"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <div class="font-semibold">
+            <a asp-page="../Index">Integrations</a> /
+            <a asp-page="Index">Custom Slack App</a> /
+            Manifest
+        </div>
+        <p>
+            Customize how your bot is displayed to users.
+        </p>
+        <h2 class="text-3xl">App Manifest</h2>
+        <form method="post" class="flex flex-col items-start">
+            <h3 class="text-xl is-4 my-4">Display Information</h3>
+
+            <label class="font-semibold" asp-for="Manifest.AppName"></label>
+            @if (Model.Editing)
+            {
+                <input class="form-input w-96" asp-for="Manifest.AppName">
+                <span asp-validation-for="Manifest.AppName"></span>
+            }
+            else if (Model.Manifest is { AppName.Length: >0 })
+            {
+                <span>@Model.Manifest.AppName</span>
+            }
+            else
+            {
+                <span class="text-gray-500">Not yet set</span>
+            }
+
+            <h3 class="text-xl is-4 my-4">App Presence</h3>
+            <p>
+                Slack does not allow duplicate bot names.
+                If you have already customized Abbot to use your preferred bot name,
+                please change it so the custom app can use the preferred name.
+            </p>
+
+            <label class="font-semibold" asp-for="Manifest.BotUserDisplayName"></label>
+            @if (Model.Editing)
+            {
+                <input class="form-input w-96" asp-for="Manifest.BotUserDisplayName">
+                <span asp-validation-for="Manifest.BotUserDisplayName"></span>
+            }
+            else if (Model.Manifest is { BotUserDisplayName.Length: >0 })
+            {
+                <span>@Model.Manifest.BotUserDisplayName</span>
+            }
+            else
+            {
+                <span class="text-gray-500">Not yet set</span>
+            }
+
+            <div class="mt-4 flex gap-x-2 w-96">
+                <a asp-page="./Index" class="btn">Back</a>
+                <div class="flex-grow"></div>
+                @if (Model.Editing)
+                {
+                    <a asp-route-editing="" asp-page-handler="" class="btn">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save Manifest</button>
+                }
+                else
+                {
+                    <a asp-route-editing="true" class="btn">Edit Manifest</a>
+                    @if (Model.Settings is { Manifest: not null })
+                    {
+                        <button asp-page-handler="Clear" class="btn btn-danger" data-confirm="Are you sure you want to clear the manifest? This cannot be undone.">Clear</button>
+                    }
+                }
+            </div>
+        </form>
+    </round-box>
+</page-body>

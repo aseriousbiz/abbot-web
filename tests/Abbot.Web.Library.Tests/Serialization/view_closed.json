@@ -1,0 +1,98 @@
+{
+  "type": "view_closed",
+  "team": {
+    "id": "T013108BYLS",
+    "domain": "aseriousbiz"
+  },
+  "user": {
+    "id": "U012LKJFG0P",
+    "username": "haacked",
+    "name": "haacked",
+    "team_id": "T013108BYLS"
+  },
+  "api_app_id": "A01TG9GPJQ3",
+  "token": "AUBq0lzDhvfWfOieKqkC1l7D",
+  "view": {
+    "id": "V03CF9W49FT",
+    "team_id": "T013108BYLS",
+    "type": "modal",
+    "blocks": [
+      {
+        "type": "input",
+        "block_id": "multiline",
+        "label": {
+          "type": "plain_text",
+          "text": "Enter something",
+          "emoji": true
+        },
+        "optional": false,
+        "dispatch_action": false,
+        "element": {
+          "type": "plain_text_input",
+          "action_id": "something",
+          "multiline": true,
+          "dispatch_action_config": {
+            "trigger_actions_on": [
+              "on_enter_pressed"
+            ]
+          }
+        }
+      },
+      {
+        "type": "input",
+        "block_id": "Wf+Y2",
+        "label": {
+          "type": "plain_text",
+          "text": "Select a channel",
+          "emoji": true
+        },
+        "optional": false,
+        "dispatch_action": false,
+        "element": {
+          "type": "conversations_select",
+          "response_url_enabled": true,
+          "action_id": "1C8=d"
+        }
+      }
+    ],
+    "private_metadata": "",
+    "callback_id": "b:conversations",
+    "state": {
+      "values": {
+        "Wf+Y2": {
+          "1C8=d": {
+            "type": "conversations_select",
+            "response_url_enabled": true
+          }
+        }
+      }
+    },
+    "hash": "1650392526.jfG5k069",
+    "title": {
+      "type": "plain_text",
+      "text": "Configure",
+      "emoji": true
+    },
+    "clear_on_close": false,
+    "notify_on_close": true,
+    "close": {
+      "type": "plain_text",
+      "text": "Close",
+      "emoji": true
+    },
+    "submit": {
+      "type": "plain_text",
+      "text": "Submit",
+      "emoji": true
+    },
+    "previous_view_id": null,
+    "root_view_id": "V03CF9W49FT",
+    "app_id": "A01TG9GPJQ3",
+    "external_id": "",
+    "app_installed_team_id": "T013108BYLS",
+    "bot_id": "B01U63BS0EL"
+  },
+  "is_cleared": true,
+  "is_enterprise_install": false,
+  "enterprise": null
+}

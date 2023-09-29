@@ -1,0 +1,39 @@
+﻿{
+  target: {
+    BusTestHarness: {
+      Messages: []
+    },
+    Conversation: {
+      RoomId: 1,
+      FirstMessageId: 1111.0006,
+      ThreadIds: [
+        1111.0006
+      ],
+      Title: CONVO-WARN-0,
+      IsImported: false,
+      LastMessagePostedOn: 1999-02-02 11:00 Utc,
+      LastStateChangeOn: 1999-02-02 11:00 Utc,
+      State: Overdue,
+      StartedById: 6,
+      Properties: {
+        LastSupporteeMessageId: 1112.0000
+      },
+      OrganizationId: 1,
+      Id: 1,
+      Created: 1999-02-02 11:00 Utc
+    },
+    Events: [
+      {
+        $type: StateChangedEvent,
+        OldState: New,
+        NewState: Overdue,
+        Implicit: false,
+        Id: 1,
+        ConversationId: 1,
+        ThreadId: 1111.0006,
+        MemberId: 2,
+        Created: 1999-02-04 12:00
+      }
+    ]
+  }
+}

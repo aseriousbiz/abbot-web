@@ -1,0 +1,142 @@
+@page
+@using Serious.Abbot.Routing
+@model Serious.Abbot.Pages.Settings.Organization.IndexPage
+@inject IUrlGenerator UrlGenerator
+@{
+    ViewContext.SetPageInfo("Settings", "Organization Settings");
+    var platformName = Model.Organization.PlatformType.Humanize();
+    var plan = Model.Organization.GetPlan();
+}
+
+<partial name="_Header" model="Model.Viewer"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <h3 class="text-xl font-semibold mb-2">Organization profile</h3>
+        <div class="flex">
+            <img id="org-avatar-current" class="w-16 h-16 border-gray-300 border-4 rounded-full" src="@Model.Organization.Avatar" alt="The organization's avatar" />
+            <div class="flex flex-col ml-3">
+                <div class="font-semibold">@Model.Organization.Name</div>
+                <div class="text-sm text-gray-500">This information comes from your Organization's @platformName profile.</div>
+            </div>
+        </div>
+    </round-box>
+
+    <round-box>
+        <h3 class="text-xl font-semibold mb-2">Subscription</h3>
+        @if (Model.Organization.Trial is {} trial) {
+            <div class="mb-1">
+                Your organization is on a trial of the <span class="font-semibold">@plan.Name Plan.</span>
+            </div>
+            <div class="mb-1">
+                The trial expires <span data-tooltip="@trial.Expiry.Date.ToLongDateString()">@trial.Expiry.Humanize()</span>.
+                <span>To upgrade this plan, visit <a asp-page="Billing/Index">the Billing page</a>.</span>
+            </div>
+        }
+        else {
+            <div class="mb-1">
+                Your organization is on the <span class="font-semibold">@Model.Organization.GetPlan().Name Plan.</span>
+                <span>For billing information about your plan, visit <a asp-page="Billing/Index">the Billing page</a>.</span>
+            </div>
+        }
+    </round-box>
+
+    <round-box>
+        <form method="post" asp-page-handler="ConversationSettings">
+            <h2 class="text-xl font-semibold" id="conversation-settings">Conversations</h2>
+
+            <div class="mt-5">
+                <label class="checkbox">
+                    <input asp-for="Input.NotifyOnNewConversationsOnly" />
+                    <span class="font-semibold">Only Notify on New Conversations</span>
+                </label>
+                <p class="text-sm text-gray-500">
+                    If checked, you will only be notified when a new conversation that has never been responded to
+                    by an agent becomes overdue. If unchecked, any time a conversation becomes overdue, a notification
+                    is sent.
+                </p>
+            </div>
+
+            <div class="mt-5" feature="@FeatureFlags.AIEnhancements">
+                <label class="checkbox">
+                    <input asp-for="Input.AllowAIEnhancements" />
+                    <span class="font-semibold">Enable AI Enhancements</span>
+                </label>
+                <p class="text-sm text-gray-500">
+                    Enables AI enhanced features including auto-summarization of conversations and
+                    an improved default responder when messaging Abbot directly. Powered by <a href="https://openai.com/">OpenAI</a>.
+                </p>
+            </div>
+            <div class="mt-3 ml-5" feature="@FeatureFlags.AIEnhancements">
+                <label class="checkbox">
+                    <input asp-for="Input.IgnoreSocialMessages" />
+                    <span class="font-semibold">Ignore Social Messages</span>
+                </label>
+                <p class="text-sm text-gray-500">
+                    When checked, Abbot will not create new conversations for messages that are classified by AI as
+                    social in nature. Note: this requires that AI Enhancements are enabled and does not affect social
+                    messages in an existing conversation thread.
+                </p>
+            </div>
+
+            <div class="mt-5">
+                <label class="checkbox">
+                    <input asp-for="Input.AllowReactionResponses" />
+                    <span class="font-semibold">Allow Emoji Reactions Responses</span>
+                </label>
+                <p class="text-sm text-gray-500">
+                    If enabled, the ✅ emoji reaction will close a conversation and the 👀 emoji
+                    reaction will snooze a message for an hour.
+                </p>
+            </div>
+            <div class="mt-5">
+                <label class="checkbox">
+                    <input asp-for="Input.AllowTicketReactions">
+                    <span class="font-semibold">Allow Ticket Reactions</span>
+                </label>
+                <p class="text-sm text-gray-500">
+                    If enabled, the 🎫 emoji reaction will allow any user (including external users)
+                    to open a ticket using any of your enabled ticketing integrations.
+                    You can override this setting per-room in the <a asp-page="../Rooms/Index">Room settings</a>.
+                </p>
+            </div>
+
+            <div class="mt-5 flex items-center">
+                <input type="submit" class="btn btn-primary" value="Save"/>
+            </div>
+        </form>
+    </round-box>
+
+    <round-box>
+        <form method="post">
+            <h2 class="text-xl font-semibold">Security</h2>
+            <div class="mt-5">
+                <label class="checkbox">
+                    <input asp-for="Input.AutoApproveUsers">
+                    <span class="font-semibold">Automatically approve authenticated users</span>
+                </label>
+                <p class="text-sm text-gray-500">
+                    If unchecked, users who authenticate to this site using their
+                    @platformName credentials will show up in the <a asp-page="Users/Pending">Wait List</a>
+                    until approved by an Administrator. If checked, users who authenticate to the
+                    site gain automatic full access to the site.
+                </p>
+            </div>
+
+            <div class="mt-5 flex items-center">
+                <input type="submit" class="btn btn-primary" value="Save"/>
+            </div>
+        </form>
+    </round-box>
+
+    <round-box>
+        <h2 class="text-xl font-semibold">Reauthorize Slack</h2>
+        <p>Approve new Slack permissions</p>
+        <p class="text-gray-500 text-sm">
+            You might need to this if Abbot requires new permissions in order for new features to work.
+        </p>
+        <a href="@UrlGenerator.SlackInstallUrl()" class="btn btn-primary mt-5">Reauthorize</a>
+    </round-box>
+
+</page-body>

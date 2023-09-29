@@ -1,0 +1,29 @@
+@model Serious.Abbot.Pages.Activity.DetailsModel
+
+@{
+    var package = Model.Package;
+    var auditEvent = Model.AuditEvent as PackageEvent
+        ?? throw new InvalidOperationException($"AuditEvent is not a {nameof(PackageEvent)}.");
+}
+
+@if (package is not null) {
+    <a asp-page="/Packages/Details"
+       asp-route-organization="@package.Organization.Slug"
+       asp-route-name="@package.Skill.Name">@auditEvent.SkillName</a>
+
+    if (!package.Skill.Name.Equals(auditEvent.SkillName, StringComparison.Ordinal)) {
+        <p class="has-text-grey">
+            <small>Since renamed to @package.Skill.Name</small>
+        </p>
+    }
+} else {
+    @auditEvent.SkillName
+    <p class="has-text-grey">
+        @if (auditEvent.EntityId != 0) {
+            <small>Since deleted</small>
+        } else {
+            @* If auditEvent.EntityId is 0, we don't know if the skill was deleted or renamed. *@
+            <small>Since deleted or renamed</small>
+        }
+    </p>
+}

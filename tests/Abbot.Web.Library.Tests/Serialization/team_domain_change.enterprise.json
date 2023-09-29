@@ -1,0 +1,26 @@
+{
+  "token": "AUBq0lzDhvfWfOieKqkC1l7D",
+  "team_id": "T013108BYLS",
+  "enterprise_id": "E02V6NXUF2Q",
+  "api_app_id": "A01TG9GPJQ3",
+  "event": {
+    "type": "team_domain_change",
+    "url": "https://aserioussandbox1.slack.com",
+    "domain": "aserioussandbox1",
+    "team_id": "T030E9MAV6U",
+    "event_ts": "1667262268.026300"
+  },
+  "type": "event_callback",
+  "event_id": "Ev048G8F3DSB",
+  "event_time": 1667262268,
+  "authorizations": [
+    {
+      "enterprise_id": "E02V6NXUF2Q",
+      "team_id": "T030E9MAV6U",
+      "user_id": "U03A5C1LA9F",
+      "is_bot": true,
+      "is_enterprise_install": false
+    }
+  ],
+  "is_ext_shared_channel": false
+}

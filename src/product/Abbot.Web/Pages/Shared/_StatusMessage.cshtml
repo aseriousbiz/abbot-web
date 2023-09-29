@@ -1,0 +1,19 @@
+@model string
+<div id="status-message-host">
+    @if (!string.IsNullOrEmpty(Model)) {
+        var (message, statusMessageClass) = Model.StartsWith(WebConstants.ErrorStatusPrefix, StringComparison.OrdinalIgnoreCase)
+            ? (Model[WebConstants.ErrorStatusPrefix.Length..], "bg-red-100 text-red-900 border-red-200")
+            : (Model, "bg-green-100 text-green-900 border-green-200");
+
+        <div class="notification-abbot text-sm w-full">
+            <div data-controller="alert"
+                 data-alert-dismiss-after-value="2500"
+                 class="fade-in mb-4 py-2 px-3 border rounded-lg @statusMessageClass flex" role="alert">
+                <div class="flex-grow">@Html.Raw(message)</div>
+                <button type="button" class="ml-auto" aria-label="Close" data-action="alert#dismiss">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+    }
+</div>

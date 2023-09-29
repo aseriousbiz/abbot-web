@@ -1,0 +1,129 @@
+@page "/skills/{skill}/triggers"
+@model Serious.Abbot.Pages.Skills.Triggers.IndexPageModel
+@{
+    ViewContext.SetPageInfo("Triggers", "Trigger List", "Triggers");
+}
+<div class="sm:flex items-start mx-1 my-2">
+    <div class="border border-gray-200 bg-gray-100 mx-1 text-sm flex-grow-0 sm:w-1/4 mt-2 sm:mt-0">
+        <div class="border-b bg-white p-2">
+            <header class="bg-blue-500 px-2">
+                <h1 class="text-white">
+                    Skill:
+                    <span>@Model.SkillName</span>
+                </h1>
+            </header>
+
+            <nav>
+                <ul class="m-2 font-mono" role="tablist">
+                    <li class="mb-1">
+                        Code
+                    </li>
+
+                    <li class="mb-1">
+                        <a class="font-mono text-blue-500 hover:text-gray-700"
+                           asp-page="../Activity/Index"
+                           asp-route-skill="@Model.SkillName">
+                            View activity
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <div class="flex-grow">
+        <section class="border border-gray-200 mx-1 mt-2 sm:mt-0">
+            <header class="px-2 m-2 bg-blue-50">
+                <h1 class="text-sm">
+                    Skill editor
+                </h1>
+            </header>
+
+            <partial name="Skills/_SkillNavigationTabs" model="Model.Skill" />
+
+            <section class="m-4">
+                <partial name="Shared/_StatusMessage" model="@Model.StatusMessage"/>
+
+                <header>
+                    <div class="max-w-3xl mb-2">
+                        <h2 class="font-bold text-lg">
+                            Triggers
+                        </h2>
+                        <p>Triggers enable a skill to be called on a schedule or by an HTTP request.</p>
+                        <p class="text-gray-500">
+                            Skill replies are sent to the channel where the trigger was created. Keep HTTP trigger URLs secret!
+                        </p>
+                    </div>
+                </header>
+
+                <section class="mt-4">
+                    <div class="flex rounded-lg px-4 py-1 border flex text-sm font-bold" aria-hidden="true">
+                        <div>Trigger</div>
+                    </div>
+
+                    <div class="divide-y">
+                        @if (Model.CanRunSkill) {
+                            @if (Model.Triggers.Any()) {
+                                @foreach (var trigger in Model.Triggers) {
+                                    <div class="p-4">
+                                        <partial name="Shared/_TriggerCard" model="@trigger"/>
+                                    </div>
+                                }
+                            } else {
+                                <div class="border border-gray-100 rounded mt-4">
+                                    <blankslate>
+                                        <h2 class="font-bold">This skill does not have any triggers.</h2>
+                                        <p>To create a trigger, run one of the following commands in chat:</p>
+
+                                        <div class="mt-4 p-4 text-left w-1/2 mx-auto bg-gray-100 rounded-lg">
+                                            <p class="text-sm">
+                                                To create an HTTP trigger and return here for the URL to call the skill:
+                                            </p>
+
+                                            <copy-box value="@("@" + Model.Organization.BotName) attach @Model.SkillName" size-to-value="true" class="w-max"></copy-box>
+
+                                            <p class="mt-4 text-sm">
+                                                To schedule the skill and return here to configure the schedule:
+                                            </p>
+
+                                            <copy-box value="@("@" + Model.Organization.BotName) schedule @Model.SkillName" size-to-value="true"></copy-box>
+                                        </div>
+                                    </blankslate>
+                                </div>
+                            }
+                        } else {
+                            <div class="rounded-lg overflow-hidden mt-2 text-red-500">
+                                <blankslate>
+                                    <span class="font-mono font-bold text-sm px-2 py-1 rounded bg-red-100">Use</span> permission is required to view a skill&#8217;s triggers.
+                                    <partial name="Shared/_PermissionTooltip" model="Model.SkillName"/>
+                                </blankslate>
+                            </div>
+                        }
+                    </div>
+                </section>
+
+                @if (Model.CanRunSkill && Model.Triggers.Any()) {
+                    <div class="border-t">
+                        <div class="mt-4 p-4 text-left mx-auto bg-gray-50 rounded-lg text-gray-500 text-sm">
+                            <p>
+                                To create an HTTP trigger and return here for the URL to call the skill:
+                            </p>
+
+                            <p class="font-mono text-black">
+                                <span class="text-gray-500 font-bold">@@abbot</span> <span class="font-bold">attach</span> @Model.SkillName
+                            </p>
+
+                            <p class="mt-4">
+                                To schedule the skill and return here to configure the schedule:
+                            </p>
+
+                            <p class="font-mono text-black">
+                                <span class="text-gray-500 font-bold">@@abbot</span> <span class="font-bold">schedule</span> @Model.SkillName
+                            </p>
+                        </div>
+                    </div>
+                }
+            </section>
+        </section>
+    </div>
+</div>

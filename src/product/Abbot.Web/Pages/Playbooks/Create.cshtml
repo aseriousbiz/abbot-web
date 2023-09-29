@@ -1,0 +1,43 @@
+@page
+@model Serious.Abbot.Pages.Playbooks.CreatePlaybookPage
+@{
+    ViewContext.SetPageInfo("Playbook", "Playbook", "Create Playbook");
+}
+
+<page-header class="my-4 w-96 mx-auto">
+    <header class="mb-4 flex">
+        <div>
+            <div class="font-medium text-sm">
+                <a asp-page="Index">
+                    Playbook
+                </a>
+            </div>
+
+            <h1 class="font-semibold" id="playbook-name">
+                Create Playbook
+            </h1>
+        </div>
+    </header>
+</page-header>
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body class="h-full">
+    <form method="post" class="flex flex-col rounded-2xl border border-slate-300 bg-white p-4 gap-y-2 w-96 mx-auto">
+        <div class="flex flex-col">
+            <label asp-for="Input.Name"></label>
+            <input class="form-input" asp-for="Input.Name" />
+            <span asp-validation-for="Input.Name"></span>
+        </div>
+
+        <div class="flex flex-col">
+            <label asp-for="Input.Description"></label>
+            <textarea class="form-input h-32" asp-for="Input.Description"></textarea>
+            <span asp-validation-for="Input.Description"></span>
+        </div>
+
+        <div class="mt-2 flex justify-end">
+            <button class="btn btn-primary" type="submit">Create Playbook</button>
+        </div>
+    </form>
+</page-body>

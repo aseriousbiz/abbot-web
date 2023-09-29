@@ -1,0 +1,47 @@
+@model NotificationEvent
+@inject Messaging.IMessageRenderer Renderer
+@{
+    var metadata = Model.DeserializeMetadata().Require();
+    var notification = metadata.Notification;
+    var icon = notification.Type switch
+    {
+        NotificationType.Warning => "exclamation-triangle",
+        NotificationType.Deadline => "exclamation-circle",
+        var type => throw new UnreachableException($"Unknown NotificationType: {type}"),
+    };
+    var message = await Renderer.RenderMessageAsync(notification.Message, Model.Conversation.Organization);
+}
+<timeline-entry icon="@icon" actor="@Model.Member" viewer-organization="@Model.Conversation.Organization">
+    <div>
+        <p class="text-indigo-500 font-semibold text-sm">
+            Notification: @notification.Headline
+
+            <span class="text-gray-500 font-normal" data-tooltip="@Model.Created" title="@Model.Created">
+                @Model.Created.Humanize()
+            </span>
+        </p>
+
+        <div class="my-2">
+            <message-renderer message="message" render-links="true" />
+        </div>
+
+        @if (metadata.Suppressed) {
+            <div class="my-2 text-gray-500 italic">
+                This notification was suppressed because the organization has "Only Notify on New Conversations" enabled.
+            </div>
+        }
+
+        <ul class="list-none">
+            @foreach(var mentionGroup in notification.MentionGroups) {
+                var mentions = string.Join(" ", mentionGroup.MentionIds.Select(SlackFormatter.UserMentionSyntax));
+                var groupMessage = await Renderer.RenderMessageAsync(
+                    $"*{mentionGroup.RecipientType.Humanize().Pluralize()}*: {mentions}",
+                    Model.Conversation.Organization);
+
+                <li>
+                    <message-renderer message="groupMessage" />
+                </li>
+            }
+        </ul>
+    </div>
+</timeline-entry>

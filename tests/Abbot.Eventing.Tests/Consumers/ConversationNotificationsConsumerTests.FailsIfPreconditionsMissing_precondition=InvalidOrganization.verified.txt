@@ -1,0 +1,31 @@
+﻿{
+  target: {},
+  logs: {
+    $type: List<LogEvent>,
+    $values: [
+      {
+        CategoryName: Serious.Abbot.Eventing.Entities.OrganizationFilter,
+        LogLevel: Error,
+        EventId: {
+          Id: 4020,
+          Name: EntityNotFound
+        },
+        Message: Entity not found by Id (Id: 99, Type: Serious.Abbot.Entities.Organization),
+        State: {
+          $type: LoggerMessage.LogValues<object, Type>,
+          $values: [
+            {
+              EntityId: 99
+            },
+            {
+              EntityType: Organization
+            },
+            {
+              {OriginalFormat}: Entity not found by Id (Id: {EntityId}, Type: {EntityType})
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

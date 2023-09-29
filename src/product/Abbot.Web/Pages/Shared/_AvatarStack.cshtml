@@ -1,0 +1,12 @@
+@model AvatarStackViewModel
+
+<div class="ml-auto inline-flex align-middle items-center -space-x-2 hover:space-x-0">
+    @foreach (var (primary, secondary) in Model.Items) {
+        <div class="relative z-30 inline-block object-cover transition-all " data-tooltip="@primary.Title">
+            <img class="inline-block w-5 h-5 border border-white rounded-full" src="@primary.Url" alt="@primary.AltText">
+            @if (secondary is not null && secondary.Url is not null) {
+                <img class="absolute -bottom-1 -right-1 inline-block w-3 h-3 bg-white border border-white rounded-full" src="@secondary.Url" title="@secondary.Title" alt="@secondary.Title">
+            }
+        </div>
+    }
+</div>

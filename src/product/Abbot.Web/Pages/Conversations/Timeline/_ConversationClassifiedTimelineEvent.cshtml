@@ -1,0 +1,24 @@
+@model ConversationClassifiedEvent
+@{
+    var result = Model.DeserializeMetadata();
+    if (result is null) {
+        return;
+    }
+}
+
+<timeline-entry icon="memo" actor="Model.Member" viewer-organization="Model.Conversation.Organization" background-color="TailwindColor.Yellow" text-color="TailwindColor.Yellow" staff-only="true">
+    <div class="text-indigo-500 text-sm">
+        <strong>Conversation Classified by <code>@result.Model</code> (via @result.Service) with temperature <code>@result.Temperature</code> using <code>@result.TokenUsage.TotalTokenCount</code> total tokens</strong>
+        <span class="text-gray-500 font-normal" data-tooltip="@Model.Created" title="@Model.Created">
+            @Model.Created.Humanize()
+        </span>
+        <partial name="Conversations/Timeline/_AIResult" model="result" />
+
+        <strong>Categories</strong>
+        <ul>
+            @foreach (var category in result.Categories) {
+                <li>@category.Name @category.Value</li>
+            }
+        </ul>
+    </div>
+</timeline-entry>

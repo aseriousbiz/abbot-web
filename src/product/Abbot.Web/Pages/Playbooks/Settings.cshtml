@@ -1,0 +1,48 @@
+@page "/playbooks/{slug}/settings"
+@model Serious.Abbot.Pages.Playbooks.PlaybookSettingsPage
+
+@{
+    ViewContext.SetPageInfo("Playbook", "Playbook", "Playbook settings");
+}
+
+<page-header class="my-4 w-96 mx-auto">
+    <header class="mb-4 flex">
+        <div>
+            <div class="font-medium text-sm">
+                <a asp-page="View" asp-route-slug="@Model.Playbook.Slug" preserve-staff>
+                    Playbook: @Model.Playbook.Name
+                </a>
+            </div>
+
+            <h1 class="font-semibold" id="playbook-name">
+                Settings
+            </h1>
+        </div>
+    </header>
+</page-header>
+
+<page-body class="h-full">
+    <form method="post" class="flex flex-col rounded-2xl border border-slate-300 bg-white p-4 gap-y-2 w-96 mx-auto">
+        <div class="flex flex-col">
+            <label asp-for="Input.Name"></label>
+            <input class="form-input" readonly="@Model.InStaffTools" asp-for="Input.Name" />
+            <span asp-validation-for="Input.Name"></span>
+        </div>
+
+        <div class="flex flex-col">
+            <label asp-for="Input.Description"></label>
+            <textarea readonly="@Model.InStaffTools" class="form-input h-32" asp-for="Input.Description"></textarea>
+            <span asp-validation-for="Input.Description"></span>
+        </div>
+
+        @if (!Model.InStaffTools) {
+            <div class="mt-2 flex items-center gap-x-4">
+                <a asp-page="Delete" asp-route-slug="@Model.Playbook.Slug" class="btn btn-danger">Delete</a>
+
+                <div class="ml-auto">
+                    <button class="btn btn-primary" type="submit">Update Playbook</button>
+                </div>
+            </div>
+        }
+    </form>
+</page-body>

@@ -1,0 +1,174 @@
+@page "/staff/organizations/{id}/rooms"
+@using Microsoft.AspNetCore.Antiforgery
+@using Serious.Abbot.Infrastructure.TagHelpers
+@using Serious.AspNetCore.TagHelpers
+@model Serious.Abbot.Pages.Staff.Organizations.RoomsPage
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Room List");
+}
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">Rooms</h2>
+        <p>
+            @Model.Organization.Name has @Model.Rooms.Count.ToQuantity("room"), @Model.AbbotMemberCount.ToQuantity("has", "have") Abbot as a member, and @Model.ConversationRoomCount.ToQuantity("has", "have") conversation tracking enabled.
+        </p>
+        <div class="hard-box w-full mt-3">
+            <table class="w-full p-3">
+                <tr>
+                    <td class="p-3">Default Response Time Set:</td>
+                    <td class="p-3"><code>@Model.HasDefaultResponseTimesSet</code></td>
+                    <td class="p-3">Default Escalation Responders Set:</td>
+                    <td class="p-3"><code>@Model.HasDefaultEscalationResponders</code></td>
+                    <td class="p-3">Rooms with Custom Response Times</td>
+                    <td class="p-3"><code>@Model.RoomsWithResponseTimesSet</code></td>
+                </tr>
+                <tr>
+                    <td class="p-3">Default First Responders Set:</td>
+                    <td class="p-3"><code>@Model.HasDefaultFirstResponders</code></td>
+                    <td class="p-3">Rooms With First Responders:</td>
+                    <td class="p-3"><code>@Model.RoomsWithFirstResponders</code></td>
+                    <td class="p-3">Rooms With Escalation Responders</td>
+                    <td class="p-3"><code>@Model.RoomsWithEscalationResponders</code></td>
+                </tr>
+            </table>
+        </div>
+        <div class="hard-box mt-5">
+            <div class="mt-3 mb-8 mx-4 mt-4">
+                <form method="get" class="flex gap-x-4 items-baseline">
+                    <input class="form-input flex-grow" asp-for="Filter" placeholder="Search for a room by name or Platform Room ID">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                    <label asp-for="Type">Type:</label>
+                    <div class="form-select-wrapper">
+                        <select class="form-select" data-action="form#submit" asp-for="Type" asp-items="Html.GetEnumSelectList<RoomsPage.RoomTypeFilter>()">
+                        </select>
+                    </div>
+                    <span data-tooltip="Include archived rooms?">
+                        <input type="checkbox" data-action="form#submit" asp-for="IncludeArchived">
+                        <label class="checkbox font-semibold" asp-for="IncludeArchived">Archived</label>
+                    </span>
+                    <span data-tooltip="Include deleted rooms?">
+                        <input type="checkbox" data-action="form#submit" asp-for="IncludeDeleted">
+                        <label class="checkbox font-semibold" asp-for="IncludeDeleted">Deleted</label>
+                    </span>
+                </form>
+                @if (Model.Rooms.Any())
+                {
+                    <table class="w-full">
+                        <thead>
+                        <tr>
+                            <th class="text-left border-b p-3"></th>
+                            <th class="text-left border-b p-3">Name</th>
+                            <th class="text-left border-b p-3">Room Type</th>
+                            <th class="text-left border-b p-3">Platform Room Id</th>
+                            <th class="text-left border-b p-3">Attributes</th>
+                            <th class="text-left border-b p-3">Last Updates</th>
+                            <th class="text-left border-b p-3">Tools</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var room in Model.Rooms) {
+                            <tr class="@((room.Deleted == true || room.Archived == true) ? "text-gray-400" : null)">
+                                <td class="align-middle p-3 w-6 @(room.Deleted == true ? "line-through": null)">
+                                    #
+                                </td>
+                                <td class="align-middle p-3">
+                                    <a asp-page="Room" asp-route-orgId="@Model.Organization.PlatformId" asp-route-id="@room.PlatformRoomId">
+                                        @if (room.Deleted is true) {
+                                            <span class="line-through" data-tooltip="This room has been deleted in @Model.Organization.PlatformType.Humanize()">
+                                                @room.Name
+                                            </span>
+                                        }
+                                        else if (room.Archived is true) {
+                                            <span data-tooltip="This room has been archived in @Model.Organization.PlatformType.Humanize()">
+                                                @room.Name
+                                            </span>
+                                        }
+                                        else {
+                                            <span>@room.Name</span>
+                                        }
+                                    </a>
+                                </td>
+                                <td class="align-middle p-3">@room.RoomType</td>
+                                <td class="align-middle p-3">
+                                    @room.PlatformRoomId
+                                </td>
+                                <td class="align-middle p-3 flex flex-col gap-2">
+                                    <span>
+                                        @(room.ManagedConversationsEnabled ? "✅ Conversations" : "🚫 Conversations")
+                                    </span>
+                                    <span>
+                                        @(room.Persistent ? "✅ Persistent" : "🚫 Non-Persistent")
+                                    </span>
+                                    <span>
+                                        @(room.BotIsMember == true ? "✅ Bot Is Member" : "🚫 Bot Is Not Member")
+                                    </span>
+                                    @if (room.Settings?.IsCommunityRoom is true) {
+                                        <span>
+                                            👥 Community Support
+                                        </span>
+                                    }
+                                </td>
+                                <td class="align-middle p-3">
+                                    <ul class="text-sm">
+                                        <li>
+                                            Last Platform Update:<br/>
+                                            <strong><date utc="@room.LastPlatformUpdate" format="DisplayDateFormat.Humanize" include-utc-in-tooltip="true"/></strong>
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td class="flex flex-col justify-center gap-2">
+                                    @if (room.Organization.PlatformType == PlatformType.Slack) {
+                                        <form asp-page-handler="RefreshMetadata">
+                                            <input type="hidden" name="roomId" id="roomId" value="@room.Id">
+                                            <button type="submit" class="btn btn-primary">Refresh from Slack</button>
+                                        </form>
+                                        <form method="post" action="/api/internal/staff/export/room?id=@room.Id">
+                                            <button type="submit" class="btn btn-primary">Export</button>
+                                            @Html.AntiForgeryToken()
+                                        </form>
+                                        <a href="?channel=@room.PlatformRoomId#query-slack-api" class="btn btn-primary">View Api Info</a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                } else {
+                    <blankslate>
+                        <div class="text-center text-xl h-6 text-gray-500 mb-2">
+                            <i class="fa-regular fa-users-slash"></i>
+                        </div>
+
+                        <h2 class="text-center text-lg text-gray-700">
+                            No rooms here!
+                        </h2>
+                    </blankslate>
+                }
+            </div>
+        </div>
+    </round-box>
+
+    <round-box>
+        <h2 id="query-slack-api" class="text-3xl font-semibold">Query Slack API</h2>
+        <div class="hard-box mt-5 p-4">
+            <p>Note that querying the Slack API for details about room will create an audit event for the customer.</p>
+            <form method="post" class="gap-x-4 items-baseline flex" asp-page-handler="CallSlackApi">
+                <input class="form-input" asp-for="Channel" placeholder="Platform Room ID">
+                <input class="form-input flex-grow" asp-for="Reason" placeholder="Reason to look at this info.">
+                <span asp-validation-for="Reason"></span>
+                <span class="nowrap has-tooltip-left">
+                    <input type="checkbox" asp-for="IncludeRecentMessages" />
+                    <label class="checkbox font-semibold" asp-for="IncludeRecentMessages">Include Recent Messages</label>
+                </span>
+                <button class="btn btn-primary" type="submit">View API Info</button>
+                <div id="@RoomsPage.ResolveButton">
+
+                </div>
+            </form>
+            <div class="mt-5">
+                <pre id="@RoomsPage.SlackApiResults"></pre>
+            </div>
+        </div>
+    </round-box>
+</page-body>

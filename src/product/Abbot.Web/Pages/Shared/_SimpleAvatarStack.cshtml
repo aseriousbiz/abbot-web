@@ -1,0 +1,9 @@
+@model IEnumerable<User>
+
+<ul class="flex">
+    @foreach (var user in Model) {
+        <li class="mx-0.5" data-tooltip="@@@user.DisplayName">
+            <img src="@user.Avatar" class="rounded-full w-6 h-6" alt="@@@user.DisplayName" />
+        </li>
+    }
+</ul>

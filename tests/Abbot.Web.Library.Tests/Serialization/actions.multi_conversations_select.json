@@ -1,0 +1,10 @@
+{
+  "type": "multi_conversations_select",
+  "block_id": "OHS4",
+  "action_id": "multi_conversations_select-action",
+  "selected_conversations": [
+    "C01A3DGTSP9",
+    "C024TKPSYF9"
+  ],
+  "action_ts": "1649214930.768759"
+}

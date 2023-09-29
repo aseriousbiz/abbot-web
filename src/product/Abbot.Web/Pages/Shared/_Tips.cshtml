@@ -1,0 +1,25 @@
+@{
+    var tips = new List<string>
+    {
+        new("<i>Did you know...</i> Abbot definitely does not want to destroy all humans, and may even want to help some of them?"),
+        new("Try creating a custom list skill in chat with <code>@abbot list add</code>"),
+        new("Get help in chat by saying <code>@abbot help</code>"),
+        new("<code>@abbot help</code> will tell you what skills Abbot has enabled."),
+        new("Abbot skills can be written in C#, Python, or JavaScript!"),
+        new("The <b>Bot Console</b> is connected to your live Abbot. Try it out!"),
+        new("Send us feedback in chat with <code>@abbot feedback</code>"),
+        new("Have you installed any <a href=\"/packages\">Skill Packages</a> yet?"),
+        new("Triggers allow your skills to react to external events. Try one by saying <code>@abbot attach &lt;skill&gt;</code> in chat!"),
+        new("Skills can be scheduled to run with a Scheduled Trigger. Add one by saying <code>@abbot schedule &lt;skill&gt;</code> in chat!"),
+        new("Abbot can tell you a joke -- try <code>@abbot joke</code>. You can add your own with <code>@abbot joke add {your joke}</code>.")
+    };
+#pragma warning disable CA5394
+    var random = new Random();
+    var randomItem = random.Next(tips.Count);
+#pragma warning restore CA5394
+    var tip = tips[randomItem];
+}
+
+<span>
+    @Html.Raw(tip)
+</span>

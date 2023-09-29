@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "profile": {
+    "title": "",
+    "phone": "",
+    "skype": "",
+    "real_name": "Ashley Stanton-Nurse",
+    "real_name_normalized": "Ashley Stanton-Nurse",
+    "display_name": "Ashley",
+    "display_name_normalized": "Ashley",
+    "fields": {
+      "Xf045KRT165N": {
+        "value": "Hi",
+        "alt": "Alt"
+      },
+      "Xf044FJYCLMV": {
+        "value": "Yoo",
+        "alt": ""
+      }
+    },
+    "status_text": "",
+    "status_emoji": "",
+    "status_emoji_display_info": [],
+    "status_expiration": 0,
+    "avatar_hash": "gcda339a75eb",
+    "email": "ashley@example.com",
+    "first_name": "Ashley",
+    "last_name": "Stanton-Nurse",
+    "image_24": "https://example.com/24.png",
+    "image_32": "https://example.com/32.png",
+    "image_48": "https://example.com/48.png",
+    "image_72": "https://example.com/72.png",
+    "image_192": "https://example.com/192.png",
+    "image_512": "https://example.com/512.png",
+    "status_text_canonical": ""
+  }
+}

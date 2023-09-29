@@ -1,0 +1,158 @@
+@page "/staff/organizations/{orgId}/rooms/{id}/{handler?}"
+@model Serious.Abbot.Pages.Staff.Organizations.RoomPage
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Room Detail");
+}
+
+<back-link asp-page="./Rooms" asp-route-id="@Model.Organization.PlatformId">Back to room list</back-link>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">#@Model.SubjectRoom.Name Details</h2>
+
+        <div class="flex flex-row mt-5">
+            <div class="flex-grow flex flex-col">
+                <p class="font-semibold">Channel</p>
+                <p>@Model.SubjectRoom.PlatformRoomId</p>
+            </div>
+            <div class="flex-grow flex flex-col">
+                <p class="font-semibold">Abbot is member?</p>
+                @if (Model.SubjectRoom.BotIsMember is true) {
+                    <span>✅</span>
+                } else {
+                    <span>❌</span>
+                }
+            </div>
+            <div class="flex-grow flex flex-col">
+                <p class="font-semibold">Type</p>
+                <p>
+                    <code>@Model.SubjectRoom.RoomType</code>
+                </p>
+            </div>
+            <div class="flex-grow flex flex-col">
+                <p class="font-semibold">Last platform update</p>
+                <p>
+                    <span data-tooltip="@Model.SubjectRoom.LastPlatformUpdate">@Model.SubjectRoom.LastPlatformUpdate.Humanize()</span>
+                </p>
+            </div>
+
+            <div class="flex-grow flex flex-col">
+                <p class="font-semibold">Ticket Emoji Reaction</p>
+                @if (Model.RoomEmojiSetting is null) {
+                    <p>
+                        @if (Model.OrganizationAllowTicketReactionSetting) {
+                            <span>✅</span>
+                        } else {
+                            <span>❌</span>
+                        }
+                        <em>via organization default.</em>
+                    </p>
+                } else {
+                    <p>
+                        @if (Model.RoomEmojiSetting.Value) {
+                            <span>✅</span>
+                        } else {
+                            <span>❌</span>
+                        }
+                        <em>via direct setting.</em>
+                    </p>
+                }
+            </div>
+        </div>
+
+        <div class="flex flex-row mt-5">
+            <div class="flex-grow flex flex-col">
+                <p class="font-semibold">Shared</p>
+                @if (Model.SubjectRoom.Shared is true) {
+                    <span>✅</span>
+                } else {
+                    <span>❌</span>
+                }
+            </div>
+            <div class="flex-grow flex flex-col">
+                <p class="font-semibold">Persistent</p>
+                @if (Model.SubjectRoom.Persistent) {
+                    <span>✅</span>
+                } else {
+                    <span>❌</span>
+                }
+            </div>
+            <div class="flex-grow flex flex-col">
+                <p class="font-semibold">Archived</p>
+                @if (Model.SubjectRoom.Archived is true) {
+                    <span>✅</span>
+                } else {
+                    <span>❌</span>
+                }
+            </div>
+            <div class="flex-grow flex flex-col">
+                <p class="font-semibold">Deleted</p>
+                @if (Model.SubjectRoom.Deleted is true) {
+                    <span>✅</span>
+                } else {
+                    <span>❌</span>
+                }
+            </div>
+            <div class="flex-grow flex flex-col">
+                <p class="font-semibold">Community</p>
+                @if (Model.SubjectRoom.Settings?.IsCommunityRoom is true) {
+                    <span>✅</span>
+                } else {
+                    <span>❌</span>
+                }
+            </div>
+            <div class="flex-grow flex flex-col">
+                <p class="font-semibold">Hub</p>
+                @if (Model.Hub is not null) {
+                    <span>✅ <a asp-page="./Hubs/View" asp-route-orgId="@Model.Organization.PlatformId" asp-route-id="@Model.SubjectRoom.PlatformRoomId">@Model.Hub.Name</a></span>
+                } else {
+                    <span>❌</span>
+                }
+            </div>
+        </div>
+
+        <div class="mt-5">
+            <span class="font-semibold">Last Verified Message Id</span>
+            <form method="post" asp-page-handler="UpdateLastMessageId">
+                <input asp-for="LastVerifiedMessageId"/>
+                <button type="submit" class="btn">Update</button>
+            </form>
+            <p class="text-gray-500">
+                This is the last message our Report Missing Conversations Job Reported.
+                You can change the id to an earlier date to have Abbot check a conversation
+                again.
+            </p>
+        </div>
+
+        <h3 class="text-2xl font-semibold mt-5">Internal Settings</h3>
+        <div class="hard-box mt-5" id="@Model.SettingsListDomId">
+            <blankslate>
+                <div class="flex flex-col items-center gap-2">
+                    <i class="fa fa-eye-slash text-3xl"></i>
+                    <span class="text-gray-500">Settings are not visible by default because they may contain confidential information.</span>
+                    <form asp-page-handler="Settings">
+                        <button type="submit" class="btn btn-danger" data-confirm="WARNING: This may show confidential data.">Show Settings</button>
+                    </form>
+                </div>
+            </blankslate>
+        </div>
+
+        <h3 class="text-2xl font-semibold mt-5">Links</h3>
+        <div class="hard-box mt-5">
+            @if (Model.SubjectRoom.Links.Count == 0) {
+                <blankslate>No Links Found</blankslate>
+            }
+            else {
+                <dl class="sm:grid grid-cols-2 gap-4 grid-cols-[max-content_1fr] p-2">
+                    @foreach(var link in Model.SubjectRoom.Links) {
+                        <dd class="font-semibold">@link.LinkType.Humanize()</dd>
+                        <dt>
+                            <div>@link.DisplayName</div>
+                            <div class="text-gray-500"><code>@link.ExternalId</code></div>
+                        </dt>
+                    }
+                </dl>
+            }
+        </div>
+    </round-box>
+</page-body>

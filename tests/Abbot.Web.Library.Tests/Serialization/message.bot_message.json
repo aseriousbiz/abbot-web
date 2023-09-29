@@ -1,0 +1,29 @@
+{
+  "token": "REDACTED_TOKEN",
+  "team_id": "T00012121",
+  "api_app_id": "A0000000001",
+  "event": {
+    "type": "message",
+    "subtype": "bot_message",
+    "text": "I am responding to a command because I am a good bot",
+    "ts": "1644777118.277809",
+    "username": "Abbot-Haacked-Dev",
+    "bot_id": "B01U63BS0EL",
+    "channel": "C50000000",
+    "event_ts": "1644777118.277809",
+    "channel_type": "channel"
+  },
+  "type": "event_callback",
+  "event_id": "Ev0000000006",
+  "event_time": 1644777118,
+  "authorizations": [
+    {
+      "team_id": "T00012121",
+      "user_id": "U0BOTID0000",
+      "is_bot": true,
+      "is_enterprise_install": false
+    }
+  ],
+  "is_ext_shared_channel": false,
+  "event_context": "4-REDACTED_EVENT_CONTEXT"
+}

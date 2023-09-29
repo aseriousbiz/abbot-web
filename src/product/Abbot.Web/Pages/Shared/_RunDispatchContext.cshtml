@@ -1,0 +1,67 @@
+@using Serious.Abbot.Playbooks
+@model PlaybookRun
+
+@if (Model.Related?.Conversation is {} convo) {
+    <span>
+        for
+        @if (ViewContext.InStaffTools()) {
+            <span>
+                conversation in @convo.Room.Name with <partial name="Shared/_SmallAvatar" model="@convo.StartedBy.User"/> @convo.StartedBy.DisplayName
+            </span>
+        } else {
+            <a asp-page="/Conversations/View"
+               asp-route-conversationId="@Model.Related.ConversationId">
+                conversation in @convo.Room.Name with <partial name="Shared/_SmallAvatar" model="@convo.StartedBy.User"/> @convo.StartedBy.DisplayName
+            </a>
+        }
+    </span>
+} else if (Model.Related?.Customer is not null) {
+    <span>
+        for
+        @if (ViewContext.InStaffTools()) {
+            @* We don't have a staff view of customers yet *@
+            <span>
+                @Model.Related.Customer.Name
+            </span>
+        } else {
+            <a asp-page="/Customers/View"
+               asp-route-id="@Model.Related.CustomerId">
+                @Model.Related.Customer.Name
+            </a>
+        }
+    </span>
+} else if (Model.Related?.Room is not null) {
+    <span>
+        in
+        @if (ViewContext.InStaffTools()) {
+            <a asp-page="/Staff/Organizations/Room" asp-route-orgId="@Model.Playbook.Organization.PlatformId" asp-route-id="@Model.Related.Room.PlatformRoomId">
+                #@Model.Related.Room.Name
+            </a>
+        } else {
+            <a href="@SlackFormatter.RoomUrl(Model.Related.Room.Organization.Domain, Model.Related.Room.PlatformRoomId)" target="_blank">
+                #@Model.Related.Room.Name
+            </a>
+        }
+    </span>
+} else {
+    // This switch is really just handling legacy scenarios where Related is null.
+    // From now on, all playbook runs that dispatch per customer should have Related.Customer set.
+    switch (Model.Properties.DispatchContext?.Type) {
+        case DispatchType.ByCustomer:
+            <span>
+                for
+                @if (ViewContext.InStaffTools()) {
+                    @* We don't have a staff view of customers yet *@
+                    <span>
+                        @Model.Properties.DispatchContext.EntityName
+                    </span>
+                } else {
+                    <a asp-page="/Customers/View"
+                       asp-route-id="@Model.Properties.DispatchContext.EntityId">
+                        @Model.Properties.DispatchContext.EntityName
+                    </a>
+                }
+            </span>
+            break;
+    }
+}

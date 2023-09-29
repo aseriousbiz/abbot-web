@@ -1,0 +1,58 @@
+@page "/skills/{skill}/history"
+@model Serious.Abbot.Pages.Skills.History.IndexPage
+@{
+    ViewContext.SetPageInfo("Skills", "Skill Versions", "Skill Versions");
+}
+
+<header class="page-header">
+    <div class="container level">
+        <div class="level-left">
+            <h1 class="title is-size-3">Version history for <code>@Model.Skill.Name</code></h1>
+        </div>
+        <div class="level-right">
+            <a class="level-item btn" asp-page="/Skills/Edit" asp-route-skill="@Model.Skill.Name">Back to skill editor</a>
+        </div>
+    </div>
+</header>
+
+<section class="section">
+    <div class="container">
+        <table class="table version-history is-fullwidth">
+            <thead>
+                <tr>
+                    <th>Version</th>
+                    <th>Description</th>
+                    <th>Date</th>
+                    <th>Actor</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @if (Model.Versions.Any()) {
+                var versionCount = Model.Versions.Count + 1;
+                @foreach (var version in Model.Versions) {
+                    <tr>
+                        <td>@versionCount</td>
+                        <td>@version.GetChangeDescription()</td>
+                        <td>
+                            <timeago datetime="@version.Created"></timeago>
+                        </td>
+                        <td><partial name="Shared/_SmallAvatar" model="version.Creator" /> @version.Creator.DisplayName</td>
+                        <td><a asp-page="Version" asp-route-skill="@Model.Skill.Name" asp-route-version="@versionCount">view</a></td>
+                    </tr>
+                    versionCount--;
+                }
+            }
+                <tr>
+                    <td>1</td>
+                    <td>Skill created</td>
+                    <td>
+                        <timeago datetime="@Model.Skill.Created"></timeago>
+                    </td>
+                    <td><partial name="Shared/_SmallAvatar" model="Model.Skill.Creator" /> @Model.Skill.Creator.DisplayName</td>
+                    <td><a asp-page="Version" asp-route-skill="@Model.Skill.Name" asp-route-version="1">view</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div><!-- close.container -->
+</section>

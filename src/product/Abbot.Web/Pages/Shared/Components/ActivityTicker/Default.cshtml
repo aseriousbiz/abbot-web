@@ -1,0 +1,20 @@
+@model IReadOnlyList<AuditEventBase>
+
+@if (Model is {Count: > 0}) {
+    <div class="activity-ticker ticker">
+        <div class="ticker-content">
+            @foreach (var auditEvent in Model) {
+                <div class="ticker-item">
+                    <partial name="Shared/Components/ActivityTicker/_ActivityItem" model="auditEvent"/>
+                </div>
+            }
+        </div>
+        <div class="ticker-footer is-full">
+            <a asp-page="/Activity/Index">What else is happening?…</a>
+        </div>
+    </div>
+} else {
+    <div class="notification is-light">
+        No activity to report. Try out Abbot in chat or the My Bot console!
+    </div>
+}

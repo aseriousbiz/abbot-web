@@ -1,0 +1,62 @@
+﻿{
+  Content: [
+    {
+      $type: TipTapParagraphNode,
+      Content: [
+        {
+          $type: TipTapHandlebarsNode,
+          Attributes: {
+            Id: trigger.outputs.channel.name,
+            Label: Channel name from triggers
+          },
+          Type: handlebars
+        },
+        {
+          $type: TipTapTextNode,
+          Text: This is a ,
+          Type: text
+        },
+        {
+          $type: TipTapTextNode,
+          Text: formatted,
+          Marks: {
+            $type: ReadOnlyCollection<TipTapMarkNode>,
+            $values: [
+              {
+                $type: TipTapLinkMark,
+                Attributes: {
+                  Href: https://ab.bot/
+                },
+                Type: link
+              },
+              {
+                Type: bold
+              }
+            ]
+          },
+          Type: text
+        },
+        {
+          $type: TipTapTextNode,
+          Text:  message,
+          Marks: {
+            $type: ReadOnlyCollection<TipTapMarkNode>,
+            $values: [
+              {
+                Type: bold
+              }
+            ]
+          },
+          Type: text
+        },
+        {
+          $type: TipTapTextNode,
+          Text: .,
+          Type: text
+        }
+      ],
+      Type: paragraph
+    }
+  ],
+  Type: doc
+}

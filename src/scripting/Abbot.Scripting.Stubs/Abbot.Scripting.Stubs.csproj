@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <Description>Stub reference implementation of Abbot.Scripting.Interfaces to supply Editor Intellisense with Omnisharp. NOT TO BE USED IN AN ACTUAL PROJECT!</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Abbot.Scripting.Interfaces\Abbot.Scripting.Interfaces.csproj" />
+    </ItemGroup>
+</Project>

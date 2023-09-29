@@ -1,0 +1,10 @@
+@model Serious.Abbot.Pages.Activity.DetailsModel
+
+<div class="m-4 grid grid-cols-1 sm:grid-cols-3 gap-4 items-baseline">
+    <div>
+        <h2 class="font-semibold text-sm mb-1 inline">
+            Conversation:
+        </h2>
+        <a asp-page="/Conversations/View" asp-route-conversationId="@Model.AuditEvent.EntityId" class="text-blue-500">Link <i class="fa fa-external-link"></i></a>
+    </div>
+</div>

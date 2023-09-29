@@ -1,0 +1,37 @@
+@page "/staff/users/{id}"
+@model Serious.Abbot.Pages.Staff.Users.DetailsPage
+@{
+    ViewContext.SetPageInfo("Staff", "Staff User Detail");
+}
+
+<partial name="_Header"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<back-link asp-page="Index">Back to users</back-link>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">User Details</h2>
+
+        <div class="flex mt-5">
+            <img class="w-16 h-16 border-gray-300 border-4 rounded-full" src="@Model.SubjectUser.Avatar" />
+            <div class="flex flex-col ml-3">
+                <div class="font-semibold">@Model.SubjectUser.DisplayName</div>
+                <div>@Model.SubjectUser.Email</div>
+            </div>
+        </div>
+
+        <div class="grid gap-2 mt-5" style="grid-template-columns: max-content 1fr;">
+            <span class="font-semibold">Platform User ID</span>
+            <span><code>@Model.SubjectUser.PlatformUserId</code></span>
+            <span class="font-semibold">Slack Team ID</span>
+            <span><code>@Model.SubjectUser.SlackTeamId</code></span>
+            <span class="font-semibold">Name Identifier</span>
+            <span><code>@Model.SubjectUser.NameIdentifier</code></span>
+        </div>
+
+        <h3 class="mt-5 text-2xl font-semibold">Memberships</h3>
+
+        <partial name="Staff/Organizations/_UsersTable" model="Model.Memberships" view-data='@new ViewDataDictionary(ViewData) { { "show-org", true } }' />
+    </round-box>
+</page-body>

@@ -1,0 +1,44 @@
+﻿{
+  target: {
+    BusTestHarness: {
+      Messages: [
+        {
+          Published: PublishConversationNotification,
+          MessageId: Guid_1,
+          ConversationId: Guid_2,
+          DestinationAddress: Serious.Abbot.Eventing.Messages:PublishConversationNotification,
+          Message: {
+            OrganizationId: 1,
+            ConversationId: 1,
+            Notification: {
+              Type: TicketPending,
+              Icon: 🎫,
+              Headline: Ticket Pending,
+              Message: <@Uforeign> requested <https://app.ab.bot/conversations/pending/1/99999/6|Fake Ticketing ticket> for <https://example.com/|this conversation>.,
+              MentionGroups: [
+                {
+                  RecipientType: FirstResponder
+                }
+              ]
+            },
+            Broadcast: false
+          }
+        }
+      ]
+    },
+    AnalyticsClient: {
+      Tracked: {
+        (6, Ticket Created): {
+          feature: Integrations,
+          integration: fake-ticketing,
+          organization: 1,
+          organization_name: Test Organization,
+          plan: Unlimited,
+          platform_id: Thome,
+          reason: null,
+          success: true
+        }
+      }
+    }
+  }
+}

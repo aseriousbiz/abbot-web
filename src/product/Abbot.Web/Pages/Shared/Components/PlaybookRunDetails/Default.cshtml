@@ -1,0 +1,132 @@
+@using Serious.Abbot.Playbooks
+@model Serious.Abbot.Pages.Shared.Components.PlaybookRunDetails.PlaybookRunDetailsViewComponent.ViewModel
+
+<div class="rounded-2xl p-3 bg-white">
+    <div class="border border-slate-200 rounded-xl p-4 shadow-inner bg-slate-50 bg-dotted-slate-200 bg-dotted-spacing-4">
+        <div class="flex gap-x-8 items-start">
+            <div class="border border-slate-200 rounded-lg p-4 bg-white text-sm flex flex-col gap-y-2">
+                <dl class="contents">
+                    <dt class="font-medium">
+                        Current Status
+                    </dt>
+
+                    <dd>
+                        <partial name="Playbooks/Runs/_PlaybookRunStatus" model="Model.Run"/>
+                    </dd>
+
+                    <dt class="font-medium">
+                        Run ID
+                    </dt>
+                    <dd>
+                        <copy-box>@Model.Run.CorrelationId</copy-box>
+                        <p class="text-xs max-w-sm mt-1 text-gray-500">
+                            (Provide this value if you need to contact our
+                            <a href="mailto:@WebConstants.SupportEmail">support team</a>
+                            about this Playbook run.)
+                        </p>
+                    </dd>
+
+                    @if (Model.Canceller is not null) {
+                        @if (Model.Run.State == "Final") {
+                            <dt class="font-medium">
+                                Cancelled by
+                            </dt>
+                        } else {
+                            <dt class="font-medium">
+                                Cancellation requested by
+                            </dt>
+                        }
+                        <dd>
+                            @if (Model.Canceller.IsStaff() && Model.Canceller.OrganizationId != Model.Run.Playbook.OrganizationId) {
+                                @* Unless the viewer is staff, don't show them the staff actor *@
+                                <span class="mr-1">
+                                    <partial name="Shared/_SmallAvatar" model="Model.Abbot.User"/>
+                                </span>
+
+                                <span class="hidden sm:inline">
+                                    Staff
+                                </span>
+                            } else {
+                                <partial name="Shared/_SmallAvatar" model="Model.Canceller.User"/>
+
+                                <span class="has-tooltip-arrow hidden sm:inline">
+                                    @Model.Canceller.DisplayName
+                                </span>
+                            }
+                        </dd>
+                    }
+                </dl>
+            </div>
+
+            <div>
+                @if (Model.Trigger is not null) {
+                    <dl class="text-sm border border-slate-200 rounded-lg p-2 bg-white">
+                        <dt class="font-medium text-slate-500 text-xs m-1">
+                            Triggered by
+                        </dt>
+
+                        <dd class="mt-2">
+                            <partial name="Shared/Components/PlaybookRunDetails/_StepBlock" model="Model.Trigger"/>
+                        </dd>
+                    </dl>
+                }
+
+                @if (Model.CompletedActions is { Count: > 0 }) {
+                    @if (Model.Trigger is not null) {
+                        <div class="text-center my-1">
+                            <i class="fa-regular fa-long-arrow-down text-slate-400"></i>
+                        </div>
+                    }
+
+                    <dl class="text-sm">
+                        <dt class="font-medium text-center mb-1 text-xs text-slate-500">
+                            Completed Actions
+                        </dt>
+
+                        <dd>
+                            <ol class="flex flex-col gap-2">
+                                @foreach (var action in Model.CompletedActions) {
+                                    <li>
+                                        <partial name="Shared/Components/PlaybookRunDetails/_StepBlock" model="action"/>
+                                    </li>
+                                }
+                            </ol>
+                        </dd>
+                    </dl>
+                }
+
+                @if (Model.ActiveAction is not null) {
+                    <div class="text-center my-1">
+                        <i class="fa-regular fa-long-arrow-down text-slate-400"></i>
+                    </div>
+
+                    <dl class="text-sm">
+                        <dt class="font-medium text-center mb-1 text-xs text-slate-500">
+                            Currently Running
+                        </dt>
+                        <dd>
+                            <partial name="Shared/Components/PlaybookRunDetails/_StepBlock" model="Model.ActiveAction"/>
+                        </dd>
+                    </dl>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<staff-only>
+    <div>
+        <div class="border border-slate-200 rounded-lg p-4 bg-white text-sm flex flex-col gap-y-4 w-full">
+            <h3 class="font-semibold">
+                Raw Definition <staff-icon/>
+            </h3>
+            <pre class="overflow-auto h-64">@Model.FormattedDefinition</pre>
+        </div>
+        <div class="border border-slate-200 rounded-lg p-4 bg-white text-sm flex flex-col gap-y-4 w-full mt-4">
+            <h3 class="font-semibold">
+                Raw State <staff-icon/>
+            </h3>
+            <pre class="overflow-auto h-64">@Model.FormattedState</pre>
+        </div>
+    </div>
+</staff-only>

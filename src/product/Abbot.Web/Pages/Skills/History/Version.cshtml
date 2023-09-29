@@ -1,0 +1,53 @@
+@page "/skills/{skill}/history/{version}"
+@model Serious.Abbot.Pages.Skills.History.VersionPage
+@{
+    var snapshot = Model.Snapshot;
+    var modifiedBy = snapshot.ModifiedBy;
+    ViewContext.SetPageInfo("Skills", "Skill Version Detail", "Skill Version Detail");
+}
+
+<header class="page-header">
+    <div>
+        <a class="text-blue-500" asp-route-skill="@Model.SkillName" asp-page="Index">Back to history</a>
+    </div>
+    <div>
+        <h1 class="font-semibold text-2xl">
+            Version @Model.Version of the <code>@Model.SkillName</code> skill
+        </h1>
+    </div>
+</header>
+
+<section class="section">
+    <div class="container">
+        <p class="text-sm text-gray-500">
+            @snapshot.Language skill modified by
+            <partial name="Shared/_SmallAvatar" model="modifiedBy"/> @modifiedBy.DisplayName
+            <timeago datetime="@snapshot.Modified"></timeago>
+        </p>
+
+        <div class="field">
+            <label class="label font-semibold">Name:</label>
+            <div class="control">
+                @snapshot.Name
+            </div>
+        </div>
+        <div class="field">
+            <label class="label font-semibold">Description:</label>
+            <div class="control">
+                @snapshot.Description
+            </div>
+        </div>
+        <div class="field">
+            <label class="label font-semibold">Usage:</label>
+            <div>
+                <pre><code>@Model.Snapshot.UsageText</code></pre>
+            </div>
+        </div>
+        <div class="field">
+            <textarea
+                class="code-viewer"
+                data-readonly="true"
+                data-language="@Model.Snapshot.Language">@Model.Snapshot.Code</textarea>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,21 @@
+@page "/staff/organizations/{id}/forms"
+@model Serious.Abbot.Pages.Staff.Organizations.Forms.IndexModel
+
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Form List", "Forms");
+}
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">Configure Forms</h2>
+        <div>
+            <label for="form-selector">Select a a form to configure</label>
+            <div class="form-select-wrapper">
+                <select id="form-selector" class="form-select" asp-items="Model.AvailableForms" data-controller="dropdown" data-action="dropdown#navigateToSelectedValue">
+                </select>
+            </div>
+        </div>
+    </round-box>
+</page-body>

@@ -1,0 +1,25 @@
+@model IReadOnlyList<Serious.Abbot.Repositories.TagFrequency>
+
+@{
+    var tags = Model;
+}
+
+@if (tags.Any()) {
+    <ul>
+        @foreach (var tagFrequency in tags.Take(5)) {
+            <li class="my-2 flex gap-x-4 items-center">
+                <span class="far fa-tag text-gray-500"></span>
+                <a href="@Url.Page("/Index", new { tag = tagFrequency.Tag.Name })">
+                    @tagFrequency.Tag.Name
+                </a>
+                <p class="ml-auto text-sm text-gray-500">
+                   @tagFrequency.Count
+                </p>
+            </li>
+        }
+    </ul>
+} else {
+    <blankslate class="text-medium rounded-lg bg-slate-50 border border-slate-100">
+        No conversations have been tagged yet.
+    </blankslate>    
+}

@@ -1,0 +1,32 @@
+@model Westwind.AspNetCore.Markdown.MarkdownModel
+@{
+    ViewContext.SetPageInfo("Markdown", "Markdown Code Page", Model.Title);
+    Layout = "Layouts/_Layout";
+}
+
+@section Styles {
+    <link rel="stylesheet"
+          href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.0/build/styles/vs2015.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.0/build/highlight.min.js"></script>
+}
+
+<header class="page-header">
+    <div class="container">
+        <vc:bread-crumb title="@Model.Title" />
+    </div>
+</header>
+
+<section class="section">
+    <div class="container content">
+        <div class="columns">
+            <div class="column is-three-fifths is-offset-one-fifth">
+                @Model.RenderedMarkdown
+            </div>
+        </div>
+
+    </div>
+</section>
+
+@section Scripts {
+    <script>hljs.initHighlightingOnLoad();</script>
+}

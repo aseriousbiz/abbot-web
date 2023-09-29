@@ -1,0 +1,150 @@
+@page "/staff/organizations/{orgId}/users/{id}/{handler?}"
+@model Serious.Abbot.Pages.Staff.Organizations.MemberPage
+
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Tools Member Page", $"Staff Tools {Model.Organization.Slug}/{Model.SubjectMember.DisplayName}");
+}
+
+<back-link asp-page="Users" asp-route-id="@Model.Organization.PlatformId">Back to user list</back-link>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">User Details</h2>
+
+        <div class="flex mt-5">
+            <img class="w-16 h-16 border-gray-300 border-4 rounded-full" src="@Model.SubjectMember.User.Avatar" alt="" />
+            <div class="flex flex-col ml-3">
+                <div class="font-semibold">@Model.SubjectMember.RealName</div>
+                <a asp-page="/Staff/Users/Details" asp-route-id="@Model.SubjectMember.User.PlatformUserId">
+                    @@@Model.SubjectMember.DisplayName (@Model.SubjectMember.User.PlatformUserId)
+                </a>
+                <div class="text-gray-500">@Model.SubjectMember.User.Email</div>
+            </div>
+        </div>
+
+        <div class="flex mt-5">
+            <div class="grid gap-2" style="grid-template-columns: max-content 1fr;">
+                <span class="font-semibold">Welcomed</span>
+                <span><code>@Model.SubjectMember.Welcomed</code></span>
+                <span class="font-semibold">PlatformAdmin</span>
+                <span><code>@Model.SubjectMember.PlatformAdmin</code></span>
+            </div>
+
+            <div class="grid gap-2 ml-3" style="grid-template-columns: max-content 1fr;">
+                <span class="font-semibold">Guest</span>
+                <span><code>@Model.SubjectMember.IsGuest</code></span>
+                <span class="font-semibold">Active</span>
+                <span><code>@Model.SubjectMember.Active</code></span>
+            </div>
+
+            <div class="grid gap-2 ml-3" style="grid-template-columns: max-content 1fr;">
+                <span class="font-semibold">Bot</span>
+                <span><code>@Model.SubjectMember.User.IsBot</code></span>
+            </div>
+        </div>
+
+        <h3 class="text-2xl font-semibold mt-5">Memberships</h3>
+        <partial name="Staff/Organizations/_UsersTable" model="Model.Memberships" view-data='@new ViewDataDictionary(ViewData) { { "show-org", true } }' />
+
+        <h3 class="text-2xl font-semibold mt-5">Roles</h3>
+        <div class="hard-box mt-5">
+            <table class="w-full">
+                <thead>
+                <tr>
+                    <th class="text-left border-b p-3">Name</th>
+                    <th class="text-left border-b p-3"></th>
+                </tr>
+                </thead>
+                @foreach (var role in Model.SubjectMember.MemberRoles) {
+                    <tr>
+                        <td class="align-middle p-3">@role.Role.Name</td>
+                        <td class="align-middle p-3">
+                            @if (role.Role.Name == Roles.Staff && Model.SubjectMember.Id == Model.Viewer.Id) {
+                                <input class="form-input" id="reason" name="reason" placeholder="Reason" disabled>
+                                <button data-tooltip="You can't unassign yourself from the Staff role. That would remove your access to this page!" class="btn btn-disabled" disabled>Unassign</button>
+                            }
+                            else {
+                                <form method="post" asp-page-handler="Unassign">
+                                    <input class="form-input" id="reason" name="reason" placeholder="Reason">
+                                    <input id="role" name="role" type="hidden" value="@role.Role.Name">
+                                    <button data-confirm="Are you sure you want to unassign @Model.SubjectMember.DisplayName from the role @role.Role.Name? This event will be logged to the audit log and the reason you provide will be visible to the customer." type="submit" class="btn btn-danger">Unassign</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </table>
+            @{
+                var unassignedRoles = Roles.All.Except(Model.SubjectMember.MemberRoles.Select(r => r.Role.Name), StringComparer.OrdinalIgnoreCase);
+            }
+            @if (unassignedRoles.Any()) {
+                <div class="p-3">
+                    <span class="font-semibold">Assign a new role</span>
+                </div>
+                <form method="post" asp-page-handler="Assign" class="p-3 flex gap-2">
+                    <div>
+                        <div class="form-select-wrapper">
+                            <select class="form-select" id="role" name="role">
+                                @foreach (var role in unassignedRoles) {
+                                    <option value="@role">@role</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <input class="form-input flex-grow" id="reason" name="reason" placeholder="Reason">
+                    <button data-confirm="Are you sure you want to assign @Model.SubjectMember.DisplayName to the selected role? This event will be logged to the audit log and the reason you provide will be visible to the customer." type="submit" class="btn btn-danger">Assign</button>
+                </form>
+            }
+        </div>
+
+        <h3 class="text-2xl font-semibold mt-5">External Identities</h3>
+        <div class="hard-box mt-5" id="@Model.ExternalIdentitiesDomId">
+            <blankslate>
+                <div class="flex flex-col items-center gap-2">
+                    <i class="fa fa-eye-slash text-3xl"></i>
+                    <span class="text-gray-500">External Identities are not visible by default because they may contain confidential information.</span>
+                    <form asp-page-handler="ExternalIdentities">
+                        <button type="submit" class="btn btn-danger" data-confirm="WARNING: This may show confidential data.">Show External Identities</button>
+                    </form>
+                </div>
+            </blankslate>
+        </div>
+
+        <h3 class="text-2xl font-semibold mt-5">Settings</h3>
+        <div class="hard-box mt-5" id="@Model.SettingsListDomId">
+            <blankslate>
+                <div class="flex flex-col items-center gap-2">
+                    <i class="fa fa-eye-slash text-3xl"></i>
+                    <span class="text-gray-500">Settings are not visible by default because they may contain confidential information.</span>
+                    <form asp-page-handler="Settings">
+                        <button type="submit" class="btn btn-danger" data-confirm="WARNING: This may show confidential data.">Show Settings</button>
+                    </form>
+                </div>
+            </blankslate>
+        </div>
+
+        <h3 class="text-2xl font-semibold mt-5">API Info</h3>
+        <div class="hard-box mt-5" id="@Model.UserInfoDomId">
+            <blankslate>
+                <div class="flex flex-col items-center gap-2">
+                    <i class="fa fa-eye-slash text-3xl"></i>
+                    <span class="text-gray-500">Settings are not visible by default because they may contain confidential information.</span>
+                    <form asp-page-handler="UserInfo">
+                        <button type="submit" class="btn btn-danger" data-confirm="WARNING: This may show confidential data.">Show User Info</button>
+                    </form>
+                </div>
+            </blankslate>
+        </div>
+        <div class="hard-box mt-5" id="@Model.ChannelMembershipsDomId">
+            <blankslate>
+                <div class="flex flex-col items-center gap-2">
+                    <i class="fa fa-eye-slash text-3xl"></i>
+                    <span class="text-gray-500">Settings are not visible by default because they may contain confidential information.</span>
+                    <form asp-page-handler="ChannelMemberships">
+                        <button type="submit" class="btn btn-danger" data-confirm="WARNING: This may show confidential data.">Show Channel Memberships</button>
+                    </form>
+                </div>
+            </blankslate>
+        </div>
+    </round-box>
+</page-body>

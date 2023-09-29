@@ -1,0 +1,181 @@
+﻿{
+  target: {
+    Room: {
+      Name: Test Room 4,
+      PlatformRoomId: C0004,
+      ManagedConversationsEnabled: true,
+      Persistent: true,
+      Shared: true,
+      RoomType: PublicChannel,
+      Deleted: false,
+      Archived: false,
+      BotIsMember: true,
+      Modified: 1999-01-02 03:04:05 Utc,
+      Settings: {
+        IsCommunityRoom: false
+      },
+      OrganizationId: 1,
+      Id: 1,
+      Created: 1999-01-02 03:04:05 Utc
+    },
+    Assignments: [
+      {
+        RoomId: 1,
+        MemberId: 3,
+        CreatorId: 3,
+        Modified: 1999-01-02 03:04:05.001 Utc,
+        ModifiedById: 3,
+        Id: 1,
+        Created: 1999-01-02 03:04:05.001 Utc
+      },
+      {
+        RoomId: 1,
+        MemberId: 7,
+        CreatorId: 3,
+        Modified: 1999-01-02 03:04:05.001 Utc,
+        ModifiedById: 3,
+        Id: 2,
+        Created: 1999-01-02 03:04:05.001 Utc
+      },
+      {
+        RoomId: 1,
+        MemberId: 8,
+        CreatorId: 3,
+        Modified: 1999-01-02 03:04:05.001 Utc,
+        ModifiedById: 3,
+        Id: 3,
+        Created: 1999-01-02 03:04:05.001 Utc
+      }
+    ],
+    TimeToRespond: {
+      Warning: 01:00:00,
+      Deadline: 02:00:00
+    },
+    SentMessages: [
+      {
+        $type: RichActivity,
+        Blocks: [
+          {
+            $type: Section,
+            Text: {
+              $type: MrkdwnText,
+              Verbatim: false,
+              Text: Thanks for the invitation! I will <https://docs.ab.bot/convos/|track conversations> from external users in this room, and you can track other conversations with the *Manage Conversation* message shortcut.,
+              Type: mrkdwn
+            },
+            Type: section
+          },
+          {
+            $type: Actions,
+            Elements: {
+              $type: IActionElement[],
+              $values: [
+                {
+                  $type: ButtonElement,
+                  Text: {
+                    Emoji: true,
+                    Text: Edit conversation tracking,
+                    Type: plain_text
+                  },
+                  Style: primary,
+                  ActionId: EditConversationsButton,
+                  Type: button
+                },
+                {
+                  $type: ButtonElement,
+                  Text: {
+                    Emoji: true,
+                    Text: Take me to Ab.bot,
+                    Type: plain_text
+                  },
+                  Url: https://app.ab.bot/,
+                  Type: button
+                }
+              ]
+            },
+            BlockId: i:RoomMembershipPayloadHandler,
+            Type: actions
+          },
+          {
+            $type: Section,
+            Text: {
+              $type: MrkdwnText,
+              Verbatim: false,
+              Text: Great! <@Uhome>, <@U0005>, and <@U0006> will be notified of conversations in this room.,
+              Type: mrkdwn
+            },
+            Type: section
+          }
+        ],
+        ResponseUrl: https://example.com/callback,
+        Type: message,
+        Text: Great! <@Uhome>, <@U0005>, and <@U0006> will be notified of conversations in this room.
+      }
+    ],
+    AnalyticsClient: {
+      Tracked: {
+        (3, Room responders changed): {
+          added_responders: true,
+          any_responders: true,
+          feature: Conversations,
+          organization: 1,
+          organization_name: Test Organization,
+          plan: Unlimited,
+          platform_id: Thome,
+          removed_responders: false,
+          room_role: first-responder,
+          room_type: PublicChannel
+        },
+        (3, Room Response Time Changed): {
+          feature: Conversations,
+          organization: 1,
+          organization_name: Test Organization,
+          plan: Unlimited,
+          platform_id: Thome,
+          room_type: PublicChannel
+        }
+      }
+    },
+    AuditEvents: {
+      $type: List<AuditEventBase>,
+      $values: [
+        {
+          $type: RoomResponseTimesChangedEvent,
+          HasDetails: true,
+          Room: Test Room 4,
+          RoomId: C0004,
+          Discriminator: RoomResponseTimesChangedEvent,
+          Identifier: Guid_1,
+          ActorMemberId: 3,
+          ActorId: 3,
+          Description: Updated the response times for room `#Test Room 4`.,
+          StaffOnly: false,
+          EntityId: 1,
+          IsTopLevel: true,
+          SerializedProperties: {"NewTarget":"01:00:00","NewDeadline":"02:00:00"},
+          OrganizationId: 1,
+          Id: 1,
+          Created: 1999-01-02 03:04:05.001 Utc
+        },
+        {
+          $type: RoomRespondersChangedEvent,
+          HasDetails: true,
+          Room: Test Room 4,
+          RoomId: C0004,
+          Discriminator: RoomRespondersChangedEvent,
+          Identifier: Guid_2,
+          ActorMemberId: 3,
+          ActorId: 3,
+          Description: First responders updated for room `#Test Room 4`. The room now has 3 first responders.,
+          StaffOnly: false,
+          EntityId: 1,
+          IsTopLevel: true,
+          SerializedProperties: {"AddedResponders":[{"MemberId":3,"Name":"Test User 1","PlatformUserId":"Uhome"},{"MemberId":7,"Name":"Test User 5","PlatformUserId":"U0005"},{"MemberId":8,"Name":"Test User 6","PlatformUserId":"U0006"}],"RemovedResponders":[],"RespondersCount":3},
+          OrganizationId: 1,
+          Id: 2,
+          Created: 1999-01-02 03:04:05.002 Utc
+        }
+      ]
+    }
+  }
+}

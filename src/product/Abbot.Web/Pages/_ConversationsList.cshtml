@@ -1,0 +1,5 @@
+@model IPaginatedList<Conversation>
+
+<turbo-frame id="@HomePageModel.ConversationsListFrameDomId" target="_top">
+    <vc:conversation-list conversations="Model" show-pager="true" show-view-all-link="false"/>
+</turbo-frame>

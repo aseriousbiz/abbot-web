@@ -1,0 +1,44 @@
+@model Conversation
+
+<div class="pl-4">
+    @if (Model.Events.Any()) {
+        <ol class="relative border-l-2 border-gray-200 mr-4 left-3.5 mt-1">
+            @{ MessagePostedEvent prev = null!; }
+            @foreach (var evt in Model.Events) {
+                switch (evt) {
+                    case MessagePostedEvent mpp:
+                        <partial name="Conversations/Timeline/_MessagePostedTimelineEvent" model="mpp" view-data="new ViewDataDictionary(ViewData)" view-data-prev="prev"/>
+                        prev = mpp;
+                        break;
+                    case NotificationEvent:
+                        <partial name="Conversations/Timeline/_NotificationTimelineEvent" model="evt"/>
+                        break;
+                    case ExternalLinkEvent:
+                        <partial name="Conversations/Timeline/_ExternalLinkTimelineEvent" model="evt"/>
+                        break;
+                    case SlackImportEvent:
+                        <partial name="Conversations/Timeline/_SlackImportEvent" model="evt"/>
+                        break;
+                    case AttachedToHubEvent:
+                        <partial name="Conversations/Timeline/_AttachedToHubTimelineEvent" model="evt"/>
+                        break;
+                    case ConversationClassifiedEvent:
+                        <partial name="Conversations/Timeline/_ConversationClassifiedTimelineEvent" model="evt" />
+                        break;
+                    @* Razor doesn't seem to like '{}' in case statements, so we can't make this a pattern match. *@
+                    @* ReSharper disable once MergeIntoPattern *@
+                    case StateChangedEvent scp:
+                        <staff-only or="!scp.Implicit">
+                            <partial name="Conversations/Timeline/_StatusChangedTimelineEvent" model="scp"/>
+                        </staff-only>
+                        break;
+                    default:
+                        <staff-only>
+                            <partial name="Conversations/Timeline/_UnknownTimelineEvent" model="evt"/>
+                        </staff-only>
+                        break;
+                }
+            }
+        </ol>
+    }
+</div>

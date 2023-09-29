@@ -1,0 +1,33 @@
+@model Serious.Abbot.Pages.Activity.DetailsModel
+@{
+    var (language, skillCode) = Model.AuditEvent switch {
+        SkillRunAuditEvent runEvent => (runEvent.Language, runEvent.Code),
+        SkillEditSessionAuditEvent editEvent => (editEvent.Language, editEvent.Code),
+        _ => throw new InvalidOperationException("Unknown Audit Event Type")
+        };
+}
+
+<h2 class="font-semibold text-sm mb-1">
+    Skill Code at execution <span data-tooltip="This is a snapshot of the code at the time the skill was run. It may have changed since then."><i class="fa fa-info-circle"></i></span>
+</h2>
+@if (@skillCode is null) {
+    <div class="text-gray-500">
+        Code is unavailable. This event may have occurred before Abbot started tracking this.
+    </div>
+} else {
+    if (Model.MaySeeCode || ViewContext.IsStaffMode() && Model.StaffMaySeeCode) {
+        if (Model.StaffMaySeeCode) {
+            <div class="border-l-4 border-yellow-500 px-3 py-2 my-4">
+                <span class="font-semibold">Viewing customer code is logged. Refreshing your browser will log another audit event!</span>
+            </div>
+        }
+        <textarea
+          class="code-viewer"
+          data-readonly="true"
+          data-language="@language">@skillCode</textarea>
+    } else {
+        <staff-only>
+            <partial name="Shared/Activity/_StaffPermissionForm"/>
+        </staff-only>
+    }
+}

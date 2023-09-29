@@ -1,0 +1,36 @@
+@page "/staff/organizations/{id}/apiexplorer"
+@model Serious.Abbot.Pages.Staff.Organizations.ApiExplorerModel
+
+@{
+    ViewContext.SetPageInfo("Staff", "Staff API Explorer");
+}
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">API Explorer</h2>
+        <p class="text-red-500">
+            The API Explorer allows you to make API requests to external services using organization-level
+            API tokens. All requests are logged along with your username.
+        </p>
+        <p>
+            Only <code>GET</code> requests are supported, which means it shouldn't be possible to change customer data.
+            However, be aware that you are viewing potentially-confidential customer data
+        </p>
+        <form method="post" class="mt-2">
+            <div class="flex gap-2 items-baseline">
+                <div class="form-select-wrapper">
+                    <select class="form-select" data-controller="form-prefill" asp-items="@Model.Apis" asp-for="Input.Api">
+                    </select>
+                </div>
+                <input asp-for="Input.Url" data-controller="form-prefill" placeholder="Url" class="flex-grow form-input">
+                <input asp-for="Input.Reason" placeholder="Reason" class="form-input">
+                <button class="btn btn-primary" type="submit">Request</button>
+            </div>
+            <span asp-validation-for="Input.Api"></span>
+            <span asp-validation-for="Input.Url"></span>
+            <span asp-validation-for="Input.Reason"></span>
+        </form>
+        <pre class="mt-2 overflow-x-auto" id="@Model.ResultsAreaId">
+        </pre>
+    </round-box>
+</page-body>

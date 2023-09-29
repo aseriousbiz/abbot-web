@@ -1,0 +1,124 @@
+@using Microsoft.Extensions.Hosting
+@using Microsoft.Extensions.Options
+@using Serious.Abbot.Services
+@using Serious.AspNetCore.TagHelpers
+@model Organization
+@inject IOptions<StripeOptions> StripeOptions
+@inject PlatformRequirements PlatformRequirements
+@inject IHostEnvironment HostEnvironment
+@{
+    var organization = Model;
+    var needsRepair = organization.NeedsRepair();
+    var tableClass = needsRepair
+        ? "bg-yellow-100"
+        : null;
+    var missingScopes = string.Join('\n', PlatformRequirements.MissingScopes(organization));
+}
+
+<tr class="@tableClass">
+    <td class="align-middle p-3">
+        @if (needsRepair) {
+            <span data-tooltip="Needs Repair" class="has-tooltip-right"><i class="fa-solid fa-triangle-exclamation"></i></span>
+        }
+        @if (!PlatformRequirements.HasRequiredScopes(organization)) {
+            <span data-tooltip="Missing a required scope: @missingScopes" class="has-tooltip-right has-tooltip-multiline"><i class="fa-solid fa-triangle-exclamation"></i></span>
+        }
+        @if (organization.IsBotInstalled()) {
+            <a class="has-tooltip-arrow has-tooltip-right"
+               asp-page="/Staff/Organizations/Status"
+               asp-route-id="@organization.PlatformId"
+               data-tooltip="@organization.BotAppName (@organization.BotAppId) is installed!">
+                <img class="inline-block"
+                     src="@(organization.BotAvatar.ToNullIfEmpty() ?? "/img/abbot-avatar-small.png")"
+                     alt="@organization.BotAppName Installed"
+                     width="36"
+                />
+            </a>
+        }
+    </td>
+    <td class="align-top p-3 w-auto">
+        <a class="font-semibold" asp-page="/Staff/Organizations/Status" asp-route-id="@organization.PlatformId">@organization.Name</a>
+        <div class="text-gray-500" data-tooltip="@organization.Domain">
+            <div class="overflow-ellipsis overflow-hidden" style="max-width: 280px">@organization.Domain</div>
+        </div>
+        <span class="text-gray-500">@organization.Slug</span>
+        <span data-controller="clipboard">
+            <button type="button"
+                    data-action="clipboard#copy"
+                    data-clipboard-target="content"
+                    data-tooltip="Copy Org Id to clipboard"
+                    value="@organization.PlatformId">
+                <code>@organization.PlatformId <i class="fa-thin fa-clipboard"></i></code>
+                @if (organization.EnterpriseGridId is { Length: > 0 } enterpriseGridId) {
+                    <code>@enterpriseGridId</code>
+                }
+            </button>
+        </span>
+    </td>
+    <td class="align-middle p-3">
+        @organization.PlanType
+        @if (organization.Trial is { } trialPlan) {
+            <div class="text-gray-500">
+                Trial Expires: <timeago datetime="trialPlan.Expiry" />
+                <a asp-page="/Staff/Organizations/Billing" asp-route-id="@organization.PlatformId">Extend</a>
+            </div>
+        }
+    </td>
+    <td class="align-middle p-3 whitespace-nowrap">
+        @organization.Members.Count @* The Members here is a filtered include *@
+        <span class="text-gray-500" data-tooltip="Purchased seats">out of @organization.PurchasedSeatCount</span>
+    </td>
+    <td class="align-middle p-3">@organization.Skills.Count</td>
+    <td class="align-middle p-3 whitespace-nowrap">
+        @if (organization.StripeCustomerId is { Length: > 0 }) {
+            <div>
+                <a href="@StripeOptions.Value.StripeDashboardBaseUrl/customers/@organization.StripeCustomerId"
+                   target="_blank"
+                   title="View Customer"
+                   data-tooltip="View Customer @organization.StripeCustomerId">
+                    <i class="fa-solid fa-user"></i>
+                    <i class="fa-solid fa-up-right-from-square"></i>
+                </a>
+            </div>
+        }
+        @if (organization.StripeSubscriptionId is { Length: > 0 }) {
+            <div>
+                <a href="@StripeOptions.Value.StripeDashboardBaseUrl/subscriptions/@organization.StripeSubscriptionId"
+                   target="_blank"
+                   title="View Subscription"
+                   data-tooltip="View Subscription @organization.StripeSubscriptionId">
+                    <i class="fa-solid fa-newspaper"></i>
+                    <i class="fa-solid fa-up-right-from-square"></i>
+                </a>
+            </div>
+        }
+    </td>
+    <td class="align-middle p-3">
+        <timeago datetime="@organization.Created"/>
+        <br/><code>@organization.Created</code>
+    </td>
+    <td class="align-middle p-3">
+        @if (organization.Activity.Any()) {
+            var lastActivity = @organization.Activity.Last();
+            <timeago datetime="@lastActivity.Created" />
+            <br/><code data-tooltip="@lastActivity.Description">@lastActivity.Created</code>
+        }
+    </td>
+    <td class="align-middle p-3 flex flex-col gap-1">
+        <a class="btn btn-primary" asp-page="Organizations/Status" asp-route-id="@organization.PlatformId">Details</a>
+        <span class="flex gap-1">
+            @if (organization.Enabled) {
+                <a asp-page="Organizations/Disable" asp-route-id="@organization.PlatformId" class="btn btn-danger flex-grow">Disable</a>
+            } else {
+                <a asp-page="Organizations/Enable" asp-route-id="@organization.PlatformId" class="btn btn-danger flex-grow">Enable</a>
+            }
+            @if (!(HostEnvironment.IsProduction() && organization.Enabled)) {
+                <a class="btn btn-danger"
+                    asp-page="Organizations/Delete" asp-route-id="@organization.PlatformId"
+                    data-tooltip="Delete Organization">
+                    <i class="fa-solid fa-trash"></i>
+                </a>
+            }
+        </span>
+    </td>
+</tr>

@@ -1,0 +1,55 @@
+@model PatternTestResults
+
+@if (Model.MatchesSuppliedPattern) {
+    <p class="bg-green-50 p-4 text-center text-green-700 mt-2">
+        The message matched the pattern.
+    </p>
+} else {
+    <p class="bg-gray-50 p-4 text-center mt-2">
+        The message did not match the pattern.
+    </p>
+}
+
+<div class="text-center text-sm m-3">
+    @if (Model.MatchingPatterns.Any()) {
+        @if (Model.MatchesSuppliedPattern) {
+            <p>The message also matched the following patterns:</p>
+        } else {
+            <p>But it did match these other patterns:</p>
+        }
+
+        <div class="rounded-lg px-4 py-1 border flex font-bold text-xs text-gray-500 mt-2" aria-hidden="true">
+            <div>
+                Pattern name
+            </div>
+            <div class="ml-auto">
+                Associated skill
+            </div>
+        </div>
+
+        <div class="divide-y">
+            @foreach (var pattern in Model.MatchingPatterns) {
+                <dl class="flex items-center p-2">
+                    <dt aria-label="Pattern name">
+                        <a asp-page="/Skills/Patterns/Edit"
+                           class="inline-block px-2 text-blue-500 hover:text-gray-700"
+                           asp-route-skill="@pattern.Skill.Name"
+                           asp-route-slug="@pattern.Slug"
+                           asp-route-source="all">
+                            @pattern.Name
+                        </a>
+                    </dt>
+
+                    <dd class="font-mono px-2 py-1 bg-gray-100 rounded text-blue-500 hover:text-gray-700 ml-auto" aria-label="Skill name">
+                        <a asp-page="/Skills/Edit"
+                           asp-route-skill="@pattern.Skill.Name">
+                            @pattern.Skill.Name
+                        </a>
+                    </dd>
+                </dl>
+            }
+        </div>
+    } else {
+        <p class="mt-2 text-gray-500 text-sm">The message did not match any other patterns.</p>
+    }
+</div>

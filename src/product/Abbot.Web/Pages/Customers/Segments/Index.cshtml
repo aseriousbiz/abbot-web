@@ -1,0 +1,65 @@
+@page
+@model Serious.Abbot.Pages.Customers.Segments.IndexPage
+
+@{
+    ViewContext.SetPageInfo("Settings", "Customer segments");
+}
+
+<page-header>
+    <div class="flex items-center mb-4">
+        <a asp-page="../Index">Customers</a><span class="mx-1">/</span> Segments
+        <div class="ml-auto">
+            <a asp-page="Create" class="btn btn-primary">Create segment</a>
+        </div>
+    </div>
+</page-header>
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+@if (Model.CustomerSegments.Count > 0) {
+    <ul class="border border-gray-300 rounded-lg bg-white divide-y mt-2 drop-shadow-sm">
+        @foreach (var segment in Model.CustomerSegments) {
+            <li class="p-4">
+                <div class="md:grid md:grid-flow-col md:auto-cols-fr md:gap-2 items-center">
+                    <div class="flex flex-col items-center col-span-2 md:mx-2 md:items-start">
+                        <h1 class="font-semibold whitespace-nowrap"><pill size="Medium">@segment.Name</pill></h1>
+                        <span class="text-xs text-gray-600">Created <timeago datetime="@segment.Created" /> by @segment.Creator.DisplayName</span>
+                    </div>
+                    <div class="flex flex-col items-center mt-2 md:mt-0 md:items-start md:ml-4 md:col-span-2 lg:col-span-3">
+                        <div>Customers in this segment:</div>
+                        <div class="text-sm">
+                            @if (segment.Assignments.Any()) {
+                                <div class="flex gap-x-2 mt-1">
+                                    @foreach (var assignment in segment.Assignments) {
+                                        <div><a asp-page="/Customers/Edit" asp-route-id="@assignment.CustomerId">@assignment.Customer.Name</a></div>
+                                    }
+                                </div>
+                            } else {
+                                <span class="italic text-gray-600">No customers in this segment</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="ml-auto flex flex-col items-center mt-2 md:mt-0">
+                        <a asp-page="Delete" asp-route-id="@segment.Id" class="btn btn-danger btn-sm rounded-md">Delete</a>
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+
+    <partial name="_Paginator" model="@Model.CustomerSegments"/>
+} else {
+    <blankslate>
+        <div class="text-center text-xl h-6 text-gray-500 mb-2">
+            <i class="fa-regular fa-building-user"></i>
+        </div>
+        <h2 class="text-center text-lg text-gray-700">
+            No Segments yet!
+        </h2>
+        <p class="mt-2">
+            <a asp-page="Create" class="btn btn-primary">Create segment</a>
+        </p>
+    </blankslate>
+}
+</page-body>

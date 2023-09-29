@@ -1,0 +1,5 @@
+.fixed-select__menu {
+    top: inherit !important;
+    width: inherit !important;
+    position: fixed !important; 
+}

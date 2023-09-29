@@ -1,0 +1,5 @@
+User-agent: *
+Disallow:
+
+sitemap: https://ab.bot/sitemap.xml
+sitemap: https://app.ab.bot/packages/sitemap.xml

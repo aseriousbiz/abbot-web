@@ -1,0 +1,65 @@
+@page
+@using Serious.AspNetCore.TagHelpers
+@model Serious.Abbot.Pages.Staff.Users.IndexPage
+@{
+    ViewContext.SetPageInfo("Staff", "Staff User List");
+}
+
+<partial name="_Header"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">Users</h2>
+
+        <div class="hard-box mt-5 p-4">
+            <div class="mt-3 mb-8 mx-4 mt-4">
+                <form method="get" class="flex gap-x-4 items-baseline">
+                    <input class="form-input w-full flex-grow" placeholder="Search for a user by username, email, Slack Team ID, or Platform User ID" asp-for="Filter">
+                    <div>
+                        <div class="form-select-wrapper">
+                            <select class="form-select" asp-items="@Html.GetEnumValueSelectList(Model.Type!.Value, lowercaseValue: true)" asp-for="Type"></select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </form>
+            </div>
+
+            <table class="w-full">
+                <thead>
+                <tr>
+                    <th class="text-left border-b p-3">UserName</th>
+                    <th class="text-left border-b p-3">Is Bot?</th>
+                    <th class="text-left border-b p-3">Name Identifier</th>
+                    <th class="text-left border-b p-3">Slack Team Id</th>
+                    <th class="text-left border-b p-3">Platform User Id</th>
+                    <th class="text-left border-b p-3">Email</th>
+                    <th class="text-left border-b p-3">Joined</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var user in Model.Users) {
+                    <tr>
+                        <td class="align-middle p-3 flex gap-2 items-center"><partial name="Shared/_Avatar" model="@user"/><a asp-page="Details" asp-route-id="@user.PlatformUserId">@user.DisplayName</a></td>
+                        <td class="align-middle p-3">
+                            @user.IsBot
+                            @if (user.IsAbbot) {
+                                <span class="ml-1" data-tooltip="Abbot!">
+                                    <img class="inline-block" src="/img/abbot-avatar-small.png" width="16" alt="Abbot" />
+                                </span>
+                            }
+                        </td>
+                        <td class="align-middle p-3">@user.NameIdentifier</td>
+                        <td class="align-middle p-3">@user.SlackTeamId</td>
+                        <td class="align-middle p-3">@user.PlatformUserId</td>
+                        <td class="align-middle p-3">@user.Email</td>
+                        <td class="align-middle p-3"><timeago datetime="@user.Created"/></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+
+            <partial name="Shared/_Paginator" model="@Model.Users" />
+        </div>
+    </round-box>
+</page-body>

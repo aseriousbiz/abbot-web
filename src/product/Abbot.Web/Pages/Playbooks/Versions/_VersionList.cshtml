@@ -1,0 +1,78 @@
+@model VersionListModel
+
+<div class="p-2 bg-white rounded-2xl m-2 border border-gray-200">
+    @if (Model.Versions.Any()) {
+        <ul class="divide-y border-slate-200">
+            @foreach (var version in Model.Versions) {
+                <li class="p-4 flex gap-2 items-center">
+                    <div>
+                        <div class="-mb-1 flex items-center gap-2">
+                            @Model.Playbook.Name (version @(version.Version))
+                            @if (Model.LatestPublished?.Version == version.Version) {
+                                @if (Model.Playbook.Enabled) {
+                                    <pill color="Green" size="Small" tooltip="This is the latest published version">
+                                        Active
+                                    </pill>
+                                } else {
+                                    <pill color="Gray" size="Small" tooltip="This is the latest published version, but the Playbook is disabled.">
+                                        Disabled
+                                    </pill>
+                                }
+                            } else if (version.PublishedAt is null) {
+                                <pill color="Gray" size="Small" tooltip="This is a draft version">
+                                    Draft
+                                </pill>
+                            }
+                        </div>
+
+                        <span class="text-sm text-slate-500">
+                            Last updated <timeago datetime="version.Modified" class="italic"/>
+                            by
+                            <avatar size="Small" user="version.ModifiedBy" /> @version.ModifiedBy.DisplayName
+                        </span>
+                    </div>
+
+                    <div class="grow">
+                    @if (version.Comment is not null) {
+                        <span class="text-sm italic">
+                            @version.Comment
+                        </span>
+                    }
+                    </div>
+
+                    <div class="flex gap-x-2 flex justify-center items-center">
+                        @if (Model.Latest?.Version == version.Version) {
+                            <a asp-page="../View"
+                               preserve-staff
+                               asp-route-slug="@Model.Playbook.Slug"
+                               data-tooltip="Edit the Playbook at this version"
+                               aria-label="Edit the Playbook at this version"
+                               class="h-7 btn btn-sm flex gap-2 justify-center items-center has-tooltip-left has-tooltip-arrow">
+                                <i class="fa-regular fa-pencil"></i>
+                                Edit
+                            </a>
+                        }
+                        <a asp-page="View"
+                           preserve-staff
+                           asp-route-versionNumber="@version.Version"
+                           asp-route-slug="@version.Playbook.Slug"
+                           asp-page-handler="export"
+                           data-tooltip="Export the Playbook definition at this version"
+                           aria-label="Export the Playbook definition at this version"
+                           class="h-7 btn btn-sm flex gap-2 justify-center items-center has-tooltip-left has-tooltip-arrow">
+                            <i class="fa-regular fa-download"></i>
+                            Export
+                        </a>
+                    </div>
+                </li>
+            }
+        </ul>
+    } else {
+        <div class="text-center p-8">
+            <h2 class="font-semibold text-xl">
+                This Playbook has no versions.
+            </h2>
+        </div>
+    }
+</div>
+<partial name="Shared/_Paginator" model="@Model.Versions"/>

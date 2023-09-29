@@ -1,0 +1,14 @@
+@model PlaybookViewModel
+@{
+    var tooltipAttribute = "data-tooltip='No changes to publish'";
+    var (disabledClass, disabled, tooltip) = Model.PublishState is PlaybookPublishState.Published
+        ? ("btn-disabled has-tooltip-left has-tooltip-arrow", "disabled", Html.Raw(tooltipAttribute))
+        : (null, null, null);
+}
+<button type="submit" name="publish" value="true" class="btn btn-primary @disabledClass" @disabled @tooltip>
+    @if (Model.PublishState is PlaybookPublishState.NeverPublished) {
+        <text>Publish Playbook</text>
+    } else {
+        <text>Publish Changes</text>
+    }
+</button>

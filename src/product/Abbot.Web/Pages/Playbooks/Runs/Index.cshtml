@@ -1,0 +1,76 @@
+@page "/playbooks/{slug}/runs"
+@model Serious.Abbot.Pages.Playbooks.Runs.IndexModel
+
+@{
+    ViewContext.SetPageInfo("Playbook", "Playbook Runs", "View Playbook Runs");
+}
+
+<page-header class="mx-4 my-3">
+    <header>
+        <div class="font-medium text-sm">
+            <a asp-page="../Index"
+               preserve-staff>
+                Playbooks
+            </a>
+            /
+            <a asp-page="../View"
+               asp-all-route-data="ViewContext.GetCurrentRouteValues()"
+               asp-route-slug="@Model.Playbook.Slug">@Model.Playbook.Name</a>
+        </div>
+
+        <h1 class="font-semibold" id="playbook-name">
+            Runs
+        </h1>
+    </header>
+</page-header>
+
+<page-body class="h-full">
+    <div class="p-2 bg-white rounded-2xl m-2 border border-gray-200">
+        @if (Model.RunGroups.Any()) {
+            <ul class="divide-y border-slate-200">
+                @foreach (var group in Model.RunGroups) {
+                    <li class="p-4 flex gap-2 items-center">
+                        <span class="fa-layers fa-2x fa-fw">
+                            <i class="fa fa-circle-play"></i>
+                            @if (@group.Group.Properties.TotalDispatchCount is > 0) {
+                                <span class="fa-layers-counter scale-[.35] -top-1">@group.Group.Properties.TotalDispatchCount.Value</span>
+                            }
+                        </span>
+                        <div class="grow">
+                            <div class="-mb-1">
+                                <a class="font-medium"
+                                   asp-page="Group"
+                                   preserve-staff
+                                   asp-route-slug="@Model.Playbook.Slug"
+                                   asp-route-groupId="@group.Group.CorrelationId">
+                                    Run of @group.Group.Playbook.Name v@(group.Group.Version)
+                                    @if (group.TriggerType is not null) {
+                                        <span>triggered by '@group.TriggerType.Presentation.Label'</span>
+                                    }
+                                </a>
+                            </div>
+
+                            <span class="text-sm text-slate-500">
+                                <timeago datetime="group.Group.Created"/>
+                                @if (group.Group.CreatedBy is { } createdBy) {
+                                    <text>by</text> <avatar size="Small" member="createdBy"/>
+                                    @createdBy.DisplayName
+                                }
+                            </span>
+                        </div>
+                        <div>
+                            <partial name="_PlaybookRunGroupStatus" model="group.Summary"/>
+                        </div>
+                    </li>
+                }
+            </ul>
+        } else {
+            <div class="text-center p-8">
+                <h2 class="font-semibold text-xl">
+                    This Playbook has not run yet.
+                </h2>
+            </div>
+        }
+    </div>
+    <partial name="Shared/_Paginator" model="@Model.RunGroups"/>
+</page-body>

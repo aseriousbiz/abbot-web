@@ -1,0 +1,80 @@
+@model StaffBarViewComponent.ViewModel
+@* This view is only rendered if the user is _in_ staff mode *@
+
+@{
+    var inStaffToolsPage = ViewContext.RouteData.Values["page"] is string s && s.StartsWith("/Staff", StringComparison.OrdinalIgnoreCase);
+    var inStaffViewOfPage = ViewContext.RouteData.Values.ContainsKey("staffOrganizationId");
+    var inStaffTools = inStaffToolsPage || inStaffViewOfPage;
+}
+
+<div class="px-4 py-1 @(inStaffTools ? "bg-yellow-200" : "bg-slate-200") text-sm flex gap-x-4">
+    <div>
+        <span class="has-tooltip-right" data-tooltip="Built @Program.BuildMetadata.BuildDate.Humanize() (@Program.BuildMetadata.BuildDate?.ToString("O"))">
+        @if (Program.BuildMetadata.PullRequestNumber is {} pullRequestNumber) {
+            <i class="fa fa-code-pull-request"></i>
+            <a target="_blank" href="https://github.com/aseriousbiz/abbot/pull/@pullRequestNumber">
+                #@pullRequestNumber
+                <code>@Program.BuildMetadata.Branch</code>
+            </a>
+        } else {
+            var (fullId, shortId) = Program.BuildMetadata.Branch is {Length: > 0}
+                ? (Program.BuildMetadata.Branch, Program.BuildMetadata.Branch)
+                : (Program.BuildMetadata.CommitId, Program.BuildMetadata.CommitId?.TruncateToLength(8, appendEllipses: true));
+            <i class="fa fa-code-branch"></i>
+            <a target="_blank" href="https://github.com/aseriousbiz/abbot/commits/@fullId"><code>@shortId</code></a>
+        }
+        </span>
+    </div>
+    <div class="hidden md:block">
+        <i class="fa fa-page"></i>
+        <code>@ViewContext.RouteData.Values["page"]</code>
+    </div>
+    <div class="grow"></div>
+    <div class="hidden xl:block">
+        <i class="fa fa-ban-bug"></i>
+        <code data-tooltip="Click to copy Activity ID" class="has-tooltip-bottom" data-controller="clipboard" data-action="click->clipboard#copy">@Activity.Current?.Id</code>
+    </div>
+    <div class="hidden md:block">
+        Environment: <code>@ApplicationEnvironment.Name</code>
+    </div>
+    <div>
+        <a class="p-2 -ml-2" asp-page="/Staff/Index" nav-active-class="text-blue-500">
+            <i class="fa fa-cog"></i>
+        </a>
+    </div>
+    <div class="-ml-2" data-controller="show-hide">
+        <button class="p-2 -mt-2 -mb-2 -ml-2" data-action="show-hide#toggle">
+            <i class="fa fa-bars"></i>
+            @if (StaffMenuTagHelper.GetStaffMenuZones(ViewContext.HttpContext) is { Count: > 0 } zones)
+            {
+                <span class="tabnav-badge">@zones.Count</span>
+            }
+        </button>
+        <div class="hidden absolute top-7 p-5 bg-yellow-200 right-0 bg-white max-w-full overflow-x-auto" data-show-hide-target="subject">
+            <h2 class="text-lg font-semibold">
+                <staff-icon></staff-icon>
+                Staff Menu
+                <div class="md:hidden inline-block">
+                    for
+                    <i class="fa fa-page"></i>
+                    <code>@ViewContext.RouteData.Values["page"]</code>
+                </div>
+            </h2>
+            <div class="md:hidden">
+                Environment: <code>@ApplicationEnvironment.Name</code>
+            </div>
+            <div class="xl:hidden max-w-full truncate break-words" data-tooltip="Click to copy Activity ID" data-controller="clipboard" data-action="click->clipboard#copy">
+                Activity ID:
+                <code class="has-tooltip-bottom inline-block" data-clipboard-target="content">
+                    @Activity.Current?.Id
+                </code>
+            </div>
+            @if (Model.AbbotPageModel?.StaffPageUrl() is { } staffPageUrl) {
+                <a class="block btn btn-small btn-primary mt-2" href="@staffPageUrl">
+                    View in Staff Tools
+                </a>
+            }
+            <staff-menu></staff-menu>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,136 @@
+{
+  "token": "AUBq0lzDhvfWfOieKqkC1l7D",
+  "team_id": "T00012121",
+  "api_app_id": "A01TG9GPJQ3",
+  "event": {
+    "type": "message",
+    "subtype": "message_changed",
+    "message": {
+      "client_msg_id": "113715da-78f4-437b-8984-c218953b3249",
+      "type": "message",
+      "text": ":announcement: This is an announcement that was created in a DM and is being sent to multiple rooms. This message is just to let you know, you all are wonderful people! That is all!",
+      "user": "U012LKJFG0P",
+      "team": "T00012121",
+      "attachments": [
+        {
+          "from_url": "https://redact.slack.com/archives/C01BVR1MN2G/p1643662336032109",
+          "ts": "1643662336.032109",
+          "author_id": "U01CFMFLYUU",
+          "channel_team": "T0223456L",
+          "channel_id": "C01BVR1MN2G",
+          "is_msg_unfurl": true,
+          "is_thread_root_unfurl": true,
+          "message_blocks": [
+            {
+              "team": "T0223456L",
+              "channel": "C01BVR1MN2G",
+              "ts": "1643662336.032109",
+              "message": {
+                "blocks": [
+                  {
+                    "type": "rich_text",
+                    "block_id": "BOBu",
+                    "elements": [
+                      {
+                        "type": "rich_text_section",
+                        "elements": [
+                          {
+                            "type": "text",
+                            "text": "REDACTED"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "id": 1,
+          "original_url": "https://redact.slack.com/archives/C01BVR1MN2G/p1643662336032109",
+          "fallback": "Fallback text",
+          "text": "The message",
+          "mrkdwn_in": [
+            "text"
+          ],
+          "team_name": "Attentive",
+          "footer": "From another organization"
+        }
+      ],
+      "edited": {
+        "user": "U012LKJFG0P",
+        "ts": "1657199914.000000"
+      },
+      "blocks": [
+        {
+          "type": "rich_text",
+          "block_id": "vr2",
+          "elements": [
+            {
+              "type": "rich_text_section",
+              "elements": [
+                {
+                  "type": "emoji",
+                  "name": "announcement"
+                },
+                {
+                  "type": "text",
+                  "text": " This is an announcement that was created in a DM and is being sent to multiple rooms. This message is just to let you know, you all are wonderful people! That is all!"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "ts": "1656728353.239749",
+      "source_team": "T013108BYLS",
+      "user_team": "T013108BYLS"
+    },
+    "previous_message": {
+      "client_msg_id": "113715da-78f4-437b-8984-c218953b3249",
+      "type": "message",
+      "text": ":announcement: This is an announcement that was created in a DM and is being sent to multiple rooms.\nYou all are wonderful people! That is all!",
+      "user": "U012LKJFG0P",
+      "ts": "1656728353.239749",
+      "team": "T00012121",
+      "blocks": [
+        {
+          "type": "rich_text",
+          "block_id": "YXz",
+          "elements": [
+            {
+              "type": "rich_text_section",
+              "elements": [
+                {
+                  "type": "emoji",
+                  "name": "announcement"
+                },
+                {
+                  "type": "text",
+                  "text": " This is an announcement that was created in a DM and is being sent to multiple rooms.\nYou all are wonderful people! That is all!"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "channel": "C50000000",
+    "ts": "1657199914.000200",
+    "event_ts": "1657199914.000200",
+    "channel_type": "channel"
+  },
+  "type": "event_callback",
+  "event_id": "Ev0000000006",
+  "event_time": 1657199914,
+  "authorizations": [
+    {
+      "team_id": "T00012121",
+      "user_id": "U01TG976JSW",
+      "is_bot": true,
+      "is_enterprise_install": false
+    }
+  ],
+  "is_ext_shared_channel": false,
+  "event_context": "4-eyJldCI6Im1lc3NhZ2UiLCJ0aWQiOiJUMDEzMTA4QllMUyIsImFpZCI6IkEwMVRHOUdQSlEzIiwiY2lkIjoiRDAxVTYzQlNKMFkifQ"
+}

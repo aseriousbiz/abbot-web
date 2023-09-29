@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <RootNamespace>Serious.Abbot</RootNamespace>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Azure.KeyVault.Core" />
+        <PackageReference Include="Microsoft.Bot.Builder.Azure" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" />
+        <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.Logging" />
+        <PackageReference Include="NodaTime" />
+        <PackageReference Include="NodaTime.Serialization.JsonNet" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\scripting\Abbot.Scripting.Interfaces\Abbot.Scripting.Interfaces.csproj" />
+        <ProjectReference Include="..\..\libraries\Serious.Library\Serious.Library.csproj" />
+        <ProjectReference Include="..\Abbot.ScriptReferences\Abbot.ScriptReferences.csproj" />
+    </ItemGroup>
+
+</Project>

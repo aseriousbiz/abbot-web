@@ -1,0 +1,40 @@
+@model IDictionary<Organization, int>
+@{
+    var rank = 0;
+}
+<div class="hard-box w-full">
+    @if (Model.Any())
+    {
+        <table class="w-full">
+            <thead>
+            <tr>
+                <th class="text-left border-b p-3">Rank</th>
+                <th class="text-left border-b p-3">Org</th>
+                <th class="text-left border-b p-3">Count</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var stat in Model)
+            {
+                <tr>
+                    <td class="align-middle p-3">@(++rank)</td>
+                    <td class="align-middle p-3">@stat.Key.Name (@stat.Key.PlatformType.Humanize())</td>
+                    <td class="align-middle p-3">@stat.Value</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <blankslate>
+            <div class="text-center text-xl h-6 text-gray-500 mb-2">
+                <i class="fa-regular fa-align-slash"></i>
+            </div>
+
+            <h2 class="text-center text-lg text-gray-700">
+                No data.
+            </h2>
+        </blankslate>
+    }
+</div>

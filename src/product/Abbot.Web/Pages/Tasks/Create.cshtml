@@ -1,0 +1,44 @@
+@page
+@model Serious.Abbot.Pages.Tasks.CreatePage
+@{
+    ViewContext.SetPageInfo("Tasks", "Create Task");
+}
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+<partial name="Shared/_ReadOnlyHeader" />
+
+<page-header>
+    Create Task
+    <span class="preview-pill text-lg">
+        Preview
+    </span>
+</page-header>
+
+<page-body>
+    <form method="post">
+        <section class="my-4 p-4 border bg-white rounded-lg shadow-sm">
+            <div asp-validation-summary="ModelOnly"></div>
+
+            <div class="mb-4">
+                <label class="font-bold" asp-for="Input.Title"></label>
+                <input class="form-input w-full" asp-for="Input.Title" />
+                <p class="text-sm text-gray-500 mb-1">
+                    * Required.
+                </p>
+                <span asp-validation-for="Input.Title"></span>
+            </div>
+
+            <div class="mb-4">
+                <label class="font-bold" asp-for="Input.CustomerId"></label>
+                <p>
+                    <select class="form-select" asp-for="Input.CustomerId" asp-items="Model.CustomerOptions"></select>
+                </p>
+                <span asp-validation-for="Input.CustomerId"></span>
+            </div>
+            <div class="mb-4">
+                <button type="submit" class="btn btn-primary">Create</button>
+            </div>
+        </section>
+    </form>
+
+</page-body>

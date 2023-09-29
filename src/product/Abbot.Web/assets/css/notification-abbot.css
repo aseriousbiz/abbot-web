@@ -1,0 +1,43 @@
+.notification-abbot {
+  z-index: 100;
+
+  &.fade-in {
+    animation:    fadeInUp .5s ease 0s 1;
+
+    @keyframes fadeInUp {
+            0% {
+                margin-top: 1.25em;
+                opacity: 0;
+            }
+            100% {
+                opacity: 100%;
+                margin-top: 0;
+            }
+        }
+  }
+
+  a:not(.button):not(.dropdown-item) {
+    color: currentColor;
+    text-decoration: underline;
+  }
+
+  strong {
+    color: currentColor;
+  }
+
+  pre code {
+    background: transparent;
+  }
+
+  & > .delete {
+    position: absolute;
+    right: 0.5rem;
+    top: 0.5rem;
+  }
+
+  .title,
+  .subtitle,
+  .content {
+    color: currentColor;
+  }
+}

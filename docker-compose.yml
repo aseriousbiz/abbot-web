@@ -1,0 +1,57 @@
+version: "3.8"
+services:
+  postgres:
+    image: abbotimages.azurecr.io/aseriousbiz/abbot/postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    tmpfs:
+      # Needed for legacy cleanup reasons
+      - /var/lib/postgresql/data.tmpfs
+    volumes:
+      - $HOME/.abbot/database:/var/lib/postgresql/data
+    build:
+      context: ./docker/postgres
+      dockerfile: Dockerfile
+      args:
+        - VERSION=14-3.2
+  ngrok:
+    image: ngrok/ngrok:3
+    restart: always
+    ports:
+      - 44040:4040
+    volumes:
+      - ./docker/ngrok/ngrok.yml:/home/ngrok/ngrok.yml
+      - "$HOME/.abbot/ngrok.config.yml:/home/ngrok/config.yml"
+      - "$HOME/.abbot/ngrok.tunnel.yml:/home/ngrok/tunnel.yml"
+    entrypoint: ["ngrok", "start", "--all", "--config", "/home/ngrok/tunnel.yml", "--config",  "/home/ngrok/config.yml", "--config",  "/home/ngrok/ngrok.yml"]
+
+  # A test instance of Postgres that runs entirely on tmpfs
+  # Only used if the "testing" profile is enabled
+  postgres_test:
+    image: abbotimages.azurecr.io/aseriousbiz/abbot/postgres
+    restart: always
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    tmpfs:
+      - /var/lib/postgresql/data
+    build:
+      context: ./docker/postgres
+      dockerfile: Dockerfile
+      args:
+        - VERSION=14-3.2
+    profiles:
+      - testing
+
+  # Only used if the "rabbitmq" profile is enabled
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    profiles:
+      - rabbitmq

@@ -1,0 +1,52 @@
+@page
+@model Serious.Abbot.Pages.Customers.CustomerIndexPage
+
+@{
+    ViewContext.SetPageInfo("Customer", "Customers");
+}
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage" />
+
+<page-header>
+    <div class="flex items-center mb-4">
+        Customers
+        <div class="ml-auto">
+            <a asp-page="Create" class="btn">Create customer</a>
+            <a asp-page="Segments/Index" class="btn">Manage segments</a>
+        </div>
+    </div>
+</page-header>
+
+<page-body>
+    <form method="post" data-controller="input-submit">
+        <div class="flex gap-x-2 items-baseline w-full">
+            <input
+                data-input-submit-target="submitter"
+                show-clear-button
+                clear-button-container-class="flex-grow"
+                class="form-input w-full"
+                asp-for="Filter"
+                name="q"
+                placeholder="Filter customers by name or description"
+                data-val="false"
+                data-clear-input-target="input" />
+            <button
+                class="btn btn-primary"
+                type="submit">
+                Filter
+            </button>
+        </div>
+    </form>
+    <div id="@Model.CustomerListId">
+        <partial name="_CustomerList"/>
+    </div>
+</page-body>
+
+<round-box class="mt-2">
+    <h2 class="text-xl font-semibold">Customer Metadata Fields</h2>
+    <p>Manage the set of custom metadata fields that can be applied to customers.</p>
+
+    <div class="grid p-3 grid-cols-4 gap-2 border border-gray-200 rounded shadow-sm my-2 w-fit" id="@Model.MetadataFieldsId">
+        <partial name="Shared/Metadata/_MetadataFields" />
+    </div>
+</round-box>

@@ -1,0 +1,7 @@
+M:Microsoft.EntityFrameworkCore.DbSet`1.Add(`0);Prefer DbSet.AddAsync over DbSet.Add.
+P:Microsoft.AspNetCore.Http.HttpContext.TraceIdentifier;Use Activity.Current.Id instead.
+T:Microsoft.FeatureManagement.IFeatureManager;Use Serious.Abbot.FeatureManagement.FeatureService instead.
+T:Microsoft.FeatureManagement.IFeatureManagerSnapshot;Use Serious.Abbot.FeatureManagement.FeatureService instead.
+T:Microsoft.FeatureManagement.Mvc.FeatureGateAttribute;Use Serious.Abbot.Web.FeatureGateAttribute instead.
+P:NodaTime.DateTimeZoneProviders.Bcl;Use Tzdb.
+P:NodaTime.DateTimeZoneProviders.Serialization;Use Tzdb.

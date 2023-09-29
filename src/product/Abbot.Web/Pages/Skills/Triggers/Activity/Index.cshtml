@@ -1,0 +1,24 @@
+@page "/skills/{skill}/triggers/{trigger}/{triggerType}/activity"
+@model Serious.Abbot.Pages.Skills.Triggers.Activity.IndexModel
+
+@{
+    var trigger = Model.Trigger;
+    ViewContext.SetPageInfo("Triggers", "Trigger Activity Log", $"Activity log for the {trigger.Name} trigger");
+}
+<header class="page-header">
+    <div class="container">
+        <div class="mb-4">
+            <small>
+                <i class="fa-light fa-arrow-left"></i>
+                Back to  <a asp-page="../Index" asp-route-skill="@trigger.Skill.Name">Triggers</a>
+            </small>
+        </div>
+        <h1 class="title is-3">Activity Log for @trigger.GetTriggerTypeRouteParameter() trigger <code>@trigger.Name</code> of skill <code>@trigger.Skill.Name</code></h1>
+    </div>
+</header>
+
+<section class="section">
+    <div class="container">
+        <partial name="Shared/Activity/_ActivityLog" />
+    </div>
+</section>

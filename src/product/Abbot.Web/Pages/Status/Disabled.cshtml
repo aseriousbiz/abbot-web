@@ -1,0 +1,22 @@
+@page
+@model Serious.Abbot.Pages.Status.DisabledPage
+@{
+    ViewContext.SetPageInfo("Status", "Organization Disabled");
+}
+
+<section class="sm:m-8">
+    <div class="border border-gray-300 p-4 rounded-lg bg-white max-w-md sm:m-8 mx-auto shadow-md">
+        <div class="p-2">
+            <div class="far fa-circle-x text-2xl mb-1 text-red-600" aria-hidden="true">
+            </div>
+
+            <h1 class="text-lg font-semibold leading-tight">
+                Your Organization is Disabled
+            </h1>
+
+            <p class="my-2">
+                Please contact <a href="mailto:@WebConstants.SupportEmail">@WebConstants.SupportEmail</a> to learn more.
+            </p>
+        </div>
+    </div>
+</section>

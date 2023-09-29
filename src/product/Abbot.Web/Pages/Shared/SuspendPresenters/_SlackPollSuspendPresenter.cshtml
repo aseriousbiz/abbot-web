@@ -1,0 +1,26 @@
+@using Serious.Abbot.Playbooks.Actions;
+@inject IClock Clock
+@model (PlaybookRun Run, IDictionary<string, object> SuspendState)
+
+@{
+    var domain = Model.Run.Playbook.Organization.Domain;
+    var messageUrl = Model.SuspendState.TryGetValue("channel", out var c)
+        && c is string channelId
+        && Model.SuspendState.TryGetValue(SlackPollAction.StateMessageId, out var m)
+        && m is string messageId
+        ? SlackFormatter.MessageUrl(domain, channelId, messageId)
+        : null;
+}
+<pill tooltip="The Playbook run will resume after a user responds to the poll." color="Gray" icon="fa-spinner fa-spin-pulse">
+    <span>
+        Waiting on response
+        @if (messageUrl is not null) {
+            <text>to </text><a href="@messageUrl" target="_blank">Slack poll</a>
+        }
+        else
+        {
+            <text>to Slack poll</text>
+        }
+        <text>&hellip;</text>
+    </span>
+</pill>

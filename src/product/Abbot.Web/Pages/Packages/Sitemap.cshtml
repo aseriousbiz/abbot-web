@@ -1,0 +1,18 @@
+@page "/packages/sitemap.xml"
+@model Serious.Abbot.Pages.Packages.Sitemap
+
+@{
+    Layout = null;
+    var items = Model.SitemapItems;
+    Response.ContentType = "application/xml";
+}   
+
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    @foreach (var item in items)
+    {
+        <url>
+            <loc>@item.Loc</loc>
+            <lastmod>@item.LastMod.ToString("yyyy-MM-dd")</lastmod>
+        </url>
+    }
+</urlset>

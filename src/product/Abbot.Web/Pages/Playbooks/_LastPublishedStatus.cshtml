@@ -1,0 +1,26 @@
+@using Serious.AspNetCore.TagHelpers
+@model PlaybookViewModel
+
+<div class="flex items-center text-sm gap-x-1 mt-1">
+    @if (Model.PublishState is PlaybookPublishState.NeverPublished) {
+        <pill color="Gray" size="Small">Unpublished</pill>
+        @if (Model.CurrentVersion is not null) {
+            <p class="text-slate-500">
+                Last saved
+                <span><timeago datetime="Model.CurrentVersion.Modified"/></span>.
+            </p>
+        }
+    } else if (Model.PublishState is PlaybookPublishState.PublishedWithUnpublishedChanges) {
+            <pill color="Gray" size="Small">Unpublished changes</pill>
+
+            <p class="text-slate-500">
+                Last saved
+                <span><timeago datetime="Model.CurrentVersion!.Modified"/></span>.
+            </p>
+        } else {
+            <p class="text-slate-500">
+                Last published
+                <span><timeago datetime="Model.PublishedVersion!.PublishedAt.GetValueOrDefault()"/></span>.
+            </p>
+    }
+</div>

@@ -1,0 +1,29 @@
+@model Serious.Abbot.Pages.Activity.DetailsModel
+@{
+  var auditEvent = Model.AuditEvent as HubAuditEvent
+      ?? throw new InvalidOperationException($"AuditEvent is not a {nameof(HubAuditEvent)}.");
+  var displayRoom = auditEvent.Room is { Length:> 0 } && auditEvent.Room[0] != '#'
+    ? $"#{auditEvent.Room}"
+    : auditEvent.Room;
+}
+
+<div class="m-4">
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div>
+      <h2 class="font-bold text-sm mb-1 inline">Channel</h2>
+      <p>
+        @if (displayRoom is { Length: > 0 }) {
+           <span title="@auditEvent.RoomId">@displayRoom</span>
+           if (auditEvent.RoomId is not null) {
+             <em>(@auditEvent.RoomId)</em>
+           }
+        }
+        else {
+          <span class="text-gray-500">Unknown</span>
+        }
+      </p>
+    </div>
+
+  </div>
+</div>
+

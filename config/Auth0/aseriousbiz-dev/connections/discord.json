@@ -1,0 +1,19 @@
+{
+  "id": "con_aqTHxmRMYJ4I2qNa",
+  "options": {
+    "scope": "identify email",
+    "scripts": {
+      "fetchUserProfile": "/*\nThis is \"Fetch User Profile Script\" we use in Auth0 under:\n\nTenant: aseriousbiz -> Connections -> Social -> `discord`\n */\n\nfunction(accessToken, ctx, cb) {\n    request.get({\n        url: 'https://discord.com/api/users/@me',\n        headers: {\n            'Authorization': 'Bearer ' + accessToken\n        }\n    }, function(err, resp, body) {\n        if (err) return cb(err);\n        if (resp.statusCode !== 200) return cb(new Error(body));\n\n        const user = JSON.parse(body);\n\n        const profile = {\n            platform_user_id: user.id,\n            id: user.id,\n            name: user.username,\n            nickname: user.username,\n            picture: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`,\n            locale: user.locale,\n            email: user.email\n        };\n        cb(null, profile);\n    });\n}"
+    },
+    "tokenURL": "https://discord.com/api/oauth2/token",
+    "client_id": "785945994097197137",
+    "authorizationURL": "https://discord.com/api/oauth2/authorize"
+  },
+  "strategy": "oauth2",
+  "name": "discord",
+  "is_domain_connection": false,
+  "enabled_clients": [
+    "Abbot - Dev",
+    "auth0-deploy-cli-extension"
+  ]
+}

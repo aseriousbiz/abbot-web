@@ -1,0 +1,134 @@
+{
+  "type": "block_actions",
+  "user": {
+    "id": "U012LKJFG0P",
+    "username": "haacked",
+    "name": "haacked",
+    "team_id": "T013108BYLS"
+  },
+  "api_app_id": "A01TG9GPJQ3",
+  "token": "TOKEN123",
+  "container": {
+    "type": "view",
+    "view_id": "V02TGKYF0ER"
+  },
+  "trigger_id": "Some.Trigger.Id",
+  "team": {
+    "id": "T013108BYLS",
+    "domain": "aseriousbiz"
+  },
+  "is_enterprise_install": false,
+  "view": {
+    "id": "V02TGKYF0ER",
+    "team_id": "T013108BYLS",
+    "type": "home",
+    "blocks": [
+      {
+        "type": "section",
+        "block_id": "c/2",
+        "text": {
+          "type": "mrkdwn",
+          "text": "Abbot is a platform to build and run automation scripts from chat without a lot of hassle.\n\nWe take care of the annoying parts of getting up and running so you can focus on getting things done.",
+          "verbatim": false
+        },
+        "accessory": {
+          "type": "image",
+          "image_url": "https://app.ab.bot/img/abbot-avatar.png",
+          "alt_text": "Abbot avatar"
+        }
+      },
+      {
+        "type": "section",
+        "block_id": "tOzb5",
+        "text": {
+          "type": "mrkdwn",
+          "text": ":gear: Manage Abbot.",
+          "verbatim": false
+        }
+      },
+      {
+        "type": "divider",
+        "block_id": "TmND"
+      },
+      {
+        "type": "context",
+        "block_id": "oHo78",
+        "elements": [
+          {
+            "type": "mrkdwn",
+            "text": "Log-in to \u003chttps://app.ab.bot/\u003e to write new skills, subscribe to signals, and administer your Abbot.",
+            "verbatim": false
+          }
+        ]
+      },
+      {
+        "type": "actions",
+        "block_id": "qeYzV",
+        "elements": [
+          {
+            "type": "button",
+            "action_id": "8ac",
+            "text": {
+              "type": "plain_text",
+              "text": ":robot_face: Get Started",
+              "emoji": true
+            },
+            "style": "primary",
+            "url": "https://app.ab.bot/login"
+          },
+          {
+            "type": "button",
+            "action_id": "system:app-home:help-button",
+            "text": {
+              "type": "plain_text",
+              "text": ":question: Help",
+              "emoji": true
+            }
+          }
+        ]
+      },
+      {
+        "type": "context",
+        "block_id": "9MvA",
+        "elements": [
+          {
+            "type": "mrkdwn",
+            "text": "If you have any questions or need any help, visit \u003chttps://docs.ab.bot/\u003e or contact us at \u0026lt;support@ab.bot|\u003cmailto:support@ab.bot\u003e\u0026gt;",
+            "verbatim": false
+          }
+        ]
+      }
+    ],
+    "private_metadata": "this is private",
+    "callback_id": "some-callback-id",
+    "state": {
+      "values": {}
+    },
+    "hash": "1641926048.oGdZivh0",
+    "title": {
+      "type": "plain_text",
+      "text": "View Title",
+      "emoji": true
+    },
+    "clear_on_close": false,
+    "notify_on_close": false,
+    "root_view_id": "V02TGKYF0ER",
+    "app_id": "A01TG9GPJQ3",
+    "external_id": "Some.External.Id",
+    "app_installed_team_id": "T013108BYLS",
+    "bot_id": "B01U63BS0EL"
+  },
+  "actions": [
+    {
+      "action_id": "system:app-home:help-button",
+      "block_id": "qeYzV",
+      "text": {
+        "type": "plain_text",
+        "text": ":question: Help",
+        "emoji": true
+      },
+      "type": "button",
+      "action_ts": "1641926102.149005"
+    }
+  ]
+}

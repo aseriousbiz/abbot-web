@@ -1,0 +1,51 @@
+@page
+@model Serious.Abbot.Pages.AccessDeniedPage
+
+@{
+    var title = Model.AccessPending ? "You are on the wait list!" : "Access Denied";
+    ViewContext.SetPageInfo("Status", title);
+}
+
+<section class="sm:m-8">
+    <div class="border border-gray-300 p-4 rounded-lg bg-white max-w-md sm:m-8 mx-auto shadow-md">
+        <div class="p-2">
+            @if (Model.AccessPending)
+            {
+                <div class="far fa-hourglass-clock text-2xl mb-1" style="color: #4F46E5;" aria-hidden="true">
+                </div>
+            }
+            else
+            {
+                <div class="far fa-circle-x text-2xl mb-1 text-red-600" aria-hidden="true">
+                </div>
+            }
+
+            <h1 class="text-lg font-semibold leading-tight">
+                @title
+            </h1>
+
+            @if (Model.AccessPending)
+            {
+                <p class="my-2">
+                    Your request for access to the site is pending confirmation from an admin of this organization.
+                </p>
+
+                <p class="mt-2">
+                    <a href="/" class="btn btn-primary">
+                        Click here when an admin grants you access
+                    </a>
+                </p>
+            }
+            else
+            {
+                <p class="mt-2">
+                    Sorry, you do not have the required permissions to view that page.
+                </p>
+                @if (ViewContext.HttpContext.User.IsInRole(Roles.Staff))
+                {
+                    <p class="mt-1">If you're staff, make sure you haven't disabled staff mode. Check the footer!</p>
+                }
+            }
+        </div>
+    </div>
+</section>

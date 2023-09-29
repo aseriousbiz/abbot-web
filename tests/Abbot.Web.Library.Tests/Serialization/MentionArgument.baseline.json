@@ -1,0 +1,12 @@
+{
+  "Mentioned": {
+    "Id": "U1234",
+    "UserName": "ciri",
+    "Name": "Ciri",
+    "Location": {
+      "FormattedAddress": "Idris"
+    }
+  },
+  "Value": "<@U1234>",
+  "OriginalText": "<@U1234>"
+}

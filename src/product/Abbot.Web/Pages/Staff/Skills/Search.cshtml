@@ -1,0 +1,70 @@
+@page
+@model Serious.Abbot.Pages.Staff.Skills.SearchPage
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Skill Search");
+}
+
+<partial name="Staff/_Header"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+<partial name="_Header"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">Skill Code Search</h2>
+        <p class="text-sm">
+            This allows you to search by Skill <code>Id</code> or for code that matches on certain keywords.
+        </p>
+        <form class="flex flex-row gap-2 mt-2">
+            <input class="form-input flex-grow" placeholder="Search query" name="q" asp-for="SearchTerm">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+
+        @if (Model.Matches is not null) {
+            if (!Model.Matches.Any()) {
+                <blankslate>
+                    <div class="text-center text-xl h-6 text-gray-500 mb-2">
+                        <i class="fa-regular fa-scroll"></i>
+                    </div>
+
+                    <h2 class="text-center text-lg text-gray-700" style="min-height: 132px">
+                        <span>No skills matched your query.</span>
+                    </h2>
+                </blankslate>
+            } else {
+                <table class="w-full">
+                    <thead>
+                        <tr>
+                            <th class="text-left border-b p-3">Id</th>
+                            <th class="text-left border-b p-3">Organization</th>
+                            <th class="text-left border-b p-3">Name</th>
+                            <th class="text-left border-b p-3">Description</th>
+                            <th class="text-left border-b p-3">Language</th>
+                            <th class="text-left border-b p-3">Enabled</th>
+                            <th class="text-left border-b p-3">Restricted</th>
+                            <th class="text-left border-b p-3">Created</th>
+                            <th class="text-left border-b p-3">Modified</th>
+                        </tr>
+                    </thead>
+                    @foreach (var skill in Model.Matches) {
+                        <tr>
+                            <td class="align-middle p-3"><code>@skill.Id</code></td>
+                            <td class="align-middle p-3">
+                                <a asp-page="/Staff/Organizations/Skills" asp-route-id="@skill.Organization.PlatformId">
+                                    @skill.Organization.Name
+                                </a>
+                            </td>
+                            <td class="align-middle p-3"><code>@skill.Name</code></td>
+                            <td class="align-middle p-3">@skill.Description</td>
+                            <td class="align-middle p-3">@skill.Language</td>
+                            <td class="align-middle p-3">@skill.Enabled</td>
+                            <td class="align-middle p-3">@skill.Restricted</td>
+                            <td class="align-middle p-3"><timeago datetime="@skill.Created"/></td>
+                            <td class="align-middle p-3"><timeago datetime="@skill.Modified"/></td>
+                        </tr>
+                    }
+                </table>
+                <partial name="_Paginator" model="@Model.Matches"/>
+            }
+        }
+    </round-box>
+</page-body>

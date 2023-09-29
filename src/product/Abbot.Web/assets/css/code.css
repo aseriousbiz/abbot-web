@@ -1,0 +1,226 @@
+textarea.code-editor[data-readonly='true'] + .CodeMirror {
+    opacity: 90%;
+    filter: grayscale(5%);
+}
+
+.CodeMirror {
+    font-family: 'Consolas', 'Roboto Mono', monospace;
+    font-size: 14px;
+    resize: vertical;
+    overflow: auto !important;
+}
+
+.cm-comment {
+    color: hsl(153, 53%,  53%) !important;
+}
+
+.scriptError {
+    background-color: hsl(348, 86%, 61%);
+    overflow-wrap: break-spaces;
+    color: white;
+}
+
+.scriptReset {
+    background-color: black;
+    color: white;
+}
+
+/* tooltips */
+.abboterror {
+    position: relative;
+}
+
+.CodeMirror-lint-mark-error .tooltiptext {
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    background-color: #ffd;
+    border: 1px solid black;
+    border-radius: 4px 4px 4px 4px;
+    color: black;
+    font-family: monospace;
+    font-size: 10pt;
+    overflow: hidden;
+    padding: 2px 5px;
+    white-space: pre;
+    white-space: pre-wrap;
+    width: 400px;
+    opacity: 0;
+    transition: opacity .4s;
+    -moz-transition: opacity .4s;
+    -webkit-transition: opacity .4s;
+    -o-transition: opacity .4s;
+    -ms-transition: opacity .4s;
+}
+
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.CodeMirror-lint-mark-error:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+.code-spacer {
+    display: block;
+    height: .5em;
+}
+
+.code-placeholder {
+    background-color: #3A3A3A;
+    color: #0c8ef6;
+}
+
+.CodeMirror-hints {
+    font-family: "Roboto", "Segoe UI", Tahoma, sans-serif !important;
+}
+
+.shell-prompt {
+    opacity: .75;
+}
+
+textarea[data-readonly="true"] + .CodeMirror .CodeMirror-cursor {
+    display: none !important
+}
+
+/* Console business! */
+.cm-s-the-matrix.CodeMirror {
+    background: #1e1e1e;
+    color: $console-color; 
+}
+
+#fullscreen-close {
+    display: none;
+}
+
+#fullscreen-shortcut .device {
+    display: none;
+}
+
+@media (max-width: 960px + (2 * 32px)) {
+    #fullscreen-shortcut .device {
+        display: inline;
+    }
+    #fullscreen-shortcut .desktop {
+        display: none;
+    }
+}
+
+#code-editor-underlay {
+    display: none;
+}
+
+body.fullscreen {
+    .main-navigation {
+        display: none;
+    }
+    
+    .CodeMirror-dialog {
+        background-color: #1e1e1e;
+    }
+
+    #code-editor-underlay {
+        background: #1e1e1e;
+        display: block;
+        position: fixed !important;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+
+        div.validation-content, div.content {
+            position: fixed; /* or absolute */
+            top: 5%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50%;
+        }
+
+        div.validation-content span.field-validation-error {
+            font-size: 0.6em;
+        }
+
+        div.content {
+            top: 50%;
+            width: 600px;
+            
+            code {
+                background-color: inherit;
+                color: #383838;
+            }
+        }
+    }
+    
+    .CodeMirror-fullscreen {
+        background-color: rgba(30, 30, 30, 0.3);
+        position: fixed !important;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 70% !important;
+        height: auto;
+        border-right: solid 2px #3a3a3a;
+        max-width: none !important;
+
+        @media (max-width: 1344px + (2 * 32px)) {
+            right: 0;
+            width: 100% !important;
+            border-right: none;
+            bottom: initial;
+            height: 80vh !important;
+            padding-bottom: 8px;
+        }
+    }
+
+    .CodeMirror.cm-s-the-matrix {
+        position: fixed !important;
+        top: 0;
+        padding-top: 8px;
+        bottom: 0;
+        right: 0;
+        width: 30% !important;
+        height: auto;
+        max-width: none !important;
+
+        @media (max-width: 1344px + (2 * 32px)) {
+            left: 0;
+            width: 100% !important;
+            height: 20vh !important;
+            top: initial;
+            border-top: solid 2px #3A3A3A;
+        }
+    }
+
+    @media (max-width: 960px + (2 * 32px)) {
+        #fullscreen-close {
+            display: block;
+            position: fixed !important;
+            top: 4px;
+            right: 4px;
+            z-index: 11;
+            opacity: .6;
+        }
+    }
+}
+
+.rich-text-editor {
+    .ProseMirror {
+        padding: 6px 4px;
+
+        ul, ol {
+            margin-left: 6px;
+        }
+
+        li {
+            padding-left: 0;
+        }
+
+        /* ProseMirror inserts a p for each list item by default, so we style it to be inline */
+        li>p:first-child {
+            display: inline;
+        }
+
+        ul li>p:first-child {
+            margin-left: -4px;
+        }
+    }
+}

@@ -1,0 +1,17 @@
+﻿{
+  target: {
+    EnqueueDirectMessagesCalls: [
+      {
+        TeamPlatformId: Thome,
+        UserPlatformIds: [
+          Uhome
+        ],
+        Message: :anguished: I wasn't able to link <https://example.com/|this conversation> to a ticket. There was an internal error, please try again. Contact 'support@ab.bot' and give them this identifier `00-TraceId-ParentId-00` if you're stuck.
+      }
+    ],
+    BusTestHarness: {
+      Messages: []
+    },
+    AnalyticsClient: {}
+  }
+}

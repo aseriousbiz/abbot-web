@@ -1,0 +1,56 @@
+﻿@page
+@model Serious.Abbot.Pages.Staff.Tools.QueriesModel
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Queries");
+}
+
+<partial name="Staff/_Header"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+<partial name="_Header"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">
+            Queries
+            @if (!Model.Enabled)
+            {
+                <span class="tag is-danger">Not Configured</span>
+            }
+        </h2>
+
+        @if (Model.DatabaseSummaries.Count == 0)
+        {
+            <p>No databases found!</p>
+        }
+        else
+        {
+            <table style="width: 100%">
+                <thead>
+                    <tr>
+                        <th>db_name</th>
+                        <th>calls</th>
+                        <th>total_time</th>
+                        <th>min_time</th>
+                        <th>max_time</th>
+                        <th>mean_time</th>
+                        <th>rows</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var qs in Model.DatabaseSummaries)
+                    {
+                        <tr>
+                            <td><a asp-page="./Top" asp-route-db="@qs.datname">@qs.datname</a></td>
+                            <td>@Html.DisplayFor(_ => qs.calls)</td>
+                            <td>@Html.DisplayFor(_ => qs.total_time)</td>
+                            <td>@Html.DisplayFor(_ => qs.min_time)</td>
+                            <td>@Html.DisplayFor(_ => qs.max_time)</td>
+                            <td>@Html.DisplayFor(_ => qs.mean_time)</td>
+                            <td>@Html.DisplayFor(_ => qs.rows)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </round-box>
+</page-body>

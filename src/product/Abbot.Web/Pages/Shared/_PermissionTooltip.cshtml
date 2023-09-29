@@ -1,0 +1,8 @@
+@model object
+@{
+    var skillName = (Model is Skill skill
+        ? skill.Name
+        : Model as string) ?? "{skill}";
+}
+<span class="has-tooltip-multiline" data-tooltip="In chat, try `@@abbot who can @skillName` to find out who has permission to this skill."><i class="fa-light fa-circle-question more-info"></i></span>
+

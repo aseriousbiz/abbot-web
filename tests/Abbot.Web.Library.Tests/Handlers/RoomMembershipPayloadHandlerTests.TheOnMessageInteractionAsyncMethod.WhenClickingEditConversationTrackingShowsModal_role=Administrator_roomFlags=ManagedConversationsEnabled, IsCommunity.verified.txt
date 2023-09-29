@@ -1,0 +1,356 @@
+﻿{
+  target: {
+    Room: {
+      Name: Test Room 4,
+      PlatformRoomId: C0004,
+      ManagedConversationsEnabled: true,
+      Persistent: true,
+      Shared: false,
+      RoomType: PublicChannel,
+      Deleted: false,
+      Archived: false,
+      BotIsMember: true,
+      Modified: 1999-01-02 03:04:05 Utc,
+      Settings: {
+        IsCommunityRoom: true
+      },
+      OrganizationId: 1,
+      Id: 1,
+      Created: 1999-01-02 03:04:05 Utc
+    },
+    TimeToRespond: {},
+    OpenModals: {
+      $type: Dictionary<string, ViewUpdatePayload>,
+      the-trigger-id: {
+        Title: {
+          Emoji: true,
+          Text: Conversation Tracking,
+          Type: plain_text
+        },
+        Close: {
+          Emoji: true,
+          Text: Cancel,
+          Type: plain_text
+        },
+        Blocks: [
+          {
+            $type: Section,
+            Text: {
+              $type: MrkdwnText,
+              Verbatim: false,
+              Text: :white_check_mark: Abbot App tracks conversations started by *community members (non agents)* in this room.,
+              Type: mrkdwn
+            },
+            Accessory: {
+              $type: ButtonElement,
+              Text: {
+                Emoji: true,
+                Text: Stop tracking,
+                Type: plain_text
+              },
+              Value: Disable,
+              Confirm: {
+                Title: {
+                  Emoji: true,
+                  Text: Stop Conversation Tracking,
+                  Type: plain_text
+                },
+                Text: {
+                  $type: PlainText,
+                  Emoji: true,
+                  Text: Are you sure?,
+                  Type: plain_text
+                },
+                Confirm: {
+                  Emoji: true,
+                  Text: Stop tracking,
+                  Type: plain_text
+                },
+                Deny: {
+                  Emoji: true,
+                  Text: Continue tracking,
+                  Type: plain_text
+                },
+                Style: danger
+              },
+              ActionId: DisableConversationTracking,
+              Type: button
+            },
+            Type: section
+          },
+          {
+            $type: Actions,
+            Elements: {
+              $type: IActionElement[],
+              $values: [
+                {
+                  $type: RadioButtonGroup,
+                  Options: {
+                    $type: CheckOption[],
+                    $values: [
+                      {
+                        Description: {
+                          $type: MrkdwnText,
+                          Verbatim: false,
+                          Text: Only guest users start tracked conversations.,
+                          Type: mrkdwn
+                        },
+                        Text: {
+                          $type: MrkdwnText,
+                          Verbatim: false,
+                          Text: *Customer Support*,
+                          Type: mrkdwn
+                        },
+                        Value: false
+                      },
+                      {
+                        Description: {
+                          $type: MrkdwnText,
+                          Verbatim: false,
+                          Text: All non-Agent users start tracked conversations.,
+                          Type: mrkdwn
+                        },
+                        Text: {
+                          $type: MrkdwnText,
+                          Verbatim: false,
+                          Text: *Community Support*,
+                          Type: mrkdwn
+                        },
+                        Value: true
+                      }
+                    ]
+                  },
+                  InitialOption: {
+                    Description: {
+                      $type: MrkdwnText,
+                      Verbatim: false,
+                      Text: All non-Agent users start tracked conversations.,
+                      Type: mrkdwn
+                    },
+                    Text: {
+                      $type: MrkdwnText,
+                      Verbatim: false,
+                      Text: *Community Support*,
+                      Type: mrkdwn
+                    },
+                    Value: true
+                  },
+                  FocusOnLoad: false,
+                  ActionId: IsCommunityRoom,
+                  Type: radio_buttons
+                }
+              ]
+            },
+            BlockId: IsCommunityRoom,
+            Type: actions
+          },
+          {
+            $type: Input,
+            Label: {
+              Emoji: true,
+              Text: First Responders,
+              Type: plain_text
+            },
+            Element: {
+              $type: MultiStaticSelectMenu,
+              FocusOnLoad: false,
+              Placeholder: {
+                Emoji: true,
+                Text: Select first responders,
+                Type: plain_text
+              },
+              ActionId: FirstResponders,
+              Type: multi_static_select
+            },
+            DispatchAction: false,
+            Optional: false,
+            BlockId: FirstResponders,
+            Type: input
+          },
+          {
+            $type: Divider,
+            Type: divider
+          },
+          {
+            $type: Section,
+            Text: {
+              $type: PlainText,
+              Emoji: true,
+              Text: :alarm_clock: Abbot App notifies first responders of conversations that do not receive a response by the target and deadline response times.,
+              Type: plain_text
+            },
+            Type: section
+          },
+          {
+            $type: Input,
+            Label: {
+              Emoji: true,
+              Text: Target Response Time,
+              Type: plain_text
+            },
+            Element: {
+              $type: StaticSelectMenu,
+              Options: {
+                $type: Option[],
+                $values: [
+                  {
+                    Text: {
+                      Emoji: true,
+                      Text: 15 minutes,
+                      Type: plain_text
+                    },
+                    Value: 00:15:00
+                  },
+                  {
+                    Text: {
+                      Emoji: true,
+                      Text: 30 minutes,
+                      Type: plain_text
+                    },
+                    Value: 00:30:00
+                  },
+                  {
+                    Text: {
+                      Emoji: true,
+                      Text: 1 hour,
+                      Type: plain_text
+                    },
+                    Value: 01:00:00
+                  },
+                  {
+                    Text: {
+                      Emoji: true,
+                      Text: 2 hours,
+                      Type: plain_text
+                    },
+                    Value: 02:00:00
+                  },
+                  {
+                    Text: {
+                      Emoji: true,
+                      Text: 4 hours,
+                      Type: plain_text
+                    },
+                    Value: 04:00:00
+                  },
+                  {
+                    Text: {
+                      Emoji: true,
+                      Text: 8 hours,
+                      Type: plain_text
+                    },
+                    Value: 08:00:00
+                  },
+                  {
+                    Text: {
+                      Emoji: true,
+                      Text: 1 day,
+                      Type: plain_text
+                    },
+                    Value: 1.00:00:00
+                  }
+                ]
+              },
+              ActionId: TargetResponseTime,
+              Type: static_select
+            },
+            DispatchAction: false,
+            Optional: true,
+            BlockId: TargetResponseTime,
+            Type: input
+          },
+          {
+            $type: Input,
+            Label: {
+              Emoji: true,
+              Text: Deadline Response Time,
+              Type: plain_text
+            },
+            Element: {
+              $type: StaticSelectMenu,
+              Options: {
+                $type: Option[],
+                $values: [
+                  {
+                    Text: {
+                      Emoji: true,
+                      Text: 15 minutes,
+                      Type: plain_text
+                    },
+                    Value: 00:15:00
+                  },
+                  {
+                    Text: {
+                      Emoji: true,
+                      Text: 30 minutes,
+                      Type: plain_text
+                    },
+                    Value: 00:30:00
+                  },
+                  {
+                    Text: {
+                      Emoji: true,
+                      Text: 1 hour,
+                      Type: plain_text
+                    },
+                    Value: 01:00:00
+                  },
+                  {
+                    Text: {
+                      Emoji: true,
+                      Text: 2 hours,
+                      Type: plain_text
+                    },
+                    Value: 02:00:00
+                  },
+                  {
+                    Text: {
+                      Emoji: true,
+                      Text: 4 hours,
+                      Type: plain_text
+                    },
+                    Value: 04:00:00
+                  },
+                  {
+                    Text: {
+                      Emoji: true,
+                      Text: 8 hours,
+                      Type: plain_text
+                    },
+                    Value: 08:00:00
+                  },
+                  {
+                    Text: {
+                      Emoji: true,
+                      Text: 1 day,
+                      Type: plain_text
+                    },
+                    Value: 1.00:00:00
+                  }
+                ]
+              },
+              ActionId: DeadlineResponseTime,
+              Type: static_select
+            },
+            DispatchAction: false,
+            Optional: true,
+            BlockId: DeadlineResponseTime,
+            Type: input
+          }
+        ],
+        PrivateMetadata: C0004|https://example.com/callback,
+        CallbackId: i:RoomMembershipPayloadHandler,
+        ClearOnClose: false,
+        NotifyOnClose: false,
+        Submit: {
+          Emoji: true,
+          Text: Save settings,
+          Type: plain_text
+        },
+        SubmitDisabled: false,
+        Type: modal
+      }
+    },
+    AnalyticsClient: {}
+  }
+}

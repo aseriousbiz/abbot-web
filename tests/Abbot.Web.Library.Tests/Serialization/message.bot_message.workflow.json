@@ -1,0 +1,62 @@
+{
+  "token": "REDACTEDTOKEN",
+  "team_id": "T00012121",
+  "api_app_id": "A01TG9GPJQ3",
+  "event": {
+    "type": "message",
+    "subtype": "bot_message",
+    "text": "Testing a more complex workflow.",
+    "ts": "1658946302.817729",
+    "username": "Ask A Haack",
+    "bot_id": "B03R6C0AMU5",
+    "app_id": "A03RN042917",
+    "team": "T013108BYLS",
+    "bot_profile": {
+      "id": "B03R6C0AMU5",
+      "deleted": false,
+      "name": "Ask A Haack",
+      "updated": 1658945797,
+      "app_id": "A03RN042917",
+      "icons": {
+        "image_36": "https://a.slack-edge.com/d4111/img/apps/workflows_36.png",
+        "image_48": "https://a.slack-edge.com/d4111/img/apps/workflows_48.png",
+        "image_72": "https://a.slack-edge.com/d4111/img/apps/workflows_72.png"
+      },
+      "is_workflow_bot": true,
+      "team_id": "T00012121"
+    },
+    "blocks": [
+      {
+        "type": "rich_text",
+        "block_id": "7Zj2z",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "text",
+                "text": "Testing a more complex workflow."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "channel": "C50000000",
+    "event_ts": "1658946302.817729",
+    "channel_type": "channel"
+  },
+  "type": "event_callback",
+  "event_id": "Ev0000000006",
+  "event_time": 1658946302,
+  "authorizations": [
+    {
+      "team_id": "T00012121",
+      "user_id": "U01TG976JSW",
+      "is_bot": true,
+      "is_enterprise_install": false
+    }
+  ],
+  "is_ext_shared_channel": true,
+  "event_context": "4-eyJldCI6Im1lc3NhZ2UiLCJ0aWQiOiJUMDEzMTA4QllMUyIsImFpZCI6IkEwMVRHOUdQSlEzIiwiY2lkIjoiQzAxQTNER1RTUDkifQ"
+}

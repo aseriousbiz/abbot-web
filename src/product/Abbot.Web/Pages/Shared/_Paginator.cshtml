@@ -1,0 +1,45 @@
+@model Serious.Collections.IPaginatedList
+
+@{
+    // Copy the existing route values, and set the 'p' value.
+    // This gets us route values for the current page exactly as-is, except with 'p' changed.
+    IDictionary<string, string> GetRouteValues(int p) {
+        var routeValues = ViewContext.GetCurrentRouteValues();
+        routeValues[Model.PageQueryStringParameterName] = p.ToString();
+        return routeValues;
+    }
+}
+
+@if (Model is {TotalPages: > 1}) {
+    <nav class="flex justify-between items-center text-center text-sm py-2" role="navigation" aria-label="pagination">
+        @if (Model.HasPreviousPage) {
+            <a class="font-bold px-2 py-1 border border-gray-300 text-blue-500 hover:text-gray-500 rounded"
+               asp-all-route-data="GetRouteValues(Model.PageNumber - 1)"
+               tabindex="-1">&larr; Previous</a>
+        } else {
+            <span class="text-opacity-50 px-2 py-1 border border-gray-300 text-gray-500 rounded" disabled="true">&larr; Previous</span>
+        }
+        <ul class="flex">
+            @foreach (var page in Model.Pages) {
+                <li class="mx-1">
+                @if (page is PaginatedDivider) {
+                    <span class="text-gray-500 font-mono">&hellip;</span>
+                }
+                else if (page is PaginatedPage paginatedPage) {
+                    <a asp-all-route-data="GetRouteValues(paginatedPage.Number)"
+                       class="font-bold px-3 py-2 rounded @(paginatedPage.Current ? "bg-blue-500 text-white hover:text-white" : "border border-gray-300 text-blue-500 hover:text-gray-500")"
+                       aria-label="Go to page @paginatedPage.Number">@paginatedPage.Number</a>
+                }
+                </li>
+            }
+        </ul>
+
+        @if (Model.HasNextPage) {
+            <a class="font-bold px-2 py-1 border border-gray-300 text-blue-500 hover:text-gray-500 rounded"
+               asp-all-route-data="GetRouteValues(Model.PageNumber + 1)"
+               disabled="@(!Model.HasNextPage)">Next &rarr;</a>
+        } else {
+            <span class="px-2 py-1 border border-gray-300 text-gray-500 rounded text-opacity-50" disabled="true">Next &rarr;</span>
+        }
+    </nav>
+}

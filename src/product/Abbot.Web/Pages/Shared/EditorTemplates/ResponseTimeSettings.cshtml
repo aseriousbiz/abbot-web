@@ -1,0 +1,65 @@
+@using Serious.Abbot.Pages.Settings.Organization
+@model Serious.Abbot.Pages.Settings.Organization.ResponseTimeSettings
+
+@{
+    var readOnly = Model.ReadOnly;
+}
+
+<div class="flex flex-col md:flex-row gap-6 flex-wrap">
+    <div class="flex-1">
+        <label class="font-semibold" asp-for="TargetValue">
+            Target response time
+        </label>
+        <p class="text-gray-500 text-sm">
+            The time window when <em class="font-semibold not-italic">first responders</em> will be notified after the last response.
+        </p>
+        
+        <input type="number"
+               class="form-input w-12"
+               asp-for="TargetValue"
+               inputmode="numeric"
+               readonly="@readOnly"/>
+        
+        <div class="form-select-wrapper">
+            <select class="form-select"
+                    disabled="@readOnly"
+                    asp-items="ResponseTimeSettings.Units"
+                    asp-for="TargetUnits">
+            </select>
+            
+            @if (Model.IsTargetRounded)
+            {
+                <span data-tooltip="Your current value is no longer supported, so we've rounded it up to the nearest minute.">
+                    <i class="fa-solid fa-triangle-exclamation text-yellow-500"></i>
+                </span>
+            }
+        </div>
+        <span asp-validation-for="TargetValue"></span>
+    </div>
+    
+    <div class="flex-1">
+        <label class="font-semibold" asp-for="DeadlineValue">
+            Deadline response time
+        </label>
+        
+        <p class="text-gray-500 text-sm">
+            The time window when <em class="font-semibold not-italic">first responders and escalation responders</em> will be notified after the last response.
+        </p>
+        
+        <input type="number" class="form-input w-12" asp-for="DeadlineValue" inputmode="numeric" readonly="@readOnly" />
+        <div class="form-select-wrapper">
+            <select class="form-select"
+                    disabled="@readOnly"
+                    asp-items="ResponseTimeSettings.Units"
+                    asp-for="DeadlineUnits">
+            </select>
+            @if (Model.IsTargetRounded) {
+                <span data-tooltip="Your current value is no longer supported, so we've rounded it up to the nearest minute.">
+                    <i class="fa-solid fa-triangle-exclamation text-yellow-500"></i>
+                </span>
+            }
+        </div>
+        <span asp-validation-for="DeadlineValue"></span>
+    </div>
+</div>
+

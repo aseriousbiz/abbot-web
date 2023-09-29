@@ -1,0 +1,8 @@
+﻿{
+  target: {
+    BusTestHarness: {
+      Messages: []
+    },
+    AnalyticsClient: {}
+  }
+}

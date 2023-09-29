@@ -1,0 +1,23 @@
+@page
+@model Serious.Abbot.Pages.Activity.IndexModel
+
+@{
+    ViewContext.SetPageInfo("Activity", "Activity Log");
+}
+
+<partial name="Settings/Organization/_Header" model="Model.Viewer"/>
+
+<page-body>
+    <partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+    <round-box>
+        <h2 class="text-xl font-semibold">Activity Log</h2>
+        <div class="mt-2">
+            <p>Recent Interactions with Abbot.</p>
+            <p class="text-gray-500">Skills called by triggers are filtered out by default.</p>
+        </div>
+        <section class="mt-4 border border-gray-300 rounded-lg">
+            <partial name="Shared/Activity/_ActivityLog" />
+        </section>
+    </round-box>
+</page-body>

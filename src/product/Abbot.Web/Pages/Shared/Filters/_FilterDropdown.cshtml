@@ -1,0 +1,17 @@
+@model FilterModel
+
+@{
+    Layout = "Filters/_FilterLayout";
+}
+
+<ul class="max-h-56 overflow-y-scroll">
+    @if (Model.Options.Any()) {
+        foreach (var option in Model.Options) {
+            <partial name="Shared/Filters/_FilterOption" model="option" />
+        }
+    } else {
+        <li class="m-0 border-y-1 border-gray-50">
+            <span>Nothing to filter on.</span>
+        </li>
+    }
+</ul>

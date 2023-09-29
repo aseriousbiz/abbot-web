@@ -1,0 +1,33 @@
+@page
+@model Serious.Abbot.Pages.Settings.Organization.Users.Invite.InviteIndexPage
+
+@{
+    ViewContext.SetPageInfo("Settings", "Invite Users", "Invite Users");
+}
+
+<partial name="../_Header" model="Model.Viewer"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-xl font-semibold"><a asp-page="../Index">Users</a> / Invite</h2>
+        <p class="mt-4">
+            Invite others in your Slack Workspace to join your Abbot organization.
+        </p>
+        <p class="text-gray-500 text-sm">
+            Look up a Slack user by their email. They will receive a DM with a brief description of Abbot and a link to log in.
+            When they log in, they will be assigned the Agent role.
+        </p>
+
+        <form method="post" asp-page-handler="Remove" id="remove-form">
+        </form>
+
+        <form method="post" data-controller="user-invitation">
+            <div class="mb-2" id="@InviteIndexPage.InviteeInputDomId">
+                <partial name="_InviteeInput"/>
+            </div>
+
+            <ul class="dynamic-list divide-y" id="@InviteIndexPage.InviteeListDomId"></ul>
+        </form>
+    </round-box>
+</page-body>

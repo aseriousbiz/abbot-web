@@ -1,0 +1,15 @@
+@model Serious.Abbot.Pages.Activity.DetailsModel
+
+<form method="post" class="flex flex-col gap-2">
+  <div class="bg-yellow-200 p-4 font-semibold rounded-md">
+    Permission is required to view code.
+  </div>
+  <p>
+    A Serious Business, Inc. takes customer privacy seriously. Please provide a reason 
+    for viewing customer code. Access to customer code is logged.
+  </p>
+  <label class="font-semibold" asp-for="Input.Reason"></label>
+  <input class="form-input" asp-for="Input.Reason" />
+  <span asp-validation-for="Input.Reason"></span>
+  <button class="btn btn-primary place-self-start" type="submit">View Code</button>
+</form>

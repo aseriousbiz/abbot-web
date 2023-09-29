@@ -1,0 +1,10 @@
+@model User
+
+@{
+    var actor = Model;
+}
+
+@actor.DisplayName
+<p class="text-gray-500 text-sm">
+    @actor.PlatformUserId
+</p>

@@ -1,0 +1,29 @@
+@page "/staff/organizations/{id}/enable"
+@model Serious.Abbot.Pages.Staff.Organizations.EnablePage
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Enable Tool");
+}
+
+<section class="section">
+    <div class="container">
+        <partial name="_StatusMessage" model="Model.StatusMessage" />
+
+        <div class="font-semibold p-4 mb-2 border rounded-lg bg-red-100 text-red-900 border-red-200">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            Enabling an organization restores all access to Abbot for the organization (according to the organization's plan).
+        </div>
+        <dl class="rows mt-3">
+            <dt>Domain</dt>
+            <dd>@Model.Organization.Domain</dd>
+            <dt>Users</dt>
+            <dd>@Model.Organization.Members.Count</dd>
+        </dl>
+
+        <form method="post">
+            <div class="field is-grouped">
+                <input type="submit" class="btn btn-primary" value="Confirm Enable"/>
+                <a asp-page="../Index" class="btn">Back</a>
+            </div>
+        </form>
+    </div>
+</section>

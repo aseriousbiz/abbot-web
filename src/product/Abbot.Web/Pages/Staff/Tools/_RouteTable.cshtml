@@ -1,0 +1,288 @@
+@using Microsoft.AspNetCore.Routing
+@using Serious.Slack.AspNetCore
+@using Microsoft.AspNetCore.Mvc.Controllers
+@using Microsoft.AspNetCore.Mvc.Filters
+@using Microsoft.AspNetCore.Mvc.RazorPages
+@using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure
+@using Microsoft.AspNetCore.Mvc.Routing
+@using Microsoft.AspNetCore.Razor.Hosting
+@using Microsoft.AspNetCore.Mvc.ApplicationModels
+@using Microsoft.AspNetCore.Mvc.ActionConstraints
+@model IReadOnlyList<Endpoint>
+
+<div id="route-table-frame" class="hard-box mt-5 overflow-y-scroll" style="height: 64rem;">
+    <table class="w-full">
+        <thead>
+        <tr>
+            <th class="text-left border-b p-3">Order</th>
+            <th class="text-left border-b p-3">Display Name</th>
+            <th class="text-left border-b p-3">Route Pattern</th>
+            <th class="text-left border-b p-3">Authz Policy</th>
+            <th class="text-left border-b p-3">Metadata</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var endpoint in Model)
+        {
+            var routeEndpoint = endpoint as RouteEndpoint;
+            var pattern = routeEndpoint?.RoutePattern?.RawText;
+            if (pattern is not null && !pattern.StartsWith("/"))
+            {
+                pattern = "/" + pattern;
+            }
+            
+            <tr class="border-t border-gray-200 @(
+                (endpoint.Metadata.GetMetadata<IAuthorizeData>() is null && endpoint.Metadata.GetMetadata<IAllowAnonymous>() is null)
+                    ? "bg-red-200"
+                    : null)">
+                <td class="p-3">@routeEndpoint?.Order</td>
+                <td class="p-3">@endpoint.DisplayName</td>
+                <td class="p-3"><code>@pattern</code></td>
+                <td class="p-3">
+                    @if (endpoint.Metadata.GetMetadata<IAllowAnonymous>() is not null)
+                    {
+                        <em>Allow Anonymous</em>
+                    }
+                    else if (endpoint.Metadata.GetOrderedMetadata<IAuthorizeData>() is { Count: >0 } authorizeDatas)
+                    {
+                        <code>@(string.Join(" & ", authorizeDatas.Select(d => d.Policy ?? AuthorizationPolicies.Default)))</code>
+                    }
+                    else
+                    {
+                        <span class="font-semibold text-red-500">No Policy</span>
+                    }
+                </td>
+                <td class="p-3">
+                    <ul>
+                        @foreach (var md in endpoint.Metadata)
+                        {
+                            switch (md)
+                            {
+                                case ControllerActionDescriptor cad:
+                                    <li>
+                                        <p class="font-bold">@nameof(ControllerActionDescriptor)</p>
+                                        <ul class="pl-6">
+                                            <li>
+                                                <span class="font-semibold">ID:</span>
+                                                <code>@cad.Id</code>
+                                            </li>
+                                            <li>
+                                                <span class="font-semibold">Controller:</span>
+                                                <code>@cad.ControllerName</code>
+                                            </li>
+                                            <li>
+                                                <span class="font-semibold">Action:</span>
+                                                <code>@cad.ActionName</code>
+                                            </li>
+                                            <li>
+                                                <span class="font-semibold">Declaring Type:</span>
+                                                <code>@cad.MethodInfo.DeclaringType?.FullName</code>
+                                            </li>
+                                            <li>
+                                                <span class="font-semibold">Method Name:</span>
+                                                <code>@cad.MethodInfo.Name</code>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    break;
+                                    
+                                case PageRouteMetadata prm:
+                                    <li>
+                                        <p class="font-bold">@nameof(PageRouteMetadata)</p>
+                                        <ul class="pl-6">
+                                            <li>
+                                                <span class="font-semibold">Page Route:</span>
+                                                <code>@prm.PageRoute</code>
+                                            </li>
+                                            <li>
+                                                <span class="font-semibold">Route Template:</span> 
+                                                <code>@prm.RouteTemplate</code>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    break;
+                                    
+                                case CompiledPageActionDescriptor pad:
+                                    <li>
+                                        <p class="font-bold">@nameof(PageActionDescriptor)</p>
+                                        <ul class="pl-6">
+                                            <li>
+                                                <span class="font-semibold">ID:</span>
+                                                <code>@pad.Id</code>
+                                            </li>
+                                            <li>
+                                                <span class="font-semibold">Area:</span>
+                                                <code>@pad.AreaName</code>
+                                            </li>
+                                            <li>
+                                                <span class="font-semibold">Display Name:</span>
+                                                <code>@pad.DisplayName</code>
+                                            </li>
+                                            <li>
+                                                <span class="font-semibold">View Engine Path:</span>
+                                                <code>@pad.ViewEnginePath</code>
+                                            </li>
+                                            <li>
+                                                <span class="font-semibold">Relative Path:</span>
+                                                <code>@pad.RelativePath</code>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    break;
+                                    
+                                case IRouteNameMetadata rnm:
+                                    <li>
+                                        <span class="font-semibold">Route Name:</span>
+                                        <code>@rnm.RouteName</code>
+                                    </li>
+                                    break;
+                                    
+                                case ISuppressLinkGenerationMetadata slg:
+                                    <li>
+                                        <span class="font-semibold">Suppress Link Generation:</span>
+                                        @(slg.SuppressLinkGeneration ? "✅" : "❎");
+                                    </li>
+                                    break;
+                                    
+                                case IRouteValueProvider rvp:
+                                    <li>
+                                        <span class="font-semibold">Route Value:</span>
+                                        <code>@rvp.RouteKey</code> = <code>@rvp.RouteValue</code>
+                                    </li>
+                                    break;
+                                    
+                                case IEndpointNameMetadata endpointNameMetadata:
+                                    <li>
+                                        <span class="font-semibold">Endpoint Name:</span>
+                                        <code>@endpointNameMetadata.EndpointName</code>
+                                    </li>
+                                    break;
+                                    
+                                case ISuppressMatchingMetadata suppressMatchingMetadata:
+                                    <li>
+                                        <span class="font-semibold">Suppress Matching:</span>
+                                        @(suppressMatchingMetadata.SuppressMatching ? "✅" : "❎");
+                                    </li>
+                                    break;
+                                    
+                                case ApiExplorerSettingsAttribute apiExplorerSettingsAttribute:
+                                    <li>
+                                        <span class="font-semibold">API Explorer Group:</span>
+                                        <code>@apiExplorerSettingsAttribute.GroupName</code>
+                                    </li>
+                                    <li>
+                                        <span class="font-semibold">API Explorer Visible:</span>
+                                        @(apiExplorerSettingsAttribute.IgnoreApi ? "❎" : "✅")
+                                    </li>
+                                    break;
+                                    
+                                case IAuthorizeData authzData:
+                                    <li>
+                                        <span class="font-semibold">Authorization Policy:</span>
+                                        <code>@(authzData.Policy ?? AuthorizationPolicies.Default)</code>
+                                    </li>
+                                    break;
+                                    
+                                case IAllowAnonymous:
+                                    <li>
+                                        <span class="font-semibold">Allow Anonymous:</span>
+                                        ✅
+                                    </li>
+                                    break;
+                                    
+                                case IHostMetadata hostMetadata:
+                                    <li>
+                                        <span class="font-semibold">Hosts:</span>
+                                        <code>@(string.Join(", ", hostMetadata.Hosts))</code>
+                                    </li>
+                                    break;
+                                    
+                                case ControllerAttribute:
+                                    <li>
+                                        <span class="font-semibold">MVC Controller:</span>
+                                        ✅
+                                    </li>
+                                    break;
+                                    
+                                case PageModelAttribute:
+                                    <li>
+                                        <span class="font-semibold">Razor Page:</span>
+                                        ✅
+                                    </li>
+                                    break;
+                                    
+                                case RazorCompiledItemMetadataAttribute razorCompiledItemMetadataAttribute:
+                                    <li>
+                                        <span class="font-semibold">Razor Compiled Item Metadata:</span>
+                                        <code>@razorCompiledItemMetadataAttribute.Key</code> = <code>@razorCompiledItemMetadataAttribute.Value</code>
+                                    </li>
+                                    break;
+                                    
+                                case RazorSourceChecksumAttribute razorSourceChecksumAttribute:
+                                    <li>
+                                        <span class="font-semibold">Razor Source Checksum</span>
+                                        <code>@razorSourceChecksumAttribute.ChecksumAlgorithm:@razorSourceChecksumAttribute.Checksum</code>
+                                    </li>
+                                    <li>
+                                        <span class="font-semibold">Razor Source Identifier</span>
+                                        <code>@razorSourceChecksumAttribute.Identifier</code>
+                                    </li>
+                                    break;
+                                    
+                                case IHttpMethodMetadata httpMethodMetadata:
+                                    <li>
+                                        <span class="font-semibold">HTTP Methods:</span>
+                                        <code>@(string.Join(", ", httpMethodMetadata.HttpMethods))</code>
+                                    </li>
+                                    break;
+                                    
+                                case IFilterMetadata caf:
+                                    <li>
+                                        <span class="font-semibold">Action Filter:</span>
+                                        <code>@(caf.GetType().FullName)</code>
+                                    </li>
+                                    break;
+                                    
+                                case IActionConstraint actionConstraint:
+                                    <li>
+                                        <span class="font-semibold">Action Constraint:</span>
+                                        <code>@(actionConstraint.GetType().FullName)</code>
+                                    </li>
+                                    break;
+                                    
+                                case IRouteTemplateProvider rtp:
+                                    <li>
+                                        <span class="font-semibold">Route Template:</span>
+                                        <code>@(rtp.Template)</code>
+                                    </li>
+                                    break;
+                                    
+                                case PageActionDescriptor:
+                                    // We've compiled the PageActionDescriptors so we should only have CompiledPageActionDescriptors.
+                                    break;
+                                    
+                                case VerifySlackRequestAttribute:
+                                    <li>
+                                        <span class="font-semibold">Verify Slack Request:</span>
+                                        ✅
+                                    </li>
+                                    break;
+                                    
+                                case not null:
+                                    if (!AppConfigModel.IgnoredMetadataTypes.Contains(md.GetType().FullName!))
+                                    {
+                                        <li>
+                                            <span class="font-semibold">Unknown Metadata:</span>
+                                            <code>@(md.ToString())</code>
+                                        </li>
+                                    }
+                                    break;
+                            }
+                        }
+                    </ul>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

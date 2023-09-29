@@ -1,0 +1,227 @@
+@page
+@model IndexPage
+
+@{
+    var selectedOption = Model.FilterOptions.FirstOrDefault(o => o.Selected);
+    var pageName = selectedOption is not null
+        ? $"Insights for {selectedOption.Text}"
+        : "Insights";
+    ViewContext.SetPageInfo("Insights", pageName);
+
+    var queryStringBuilder = new QueryStringBuilder {
+        { "filter", Model.Input.SelectedFilter },
+        { "range", $"{Model.Input.SelectedRange}" },
+        { "tag", Model.Input.SelectedTagFilter },
+        { "q", Model.Filter.Any() ? Model.Filter.ToString() : null }
+    };
+
+    var queryString = queryStringBuilder.ToString();
+    
+    var noRoomsTracked = (Model.RoomCounts.Tracked.TotalCount == 0 ? true : false);
+}
+
+<partial name="Shared/_ReadOnlyHeader" />
+
+<page-header class="m-2">
+    Insights
+    <div class="text-gray-500 text-sm font-normal">
+        @Model.RoomCounts.Tracked.TotalCount.ToQuantity("tracked room"),
+        @Model.CustomerCounts.Total.ToQuantity("customer"),
+        @Model.CustomerCounts.WithoutRooms.ToQuantity("customer without rooms")
+    </div>
+</page-header>
+
+<page-body data-controller="save-url" data-save-url-key-value="insights" class="m-2">
+    <div class="flex flex-col gap-8">
+        <section class="flex gap-x-4">
+            <div class="text-sm flex items-center px-2">
+                <form method="get">
+                    <label asp-for="Input.SelectedFilter" class="font-semibold">Filter</label>
+                    <div class="form-select-wrapper flex-initial ml-1">
+                        <select id="filter-select"
+                                name="filter"
+                                asp-items="Model.FilterOptions"
+                                data-action="form#submit"
+                                class="form-select">
+                        </select>
+                    </div>
+
+                    <label asp-for="Input.SelectedTagFilter" class="font-semibold ml-6">Tag</label>
+                    <div class="form-select-wrapper flex-initial ml-1">
+                        <select name="tag"
+                                data-action="form#submit"
+                                asp-items="Model.TagOptions"
+                                class="form-select">
+                        </select>
+                    </div>
+                    <label asp-for="Input.SelectedRange" class="font-semibold ml-6">Date range</label>
+                    <div class="form-select-wrapper flex-initial ml-1">
+                        <select name="range"
+                                data-action="form#submit"
+                                asp-items="Html.GetEnumValueSelectList(Model.Input.SelectedRange, lowercaseValue: true)"
+                                class="form-select">
+                        </select>
+                    </div>
+                    <input type="hidden" name="q" value="@Model.Filter" />
+                </form>
+                <partial name="Shared/Filters/_CustomerFilter" model="Model.CustomerFilterModel" />
+            </div>
+        </section>
+
+        <div data-partial-url="/api/internal/insights/summary@(queryString)"
+             data-append-timezone="true">
+            <partial name="Shared/Insights/_Summary" model="Model.Summary" />
+        </div>
+
+        <section>
+            <round-box rounded-size="XXLarge" padding="false" class="shadow-sm">
+                @if (noRoomsTracked) {
+                    <div class="flex items-center justify-center bg-slate-50 border border-slate-100 m-6 rounded-lg text-center min-h-[400px]">
+                        <div>
+                            <h2 class="font-semibold">You have no rooms tracked</h2>
+                            <p>Abbot needs to be added to rooms in order to show Insights.</p>
+                            <p class="text-sm font-medium">
+                                <a href="/settings/rooms?tab=BotMissing">
+                                    Go to rooms settings &rarr;
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                } else {
+                    <h2 class="font-semibold p-6">
+                        Conversation volume
+                        <partial name="Shared/_ReadOnlyBadge" />
+                    </h2>
+                    
+                    <div id="conversation-volume-graph"
+                         class="bg-slate-50 border border-slate-100 mx-6 mb-6 rounded-xl"
+                         data-url="/api/internal/insights/volume@(queryString)">
+                        <div class="flex justify-center items-center h-full w-full p-2 min-h-[400px]">
+                            <h1 class="font-medium loading">
+                                Loading data…
+                            </h1>
+                            
+                            <div class="no-data hidden text-center">
+                                <h1 class="text-lg font-medium">Not enough data to show yet</h1>
+                                <p>Check back in a few days</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </round-box>
+        </section>
+
+        <section>
+            <round-box rounded-size="XXLarge" padding="false" class="shadow-sm">
+                <div class="px-6 pt-6">
+                    <h2 class="font-semibold">
+                        Response times<partial name="Shared/_ReadOnlyBadge" />
+                    </h2>
+                    
+                    <p class="text-gray-500 text-sm">
+                        The time it takes to reply to a message
+                    </p>
+                </div>
+                
+                <div class="flex gap-6 p-6 items-stretch">
+                    <ul class="flex flex-col text-sm grow-0 shrink-0">
+                        <li data-trends-metric="averageTimeToFirstResponse" class="flex flex-col p-4 rounded">
+                            <a href="#" class="text-black">
+                                <div class="font-medium">
+                                    Average time to first response
+                                </div>
+                                <div id="ttfr" class="text-gray-700"></div>
+                            </a>
+                        </li>
+                        <li data-trends-metric="averageTimeToResponse" class="flex flex-col p-4 rounded">
+                            <a href="#" class="text-black">
+                                <div class="font-medium">
+                                    Average time to response
+                                </div>
+                                <div id="ttr" class="text-gray-700"></div>
+                            </a>
+                        </li>
+                        <li data-trends-metric="averageTimeToFirstResponseDuringCoverage" class="flex flex-col p-4 rounded">
+                            <a href="#" class="text-black">
+                                <div class="font-medium">
+                                    Average time to first response
+                                </div>
+                                <div class="text-slate-500">
+                                    During coverage
+                                </div>
+                                <div id="ttfrdc" class="text-gray-700"></div>
+                            </a>
+                        </li>
+                        <li data-trends-metric="averageTimeToResponseDuringCoverage" class="flex flex-col p-4 rounded">
+                            <a href="#" class="text-black">
+                                <div class="font-medium">
+                                    Average time to response
+                                </div>
+                                <div class="text-slate-500">
+                                    During coverage
+                                </div>
+                                <div id="ttrdc" class="text-gray-700"></div>
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <div class="bg-slate-50 border border-slate-100 rounded-xl p-2 grow">
+                        <div id="trends-graph"
+                             data-url="/api/internal/conversations/trends@(queryString)"
+                             data-initial-metric="averageTimeToFirstResponse"
+                             data-ttfr="ttfr"
+                             data-ttr="ttr"
+                             data-ttfrdc="ttfrdc"
+                             data-ttrdc="ttrdc"
+                             data-show-y-axis="true"
+                             class="w-full h-full"></div>
+                    </div>
+                </div>
+            </round-box>
+        </section>
+
+        <div class="flex flex-col sm:flex-row gap-8 items-start">
+            @if (Model.ShowRooms || Model.ShowResponders) {
+                @if (Model.ShowRooms) {
+                    <round-box rounded-size="XXLarge" padding="true" class="flex flex-col gap-6 flex-1 shadow-sm">
+                        <h2 class="font-semibold">
+                            Conversation volume by room
+                            <partial name="Shared/_ReadOnlyBadge" />
+                        </h2>
+                        <div data-partial-url="/api/internal/insights/rooms@(queryString)"
+                             data-append-timezone="true">
+                            <div class="flex justify-center items-center h-full w-full text-gray-500">
+                                <h1 class="text-lg loading">Loading…</h1>
+                            </div>
+                        </div>
+                    </round-box>
+                }
+                @if (Model.ShowResponders)
+                    {
+                    <round-box rounded-size="XXLarge" padding="true" class="flex flex-col gap-6 flex-1 shadow-sm">
+                        <h2 class="font-semibold">
+                            Conversation volume by responder
+                            <partial name="Shared/_ReadOnlyBadge" />
+                        </h2>
+                        <div data-partial-url="/api/internal/insights/responders@(queryString)"
+                             data-append-timezone="true">
+                            <div class="flex justify-center items-center h-full w-full text-gray-500">
+                                <h1 class="text-lg loading">Loading…</h1>
+                            </div>
+                        </div>
+                    </round-box>
+                }
+            }
+            
+            <round-box rounded-size="XXLarge" padding="true" class="flex flex-col gap-6 flex-1 shadow-sm">
+                <h2 class="font-semibold">
+                    Top 5 Conversation tags
+                    <partial name="Shared/_ReadOnlyBadge" />
+                </h2>
+                <div data-partial-url="/api/internal/insights/tags@(queryString)"
+                     data-append-timezone="true">
+                </div>
+            </round-box>
+        </div>
+    </div>
+</page-body>

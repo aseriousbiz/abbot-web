@@ -1,0 +1,114 @@
+{
+    "display_information": {
+        "name": "Abbot",
+        "description": "SlackOps for Customer Success teams",
+        "background_color": "#0d1e4d",
+        "long_description": "*Help your customers in Slack by using Abbot*\r\n\r\nWith Abbot you can: \r\n \r\n*Smartly manage shared channels with customers and partners.*\r\n \r\n- Assign people to customer channels so the right team members are alerted to respond to conversations quickly.\r\n- Customize Abbot’s name and avatar in Slack.\r\n \r\n*Understand which Slack conversations are important to get back to quickly.*\r\n \r\n- Abbot’s smart priority queue helps make sure you don't miss important requests by organizing customer conversations in order of priority.\r\n- Measure your team's performance and bandwidth across customer channels to help you identify when an account needs help.\r\n \r\n*Help your customers without leaving Slack.*\r\n \r\n- Abbot integrates with ticketing systems like Zendesk and Hubspot Ticketing so customers can get the support help they need without leaving your shared Slack channels.\r\n- Craft and send announcements to multiple channels at the same time.\r\n- Build custom skills to extend Abbot to other tools and integrations.\r\n \r\nHave questions or want to learn more? Contact us at hello@ab.bot or visit https://ab.bot/"
+    },
+    "features": {
+        "app_home": {
+            "home_tab_enabled": true,
+            "messages_tab_enabled": true,
+            "messages_tab_read_only_enabled": false
+        },
+        "bot_user": {
+            "display_name": "abbot",
+            "always_online": true
+        },
+        "shortcuts": [
+            {
+                "name": "Manage Conversation",
+                "type": "message",
+                "callback_id": "i:ManageConversationHandler",
+                "description": "Manage the Abbot Conversation containing this message."
+            }
+        ]
+    },
+    "oauth_config": {
+        "redirect_urls": [
+            "https://app.ab.bot/slack/install/complete",
+            "https://aseriousbiz.us.auth0.com/login/callback"
+        ],
+        "scopes": {
+            "user": [
+                "email",
+                "openid",
+                "profile"
+            ],
+            "bot": [
+                "app_mentions:read",
+                "channels:history",
+                "channels:join",
+                "channels:manage",
+                "channels:read",
+                "chat:write",
+                "chat:write.customize",
+                "commands",
+                "conversations.connect:write",
+                "conversations.connect:manage",
+                "files:read",
+                "files:write",
+                "groups:history",
+                "groups:read",
+                "groups:write",
+                "im:history",
+                "im:read",
+                "im:write",
+                "mpim:history",
+                "mpim:read",
+                "mpim:write",
+                "reactions:read",
+                "reactions:write",
+                "team:read",
+                "users.profile:read",
+                "users:read",
+                "users:read.email"
+            ]
+        }
+    },
+    "settings": {
+        "event_subscriptions": {
+            "request_url": "https://in.ab.bot/api/slack",
+            "bot_events": [
+                "app_home_opened",
+                "app_mention",
+                "app_uninstalled",
+                "channel_archive",
+                "channel_deleted",
+                "channel_left",
+                "channel_rename",
+                "channel_unarchive",
+                "email_domain_changed",
+                "group_archive",
+                "group_deleted",
+                "group_left",
+                "group_rename",
+                "group_unarchive",
+                "member_joined_channel",
+                "member_left_channel",
+                "message.channels",
+                "message.groups",
+                "message.im",
+                "message.mpim",
+                "reaction_added",
+                "reaction_removed",
+                "shared_channel_invite_accepted",
+                "shared_channel_invite_approved",
+                "shared_channel_invite_declined",
+                "team_domain_change",
+                "team_join",
+                "team_rename",
+                "tokens_revoked",
+                "user_change"
+            ]
+        },
+        "interactivity": {
+            "is_enabled": true,
+            "request_url": "https://in.ab.bot/api/slack",
+            "message_menu_options_url": "https://in.ab.bot/api/slack"
+        },
+        "org_deploy_enabled": false,
+        "socket_mode_enabled": false,
+        "token_rotation_enabled": false
+    }
+}

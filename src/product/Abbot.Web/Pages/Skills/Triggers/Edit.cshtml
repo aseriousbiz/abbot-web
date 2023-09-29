@@ -1,0 +1,21 @@
+@page "/skills/{skill}/triggers/{trigger}/{triggerType}/edit"
+@model Serious.Abbot.Pages.Skills.Triggers.EditPageModel
+@{
+    var trigger = Model.Trigger;
+    ViewContext.SetPageInfo("Triggers", "Trigger Edit", $"Edit the {trigger.Name} trigger");
+}
+
+<section class="section">
+    <div class="container">
+        <div class="columns is-centered">
+            <div class="is-one-third">
+                <partial name="Shared/_StatusMessage" model="@Model.StatusMessage"/>
+                <form method="post">
+                    <partial name="Shared/_TriggerCard" model="@trigger"/>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<partial name="Shared/_CronEditor" />

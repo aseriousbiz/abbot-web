@@ -1,0 +1,30 @@
+@model HubSpotCompanyListModel
+
+<div class="absolute left-2 top-2 hard-box">
+    @if (Model.ErrorMessage is {Length: >0}) {
+        <div class="flex gap-2 w-max">
+            <div class="text-red-500">
+                @Model.ErrorMessage
+            </div>
+            <button type="button" data-action="autocomplete#clear"><i class="fa fa-xmark"></i></button>
+        </div>
+    } else if (Model.Results.Any()) {
+        <ol class="w-max divide-gray-200 divide-y" data-autocomplete-target="combobox" role="listbox">
+            @foreach (var company in Model.Results) {
+                <li>
+                    <form id="hs-company-@company.Id" asp-page-handler="SetHubSpotCompany" data-action="click->form#submit combobox:commit->form#submit" class="px-2 py-2 cursor-pointer hover:bg-gray-100 [&[aria-selected=true]]:bg-gray-100" role="option">
+                        <input name="hubId" type="hidden" value="@Model.HubId" />
+                        <input name="companyId" type="hidden" value="@company.Id" />
+                        <input name="displayName" type="hidden" value="@company.Properties["name"]" />
+                        @company.Properties["name"]
+                    </form>
+                </li>
+            }
+        </ol>
+    } else {
+        <div class="flex gap-2 w-max">
+            <div class="text-red-500">No matches found!</div>
+            <button type="button" data-action="autocomplete#clear"><i class="fa fa-xmark"></i></button>
+        </div>
+    }
+</div>

@@ -1,0 +1,236 @@
+@page
+@model Serious.Abbot.Pages.Account.DebugModel
+
+@{
+    ViewContext.SetPageInfo("Account", "Debug");
+}
+<page-header>
+    Debug
+</page-header>
+
+<page-body>
+    <table>
+        <tr>
+            <th>Activity.Current.Id</th>
+            <td>@Activity.Current?.Id</td>
+        </tr>
+        <tr>
+            <th>Activity.Current.ParentId</th>
+            <td>@Activity.Current?.ParentId</td>
+        </tr>
+        <tr>
+            <th>Activity.Current.TraceId.ToString()</th>
+            <td>@Activity.Current?.TraceId.ToString()</td>
+        </tr>
+        <tr>
+            <th>Activity.Current.DisplayName</th>
+            <td>@Activity.Current?.DisplayName</td>
+        </tr>
+        <tr>
+            <th>Activity.Current.OperationName</th>
+            <td>@Activity.Current?.OperationName</td>
+        </tr>
+        <tr>
+            <th>Tracing.Activity.TraceStateString</th>
+            <td>@Activity.Current?.TraceStateString</td>
+        </tr>
+    </table>
+
+    <section class="section">
+        <div class="columns is-centered is-multiline">
+            <div class="column is-narrow">
+                <h2 class="is-size-3">User</h2>
+
+                @if (Model.CurrentUser is null) {
+                    <div class="content">
+                        No user found. <em>@Model.ErrorMessage</em>
+                    </div>
+                } else {
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <th>Id</th>
+                            <td>@Model.CurrentUser.Id</td>
+                        </tr>
+                        <tr>
+                            <th>PlatformUserId</th>
+                            <td>@(Model.CurrentUser.PlatformUserId)</td>
+                        </tr>
+                        <tr>
+                            <th>DisplayName</th>
+                            <td>@Model.CurrentUser.DisplayName</td>
+                        </tr>
+                        <tr>
+                            <th>RealName</th>
+                            <td>@Model.CurrentUser.RealName</td>
+                        </tr>
+                        <tr>
+                            <th>NameIdentifier</th>
+                            <td>@(Model.CurrentUser.NameIdentifier ?? "null")</td>
+                        </tr>
+                        <tr>
+                            <th>Email</th>
+                            <td>@(Model.CurrentUser.Email ?? "null")</td>
+                        </tr>
+                        <tr>
+                            <th>IsBot</th>
+                            <td>@Model.CurrentUser.IsBot</td>
+                        </tr>
+                        <tr>
+                            <th>Avatar</th>
+                            <td><img src="@Model.CurrentUser.Avatar" style="height: 20px;"/> @Model.CurrentUser.Avatar</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <h3 class="is-size-4">Members</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Organization</th>
+                                <th>Active</th>
+                                <th>AccessRequestDate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var membership in Model.CurrentUser.Members) {
+                            var selected = membership.OrganizationId == Model.Organization?.Id ? "is-selected" : null;
+                            <tr class="@selected">
+                                <td>@membership.Organization.Name</td>
+                                <td>@membership.Active</td>
+                                <td>@membership.AccessRequestDate</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                }
+
+                <h2 class="is-size-3">Organization</h2>
+
+                @if (Model.Organization is null) {
+                    <div class="content">
+                        Current organization is known
+                    </div>
+                } else {
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <th>Id</th>
+                            <td>@Model.Organization.Id</td>
+                        </tr>
+                        <tr>
+                            <th>PlatformId</th>
+                            <td>@Model.Organization.PlatformId</td>
+                        </tr>
+                        <tr>
+                            <th>PlatformType</th>
+                            <td>@Model.Organization.PlatformType</td>
+                        </tr>
+                        <tr>
+                            <th>Name</th>
+                            <td>@(Model.Organization.Name ?? "null")</td>
+                        </tr>
+                        <tr>
+                            <th>Domain</th>
+                            <td>@(Model.Organization.Domain ?? "null")</td>
+                        </tr>
+                        <tr>
+                            <th>PlatformBotId</th>
+                            <td>@(Model.Organization.PlatformBotId ?? "null")</td>
+                        </tr>
+                        <tr>
+                            <th>Avatar</th>
+                            <td><img src="@Model.Organization.Avatar" style="height: 20px;"/> @Model.Organization.Avatar</td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                }
+            </div>
+            <div class="column is-narrow">
+                <h2 class="is-size-3">Claims</h2>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>
+                            Claim
+                        </th>
+                        <th>
+                            Value
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th>Authenticated</th>
+                        <td>@Model.IsAuthenticated</td>
+                    </tr>
+
+                    @foreach (var claim in User.Claims) {
+                        <tr>
+                            <th>@claim.Type</th>
+                            <td>
+                                @if (claim.Type == "picture") {
+                                    <img src="@claim.Value" style="height: 20px;"/>
+                                }
+                                <span>@claim.Value</span>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+
+
+                <h3 class="is-size-4">Organization Members</h3>
+                @if (Model.Organization is not null) {
+                    foreach (var member in Model.Organization.Members) {
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <th>Id</th>
+                                <td>@member.Id</td>
+                            </tr>
+                            <tr>
+                                <th>UserId</th>
+                                <td>@member.User.Id</td>
+                            </tr>
+                            <tr>
+                                <th>PlatformUserId</th>
+                                <td>@member.User.PlatformUserId</td>
+                            </tr>
+                            <tr>
+                                <th>DisplayName</th>
+                                <td>@member.DisplayName</td>
+                            </tr>
+                            <tr>
+                                <th>RealName</th>
+                                <td>@member.User.RealName</td>
+                            </tr>
+                            <tr>
+                                <th>NameIdentifier</th>
+                                <td>@(member.User.NameIdentifier ?? "null")</td>
+                            </tr>
+                            <tr>
+                                <th>Email</th>
+                                <td>@(member.User.Email ?? "null")</td>
+                            </tr>
+                            <tr>
+                                <th>Active</th>
+                                <td>@member.Active</td>
+                            </tr>
+                            <tr>
+                                <th>IsBot</th>
+                                <td>@member.User.IsBot</td>
+                            </tr>
+                            <tr>
+                                <th>Avatar</th>
+                                <td><img src="@member.User.Avatar" style="height: 20px;"/> @member.User.Avatar</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    }
+                }
+            </div>
+        </div>
+    </section>
+</page-body>

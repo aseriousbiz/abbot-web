@@ -1,0 +1,182 @@
+@page "/staff/organizations/{id}"
+@model Serious.Abbot.Pages.Staff.Organizations.StatusPage
+@inject PlatformRequirements PlatformRequirements
+@{
+    ViewContext.SetPageInfo("Staff", "Organization Status", $"Organization Status - {Model.Organization.Name}");
+    bool hasApiToken = Model.HasApiToken;
+    var somethingDiffersFromPlatform = false;
+    var missingScopes = string.Join('\n', PlatformRequirements.MissingScopes(Model.Organization));
+}
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">
+            Status
+            @if (!PlatformRequirements.HasRequiredScopes(Model.Organization)) {
+                <span data-tooltip="Missing a required scope: @missingScopes" class="has-tooltip-right has-tooltip-multiline"><i class="fa-solid fa-triangle-exclamation"></i></span>
+            }
+        </h2>
+
+        <div class="hard-box mt-5 overflow-auto">
+            <table class="w-full">
+                <thead>
+                <tr>
+                    <th class="text-left border-b p-3">Value</th>
+                    <th class="text-left border-b p-3">Database</th>
+                    <th class="text-left border-b p-3">@Model.Organization.PlatformType says</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="align-middle p-3">API Token?</td>
+                    <td colspan="2" class="align-middle p-3">
+                        @if (hasApiToken) {
+                            <span data-tooltip="Yes" title="Yes"><i class="fa-solid fa-check"></i></span>
+                        }
+                        else {
+                            <span data-tooltip="No" title="No"><i class="fa-solid fa-xmark"></i></span>
+                        }
+                    </td>
+                </tr>
+                @foreach (var field in Model.Fields) {
+                    var rowClass = "";
+                    if (field.Platform is {Length: >0} && field.Database != field.Platform)
+                    {
+                        rowClass = "bg-red-200";
+                        somethingDiffersFromPlatform = true;
+                    }
+                    <tr class="@rowClass">
+                        <td class="align-middle p-3">@field.Name</td>
+                        <td class="align-middle p-3">
+                            @if (field.Name is "BotAvatar") {
+                                <img src="@field.Database" alt="" title="@field.Database" />
+                            }
+                            else if(field.Name is "Scopes") {
+                                <ul>
+                                    @foreach (var scope in (field.Database?.Split(",") ?? Enumerable.Empty<string>()).Order()) {
+                                        <li><code>@scope</code></li>
+                                    }
+                                </ul>
+                            }
+                            else {
+                                <code>@field.Database</code>
+                            }
+                        </td>
+                        <td class="align-middle p-3">
+                            @if (field.Name is "BotAvatar") {
+                                <img src="@field.Platform" alt="" title="@field.Platform" />
+                            } else if (field.Name is "Scopes") {
+                                <ul>
+                                    @foreach (var scope in (field.Platform?.Split(",") ?? Enumerable.Empty<string>()).Order()) {
+                                        <li><code>@scope</code></li>
+                                    }
+                                </ul>
+                            } else {
+                                <code>@field.Platform</code>
+                            }
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+
+        @if (Model.Fields.Single(f => f.Name.Equals("PlatformId")).Platform is {Length: >0} platformId && platformId != Model.Organization.PlatformId)
+        {
+            <div class="mt-5 bg-red-200 p-4">
+                <p>Platform ID doesn't match the API token value! This is VERY BAD and I'm not going to help you.</p>
+            </div>
+        }
+        else if (somethingDiffersFromPlatform)
+        {
+            <div class="mt-5 bg-yellow-200 p-4">
+                <form method="post">
+                    <p>There are differences between the database and what the Chat Platform reports for the Organization</p>
+                    <button class="btn btn-danger" type="submit">Resync Database Values from Chat Platform</button>
+                </form>
+            </div>
+        }
+    </round-box>
+
+    <round-box>
+        <h2 class="text-3xl font-semibold">
+            Feature State
+        </h2>
+        @if (Model.FeatureContext is not null) {
+            <div class="flex flex-row items-baseline gap-2">
+                <span class="font-semibold">Targetting Context:</span>
+                @if (Model.FeatureContext.UserId is {Length: >0}) {
+                    <copy-box container-classes="inline-block" display-value-classes="font-mono form-input-split text-xs flex-grow border-r border-gray-200 w-min" clipboard-classes="text-xs">@Model.FeatureContext.UserId</copy-box>
+                }
+                @foreach (var group in Model.FeatureContext.Groups) {
+                    <copy-box container-classes="inline-block" display-value-classes="font-mono form-input-split text-xs flex-grow border-r border-gray-200 w-min" clipboard-classes="text-xs">@group</copy-box>
+                }
+            </div>
+        }
+        @if (Model.FeatureState.Count > 0) {
+            <dl class="grid gap-2" style="grid-template-columns: max-content 1fr;">
+               @foreach (var feature in Model.FeatureState) {
+                   <dt>@feature.Flag</dt>
+                   <dd><span>@(feature.Enabled ? "✅" : "❌")</span></dd>
+               }
+            </dl>
+        }
+        <p>
+            Manage Feature Flags in the <a target="_blank" href="@FeatureFlags.FeatureManagerPortalUrl">Azure Portal <i class="fa fa-external-link"></i></a>
+        </p>
+    </round-box>
+
+    @if (Model.ShowApiTokens) {
+        <round-box>
+            <div class="my-3">
+                <h2 class="font-semibold">Slack API Token</h2>
+                @if (Model.Organization.TryGetUnprotectedApiToken(out var apiToken)) {
+                    <copy-box size-to-value="true" value="@apiToken">
+                        <span class="api-token">@apiToken</span>
+                    </copy-box>
+                }
+                else {
+                    <span class="text-gray-500">No API Token</span>
+                }
+            </div>
+            <div class="my-3">
+                <h2 class="font-semibold">HubSpot API Token</h2>
+                @if (Model.HubSpotSettings is { AccessToken: {} hubSpotToken }
+                     && hubSpotToken.Reveal() is {} hubSpotTokenClearText) {
+                    <copy-box size-to-value="true" value="@hubSpotTokenClearText">
+                        <span class="api-token">@hubSpotTokenClearText</span>
+                    </copy-box>
+                }
+                else {
+                    <span class="text-gray-500">No API Token</span>
+                }
+            </div>
+            <div class="my-3">
+                <h2 class="font-semibold">Zendesk API Token</h2>
+                @if (Model.ZendeskSettings is { ApiToken: {} zendeskToken }
+                     && zendeskToken.Reveal() is {} zendeskTokenClearText) {
+                    <copy-box size-to-value="true" value="@zendeskTokenClearText">
+                        <span class="api-token">@zendeskTokenClearText</span>
+                    </copy-box>
+                }
+                else {
+                    <span class="text-gray-500">No API Token</span>
+                }
+            </div>
+        </round-box>
+    }
+
+    <round-box>
+        <h3 class="text-2xl font-semibold mt-5">Settings</h3>
+        <div class="hard-box mt-5" id="@Model.SettingsListDomId">
+            <blankslate>
+                <div class="flex flex-col items-center gap-2">
+                    <i class="fa fa-eye-slash text-3xl"></i>
+                    <span class="text-gray-500">Settings are not visible by default because they may contain confidential information.</span>
+                    <form asp-page-handler="Settings">
+                        <button type="submit" class="btn btn-danger" data-confirm="WARNING: This may show confidential data.">Show Settings</button>
+                    </form>
+                </div>
+            </blankslate>
+        </div>
+    </round-box>
+</page-body>

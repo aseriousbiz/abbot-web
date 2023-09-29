@@ -1,0 +1,20 @@
+@model Member
+
+<page-header>
+    Account Settings
+</page-header>
+<nav class="sm:grid grid-cols-4 gap-4 my-2">
+    <ul class="col-span-3 flex text-sm my-2">
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Settings/Account/Index" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                General
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Settings/Account/ApiKeys" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                API Keys
+            </a>
+        </li>
+    </ul>
+</nav>
+

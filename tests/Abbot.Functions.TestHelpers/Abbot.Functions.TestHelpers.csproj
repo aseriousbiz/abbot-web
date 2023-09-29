@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+        <PackageReference Include="NSubstitute" />
+        <PackageReference Include="Serious.Ink.Compiler" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\functions\Abbot.Functions.DotNet\Abbot.Functions.DotNet.csproj" />
+      <ProjectReference Include="..\..\src\product\Abbot.Web.Library\Abbot.Web.Library.csproj" />
+      <ProjectReference Include="..\..\src\scripting\Abbot.Scripting.Interfaces\Abbot.Scripting.Interfaces.csproj" />
+      <ProjectReference Include="..\Serious.TestHelpers\Serious.TestHelpers.csproj" />
+    </ItemGroup>
+
+</Project>

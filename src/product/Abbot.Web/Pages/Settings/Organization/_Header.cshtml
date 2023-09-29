@@ -1,0 +1,68 @@
+@using Serious.Abbot.Repositories
+@using Serious.Abbot.Infrastructure.TagHelpers
+@using Microsoft.EntityFrameworkCore
+@model Member
+@inject IUserRepository UserRepository
+
+@{
+    var waitListCount = await UserRepository.GetPendingMembersQueryable(Model.Organization)
+        .CountAsync();
+    var (verb, noun) = waitListCount is 1 ? ("is", "user") : ("are", "users");
+}
+
+<page-header>
+    Organization Settings
+</page-header>
+
+<nav class="sm:grid gap-4 my-4 flex" style="grid-template-columns: max-content 1fr max-content;">
+    <ul class="flex text-sm gap-2">
+        <li class="flex-shrink-0">
+            <a asp-page="/Settings/Organization/Index" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                General
+            </a>
+        </li>
+        <li class="flex-shrink-0">
+            <a asp-page="/Settings/Organization/Users/Index" class="tabnav-btn" nav-active-class="tabnav-btn-active">
+                Users
+
+                @if (waitListCount > 0) {
+                    <pill color="Gray" tooltip="There @verb @noun on the wait list." size="Small">@waitListCount</pill>
+                }
+            </a>
+        </li>
+        <li class="flex-shrink-0">
+            <a asp-page="/Settings/Organization/Tags/Index" class="tabnav-btn" nav-active-class="tabnav-btn-active">
+                Tags
+            </a>
+        </li>
+        <li class="flex-shrink-0">
+            <a asp-page="/Settings/Organization/Integrations/Index" class="tabnav-btn" nav-active-class="tabnav-btn-active">
+                Integrations
+            </a>
+        </li>
+        <li class="flex-shrink-0">
+            <a asp-page="/Activity/Index" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                Activity Log
+            </a>
+        </li>
+        <li class="flex-shrink-0">
+            <a asp-page="/Settings/Organization/Billing/Index" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                Billing
+            </a>
+        </li>
+        <li class="flex-shrink-0">
+            <a asp-page="/Settings/Organization/Advanced/Index" class="tabnav-btn text-gray-600" nav-active-class="tabnav-btn-active">
+                Advanced
+            </a>
+        </li>
+    </ul>
+    <ul class="col-start-3 flex text-sm place-self-end">
+        @if (Model is { Organization.UserSkillsEnabled: true }) {
+            <li>
+                <a asp-page="/Settings/Organization/Runners/Index" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                    Runners
+                </a>
+            </li>
+        }
+    </ul>
+</nav>

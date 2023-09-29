@@ -1,0 +1,41 @@
+<Project>
+    <Target Name="__Debug">
+        <Message Text="RootDir = $(RootDir)" Importance="high" />
+        <Message Text="AbbotMSBuildExtensions = $(AbbotMSBuildExtensions)" Importance="high" />
+    </Target>
+
+    <Target Name="CollectGitMetadata">
+        <Exec Command="git rev-parse --abbrev-ref HEAD" ConsoleToMSBuild="true" EchoOff="true" StandardOutputImportance="low">
+            <Output TaskParameter="ConsoleOutput" PropertyName="GitBranch" />
+        </Exec>
+        <Exec Command="git rev-parse HEAD" ConsoleToMSBuild="true" EchoOff="true" StandardOutputImportance="low">
+            <Output TaskParameter="ConsoleOutput" PropertyName="GitCommitId" />
+        </Exec>
+    </Target>
+    <Target Name="EmbedGitMetadata" DependsOnTargets="CollectGitMetadata" BeforeTargets="InitializeSourceControlInformation">
+        <ItemGroup>
+            <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+                <_Parameter1>BuildBranch</_Parameter1>
+                <_Parameter2>$(GitBranch)</_Parameter2>
+            </AssemblyAttribute>
+            <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+                <_Parameter1>BuildSha</_Parameter1>
+                <_Parameter2>$(GitCommitId)</_Parameter2>
+            </AssemblyAttribute>
+            <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+                <_Parameter1>BuildDate</_Parameter1>
+                <_Parameter2>$([System.DateTime]::UtcNow.ToString('O'))</_Parameter2>
+            </AssemblyAttribute>
+
+            <!-- These come from the GitHub Actions workflow when we build -->
+            <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute" Condition="'$(BUILD_HEAD_REF)' != ''">
+                <_Parameter1>BuildHeadRef</_Parameter1>
+                <_Parameter2>$(BUILD_HEAD_REF)</_Parameter2>
+            </AssemblyAttribute>
+            <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute" Condition="'$(BUILD_PR)' != ''">
+                <_Parameter1>BuildPR</_Parameter1>
+                <_Parameter2>$(BUILD_PR)</_Parameter2>
+            </AssemblyAttribute>
+        </ItemGroup>
+    </Target>
+</Project>

@@ -1,0 +1,62 @@
+@page "/staff/organizations/{id}/forms/{form}/edit/{handler?}"
+@using Serious.Abbot.Integrations.HubSpot
+@model Serious.Abbot.Pages.Staff.Organizations.Forms.EditModel
+
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Form Editor", "Form Editor");
+}
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <div class="font-semibold">
+            <a asp-page="Index" asp-route-id="@Model.Organization.PlatformId">Forms</a> / @Model.Key
+        </div>
+
+        <form method="post" class="flex flex-col gap-2">
+            @if (Model.IsDefault) {
+                <p>
+                    There is no custom configuration for this form in the organization.
+                    Below is the default form definition, edit it and click Save to create a custom configuration.
+                </p>
+            } else {
+                <p>The organization is using a custom definition for this form.</p>
+            }
+            <label class="checkbox">
+                <input asp-for="IsEnabled">
+                <span class="font-semibold">Enabled</span>
+            </label>
+            <label class="font-semibold" asp-for="Definition"></label>
+            <textarea class="form-input" rows="24" asp-for="Definition"></textarea>
+            <span asp-validation-for="Definition"></span>
+
+            @if (Model.Key is FormSettingsExtensions.HubSpotFormKey) {
+                <label class="font-semibold" asp-for="FormGuid"></label>
+                <input class="form-input"  asp-for="FormGuid" />
+                <span asp-validation-for="FormGuid"></span>
+
+                <label class="font-semibold" asp-for="TokenFormField"></label>
+                <input class="form-input"  asp-for="TokenFormField" />
+                <span asp-validation-for="TokenFormField"></span>
+            }
+
+            <div class="flex gap-2">
+                <button type="submit" formaction="@Url.Page(null, "Test")" class="btn">Test</button>
+                <div class="flex-grow"></div>
+                @if (Model.IsDefault) {
+                    <button type="submit" class="btn btn-primary">Create</button>
+                } else {
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="submit" formaction="@Url.Page(null, "Delete")" data-confirm="This will permanently delete this form configuration! You can also just disable it by unchecking the 'Enabled' checkbox." class="btn btn-danger">Delete</button>
+                }
+            </div>
+
+            @if (!Model.IsDefault && Model.SystemDefinition is not null)
+            {
+                <label class="font-semibold" asp-for="SystemDefinition"></label>
+                <textarea class="form-input" rows="24" asp-for="SystemDefinition" disabled></textarea>
+            }
+        </form>
+    </round-box>
+</page-body>

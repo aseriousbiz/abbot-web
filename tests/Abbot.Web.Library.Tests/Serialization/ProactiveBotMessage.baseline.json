@@ -1,0 +1,34 @@
+{
+  "SkillId": 24,
+  "Message": "A Message",
+  "ConversationReference": {
+    "activityId": "a-b-c",
+    "conversation": {
+      "id": "B1:T1:C1"
+    }
+  },
+  "Schedule": 42,
+  "Attachments": [
+    {
+      "Buttons": [
+        {
+          "Title": "Click Me",
+          "Arguments": "args",
+          "Style": "C O O L"
+        }
+      ],
+      "ButtonsLabel": "The label",
+      "ImageUrl": "https://images.example.com/cool.png",
+      "Title": "A title",
+      "TitleUrl": "https://example.com/cool",
+      "Color": "#beefcafe"
+    }
+  ],
+  "Options": {
+    "To": {
+      "Type": "Room",
+      "Id": "C123",
+      "ThreadId": "9999.9999"
+    }
+  }
+}

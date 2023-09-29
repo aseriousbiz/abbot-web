@@ -1,0 +1,36 @@
+@using Serious.Abbot
+@using Serious.Abbot.Components
+@using Serious.Abbot.Configuration
+@using Serious.Abbot.Entities
+@using Serious.Abbot.Extensions
+@using Serious.Abbot.FeatureManagement
+@using Serious.Abbot.Infrastructure.Security
+@using Serious.Abbot.Infrastructure.TagHelpers
+@using Serious.Abbot.Models
+@using Serious.Abbot.Scripting
+@using Serious.Abbot.Security
+@using Serious.AspNetCore
+@using Serious.Collections
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Http.Extensions
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Collections.Generic
+@using System.Diagnostics
+@using System.Globalization
+@using System.Security.Claims
+@using System.Linq
+@using Serious.Abbot.Signals
+@using Humanizer
+@using Humanizer.Localisation
+@namespace Serious.Abbot.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, MiniProfiler.AspNetCore.Mvc
+@addTagHelper *, TagHelperPack
+@addTagHelper *, Serious.Library
+@addTagHelper *, Serious.Razor
+@addTagHelper *, Abbot.Web
+
+@* We have our own AnchorTagHelper *@
+@removeTagHelper Microsoft.AspNetCore.Mvc.TagHelpers.AnchorTagHelper, Microsoft.AspNetCore.Mvc.TagHelpers

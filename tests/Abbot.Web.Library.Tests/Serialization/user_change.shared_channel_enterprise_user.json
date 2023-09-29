@@ -1,0 +1,78 @@
+{
+  "token": "TOKEN123",
+  "team_id": "T0123456",
+  "enterprise_id": "E0123456",
+  "api_app_id": "A012345",
+  "event": {
+    "type": "user_change",
+    "user": {
+      "id": "USER12324",
+      "name": "billybob",
+      "deleted": false,
+      "color": "73769d",
+      "real_name": "Billy Bob",
+      "tz": "Asia/Kolkata",
+      "tz_label": "India Standard Time",
+      "tz_offset": 19800,
+      "profile": {
+        "title": "Support Engineer",
+        "phone": "8675309",
+        "skype": "",
+        "real_name": "Billy Bob",
+        "real_name_normalized": "Billy Bob",
+        "display_name": "Billy Bob",
+        "display_name_normalized": "Billy Bob",
+        "fields": {},
+        "status_text": "",
+        "status_emoji": "",
+        "status_emoji_display_info": [],
+        "status_expiration": 0,
+        "avatar_hash": "hashyhash",
+        "image_original": "https://example.com_original.jpg",
+        "is_custom_image": true,
+        "huddle_state": "default_unset",
+        "huddle_state_expiration_ts": 1642536562,
+        "first_name": "Billy",
+        "last_name": "Bob",
+        "status_text_canonical": "",
+        "team": "E0123456"
+      },
+      "is_admin": false,
+      "is_owner": false,
+      "is_primary_owner": false,
+      "is_restricted": false,
+      "is_ultra_restricted": false,
+      "is_bot": false,
+      "is_app_user": false,
+      "updated": 1642536262,
+      "is_email_confirmed": true,
+      "who_can_share_contact_card": "EVERYONE",
+      "enterprise_user": {
+        "id": "USER12324",
+        "enterprise_id": "E0123456",
+        "enterprise_name": "Big Business",
+        "is_admin": true,
+        "is_owner": false,
+        "teams": [
+          "T8675309"
+        ]
+      },
+      "enterprise_id": "E0123456"
+    },
+    "cache_ts": 1642536262,
+    "event_ts": "1642536263.283300"
+  },
+  "type": "event_callback",
+  "event_id": "Ev02UFNG61QV",
+  "event_time": 1642536263,
+  "authorizations": [
+    {
+      "enterprise_id": "E0123456",
+      "team_id": "T0123456",
+      "user_id": "U000BOTID",
+      "is_bot": true,
+      "is_enterprise_install": false
+    }
+  ],
+  "is_ext_shared_channel": false
+}

@@ -1,0 +1,110 @@
+@page
+@model Serious.Abbot.Pages.Skills.IndexPage
+@{
+    ViewContext.SetPageInfo("Skills", "Custom Skills");
+    Layout = "Shared/Layouts/_SkillListLayout";
+}
+
+@if (Model.Organization is { UserSkillsEnabled: true }) {
+    <header class="max-w-3xl">
+        <h2 class="font-bold text-lg">Custom Skills</h2>
+        <p>These skills were created by members of your organization.</p>
+
+        @if (Model.NumSkillsAllowed is not null && Model.NumSkillsEnabled >= Model.NumSkillsAllowed) {
+            <p class="mt-2 border-l-4 px-3 py-2  border-yellow-500">
+                Please note that we are allowing overages during Abbot's beta period, <span class="font-bold">but will charge a monthly subscription for teams with more than 5 skills enabled</span> after the beta has completed.
+            </p>
+        }
+    </header>
+
+    <partial name="_StatusMessage" model="Model.StatusMessage"/>
+
+    <div class="flex my-4 items-start">
+        <details class="dropdown dropdown--no-triangle mr-2">
+            <summary class="text-sm btn flex-shrink-0">
+                Create new skill
+            </summary>
+
+            <div class="dropdown-menu w-64 top-8" role="menu">
+                <div class="dropdown-content">
+                    <p class="font-semibold px-2 py-1">
+                        Select a language
+                    </p>
+                    <p>
+                        <a class="dropdown-item" href="/skills/create/@CodeLanguage.CSharp.ToSlug()">C#</a>
+                        <a class="dropdown-item" href="/skills/create/@CodeLanguage.JavaScript.ToSlug()">JavaScript</a>
+                        <a class="dropdown-item" href="/skills/create/@CodeLanguage.Python.ToSlug()">Python</a>
+                        <a class="dropdown-item" href="/skills/create/@CodeLanguage.Ink.ToSlug()">Ink</a>
+                    </p>
+                </div>
+            </div>
+        </details>
+
+        <a asp-page="/Packages/Index"
+           class="mr-2 btn btn-primary">
+            Install a Skill
+        </a>
+
+        @if (Model.Skills.Any() && string.IsNullOrEmpty(Model.Filter)) {
+            <div class="text-sm text-gray-500 self-center">
+                You have @Model.NumSkillsEnabled (out of @Model.NumSkillsAllowed allowed) skills enabled.
+            </div>
+        }
+    </div>
+
+    @if (!Model.Skills.Any() && string.IsNullOrEmpty(Model.Filter)) {
+        <blankslate>
+            <strong>Your organization does not have any custom skills yet.</strong>
+            <p>But <em>you</em> can change that.</p>
+            <p>
+                Create a new skill using
+                <a href="/skills/create/@CodeLanguage.CSharp.ToSlug()">C#</a>,
+                <a href="/skills/create/@CodeLanguage.JavaScript.ToSlug()">JavaScript</a>, or
+                <a href="/skills/create/@CodeLanguage.Python.ToSlug()">Python</a>
+                <a href="/skills/create/@CodeLanguage.Ink.ToSlug()">Ink</a>
+            </p>
+            <p>
+                <a asp-page="/Packages/Index">Or install a Skill Package</a>
+            </p>
+        </blankslate>
+    } else {
+        <div class="rounded-lg border my-4 bg-white">
+            <form method="post" class="flex border-b p-2" data-controller="input-submit" asp-page-handler="Filter">
+                <label class="sr-only" for="filter-skill">Filter skills</label>
+                <input id="filter-skill"
+                       class="border rounded-md px-2 py-1 border-gray-300 text-base bg-gray-100 shadow-inner flex-grow mr-2"
+                       type="text"
+                       placeholder="Filter Skills"
+                       name="filter"
+                       data-input-submit-target="submitter"
+                       value="@Model.Filter">
+                <input type="submit"
+                       class="appearance-none font-bold text-sm inline-block cursor-pointer px-2 py-1 border rounded bg-white text-blue-500 hover:text-gray-700"
+                       value="Filter skills"/>
+            </form>
+            <div id="@Model.SkillListDomId">
+                <partial name="Shared/_SkillList" />
+            </div>
+        </div>
+    }
+} else {
+    <header class="max-w-3xl">
+        <h2 class="font-bold text-lg">Custom Skills</h2>
+        <p>Custom Skills are not enabled for this organization.</p>
+    </header>
+    <div class="flex my-4 item-center" style="font-size: 16px">
+        <blankslate>
+        @if (Model.Viewer.IsAdministrator()) {
+            <p>
+                To enable Custom Skills, <a asp-page="/Settings/Organization/Advanced/Index">visit the Organization Advanced Settings page</a>,
+                check "Allow Custom Skills", and hit the "Save" button.
+            </p>
+        } else {
+            <p>
+                To enable Custom Skills, ask an administtrator to <a asp-page="/Settings/Organization/Advanced/Index">visit the Organization Advanced Settings page</a>,
+                check "Allow Custom Skills", and hit the "Save" button.
+            </p>
+        }
+        </blankslate>
+    </div>
+}

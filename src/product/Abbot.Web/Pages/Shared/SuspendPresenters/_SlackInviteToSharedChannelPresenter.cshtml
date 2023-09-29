@@ -1,0 +1,20 @@
+@inject IClock Clock
+@model (PlaybookRun Run, IDictionary<string, object> SuspendState)
+
+@{
+    var wakeTime = Model.SuspendState.TryGetValue("expiration", out var o)
+        && o is string wakeTimeStr
+        && DateTime.TryParseExact(wakeTimeStr, "O", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var wt)
+        ? (DateTime?)wt
+        : null;
+
+    // If we're within 30 seconds of the wake time, don't show the timeago, because it might get funky.
+    var threshold = TimeSpan.FromSeconds(30);
+}
+<pill tooltip="The Playbook run will resume after the somone accepts the invitation or when it expires." color="Gray" icon="fa-spinner fa-spin-pulse">
+    @if (wakeTime is null || wakeTime.Value - threshold < Clock.UtcNow) {
+        <span>Waiting on invitation response. Invitation is expiring...</span>
+    } else {
+        <span>Waiting on invitation response. Invitation expires <timeago datetime="wakeTime.Value"/>...</span>
+    }
+</pill>

@@ -1,0 +1,15 @@
+local.settings.json
+appsettings.Development.json
+dist/
+docker/
+!docker/files/
+#!docker/keys
+.github/
+.vs/
+script/
+build/
+src/**/node_modules
+.store/
+tools/
+src/functions/Abbot.Functions.*/bin/
+out/

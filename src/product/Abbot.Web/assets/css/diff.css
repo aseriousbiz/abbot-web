@@ -1,0 +1,50 @@
+.diff-pane {
+  table {
+    width: 100%;
+    height: 100%;
+    border: solid 1px #e2e4e8;
+    border-collapse: separate !important;
+    border-radius: 3px !important;
+  }
+  
+  font-family: $family-code;
+  color: #24292e;
+  font-size: 14px;
+  line-height: 24px;
+
+  .line-number {
+    padding: 0 1em 0 0.3em;
+    text-align: right;
+    width: 50px;
+    color: rgba(27, 31, 35, 0.3);
+
+    &.Inserted {
+      background-color: #cdffd8;
+    }
+    
+    &.Deleted {
+      background-color: #ffdce0;
+    }
+  }
+  
+  .change-type {
+    padding: 0 .3em 0 0.8em;
+  }
+  
+  .line {
+    padding-left: .2em;
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  .Inserted {
+    background-color: #e6ffed;
+  }
+
+  .Modified {
+  }
+
+  .Deleted {
+    background-color: #ffeef0;
+  }
+}

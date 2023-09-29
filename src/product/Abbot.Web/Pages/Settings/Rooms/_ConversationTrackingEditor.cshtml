@@ -1,0 +1,90 @@
+@model RoomPage
+
+@{var disabled = Model.ReadOnly ? "disabled" : null;}
+
+@if (!Model.Room.IsActive()) {
+    if (Model.Room.Deleted == true) {
+        <div class="flex flex-col">
+            <span>This room has been deleted from @Model.Organization.PlatformType.Humanize().</span>
+            <span>Conversation data has been preserved, but Abbot can no longer track conversations in this room.</span>
+        </div>
+    } else if (Model.Room.Archived == true) {
+        <div class="flex flex-col">
+            <span>This room has been archived in @Model.Organization.PlatformType.Humanize().</span>
+            <span>Conversation data has been preserved, but Abbot can't track conversations in this room until you unarchive the room.</span>
+        </div>
+    } else if (Model.Room.BotIsMember == false) {
+        <div class="flex flex-col">
+            <span>Abbot is not a member of this room.</span>
+            <div class="flex items-baseline">
+                Conversation data has been preserved, but Abbot can't track conversations in this room until you invite them back by running
+                <copy-box value="/invite @@@(Model.Organization.BotName)"></copy-box>
+            </div>
+            <form asp-page-handler="Untrack">
+                <button
+                    type="submit"
+                    class="btn @(Model.ReadOnly ? "btn-disabled" : "btn-danger") mt-4"
+                    disabled="@disabled"
+                    data-confirm="Are you sure you want to stop conversation tracking in #@(Model.Room.Name)? Existing data will be preserved, but will not be accessible until conversation tracking is re-enabled.">
+                    Stop Conversation Tracking
+                </button>
+            </form>
+        </div>
+    }
+} else if (Model.Room.ManagedConversationsEnabled) {
+    <p>
+        This room tracks conversations started by <strong>@Model.Room.SupporteeType()</strong>.
+    </p>
+    if (Model.Room.Shared is false) {
+        <form id="supportType" asp-page-handler="ChangeRoomType">
+            <ul class="mt-2 px-3">
+                <li class="mt-1">
+                    <label>
+                        <input type="radio" asp-for="IsCommunitySupportRoom" value="false"/>
+                        <strong>Customer Support</strong> Only guest users start tracked conversations.
+                    </label>
+                </li>
+                <li class="mt-1">
+                    <label>
+                        <input type="radio" asp-for="IsCommunitySupportRoom" value="true"/>
+                        <strong>Community Support</strong> All non-Agent users start tracked conversations.
+                    </label>
+                </li>
+            </ul>
+        </form>
+    }
+    if (User.CanManageConversations()) {
+        <div class="flex items-start mt-4">
+            @if (Model.Room.Shared is false) {
+                <button type="submit" class="btn btn-primary mr-3" form="supportType">Save Changes</button>
+            }
+            <form asp-page-handler="Untrack">
+                <button
+                    type="submit"
+                    class="btn @(Model.ReadOnly ? "btn-disabled" : "btn-danger")"
+                    disabled="@disabled"
+                    data-confirm="Are you sure you want to stop conversation tracking in #@(Model.Room.Name)? Existing data will be preserved, but will not be accessible until conversation tracking is re-enabled.">
+                    Stop Conversation Tracking
+                </button>
+                <span class="ml-2 text-gray-500">Conversation data will be preserved, but stopping conversation tracking will disable all reminders. </span>
+            </form>
+        </div>
+    } else {
+        <p>Enabled for this room.</p>
+    }
+} else {
+    if (User.CanManageConversations()) {
+        <p>Conversation tracking enables reminders to First Responders to ensure resolution in a timely manner.</p>
+        <form asp-page-handler="Track">
+            <button
+                type="submit"
+                class="btn @(Model.ReadOnly ? "btn-disabled" : "") mt-4"
+                disabled="@disabled"
+                data-confirm="Do you want to start tracking conversations in #@(Model.Room.Name)?">
+                Start Conversation Tracking
+            </button>
+        </form>
+    } else {
+        <p>Not enabled for this room.</p>
+    }
+}

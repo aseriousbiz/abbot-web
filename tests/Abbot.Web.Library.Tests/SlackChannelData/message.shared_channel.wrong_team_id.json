@@ -1,0 +1,47 @@
+{
+  "token": "TOKEN_REDACTED",
+  "team_id": "T000998899",
+  "api_app_id": "A0136GZSLBC",
+  "event": {
+    "client_msg_id": "57fa94a9-b1ec-45dc-b044-43a3de46d327",
+    "type": "message",
+    "text": "How much DDoS scrubbing does the fly proxy/ingress do for traffic?",
+    "user": "U000000F11",
+    "ts": "1671033292.854689",
+    "blocks": [
+      {
+        "type": "rich_text",
+        "block_id": "CLD",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "text",
+                "text": "How much DDoS scrubbing does the fly proxy/ingress do for traffic?"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "team": "T000998899",
+    "channel": "C00000002",
+    "event_ts": "1671033292.854689",
+    "channel_type": "channel"
+  },
+  "type": "event_callback",
+  "event_id": "Ev04F1025CLW",
+  "event_time": 1671033292,
+  "authorizations": [
+    {
+      "enterprise_id": null,
+      "team_id": "T00012121",
+      "user_id": "U029NFVKLCT",
+      "is_bot": true,
+      "is_enterprise_install": false
+    }
+  ],
+  "is_ext_shared_channel": true,
+  "event_context": "4-eyJldCI6Im1lc3NhZ2UiLCJ0aWQiOiJUMDI0SlRTQVAiLCJhaWQiOiJBMDEzNkdaU0xCQyIsImNpZCI6IkNBSDIyRkg1NCJ9"
+}

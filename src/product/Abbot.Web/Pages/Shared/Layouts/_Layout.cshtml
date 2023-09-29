@@ -1,0 +1,351 @@
+@using Serious.Abbot.Repositories
+@inject PlatformRequirements PlatformRequirements;
+@inject IOrganizationRepository OrganizationRepository;
+@{
+    var member = Context.GetCurrentMember();
+    var organization = Context.GetCurrentOrganization();
+    var botAppName = organization?.BotAppName ?? "Abbot";
+    var teamAvatar = string.Empty;
+    var platformDomain = string.Empty;
+    var platformName = string.Empty;
+    bool botInstalled = false;
+    int purchasedSeats = 0;
+    int usedSeats = 0;
+
+    if (organization is not null) {
+        teamAvatar = organization.Avatar;
+        platformDomain = organization.Domain;
+        botInstalled = organization.IsBotInstalled();
+        platformName = organization.PlatformType.Humanize();
+        purchasedSeats = organization.PurchasedSeatCount;
+        if (purchasedSeats > 0 && organization.GetPlan().PricePerAgent) {
+            // Grab the number of agents for the current org.
+            usedSeats = await OrganizationRepository.GetAgentCountAsync(organization);
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en" data-controller="analytics">
+<head>
+    <partial name="Layouts/_HeadBlock"/>
+    @RenderSection("Styles", required: false)
+    @RenderSection("Meta", false)
+    @RenderSection("Scripts", false)
+</head>
+<body class="font-sans">
+<div class="flex flex-col h-full overflow-y-hidden">
+<vc:staff-bar page="Model"></vc:staff-bar>
+<div class="md:flex h-screen">
+<nav class="flex flex-col md:border-r border-gray-200 bg-white main-navigation md:p-4 text-sm 2xl:w-1/5" role="navigation" aria-label="main navigation">
+    <div class="flex items-center border-b border-gray-300 md:border-0 pb-0">
+        <div class="md:hidden mx-7 my-4">
+            <button class="js-nav-toggle w-4" aria-label="toggle navigation menu">
+                <span class="hidden js-nav-toggle-icon">
+                    <i class="fa-regular fa-xmark" aria-hidden="true"></i>
+                </span>
+
+                <span class="js-nav-toggle-icon">
+                    <i class="fa-regular fa-bars" aria-hidden="true"></i>
+                </span>
+            </button>
+        </div>
+
+        <a class="inline-flex p-2 items-center flex-grow" href="/">
+            <span class="w-6 h-6 text-gray-500 mr-4 inline-flex items-center">
+                <img src="/img/abbot-head-sm.png" alt="Abbot">
+            </span>
+            <partial name="_LogoLightSVG"/>
+        </a>
+
+        @* This is the _ONLY_ place it is acceptable to check the staff role directly, because it is used to show the staff mode toggle *@
+        @if (User.IsInRole(Roles.Staff)) {
+            var (handler, onOff, iconClass) = ViewContext.IsStaffMode()
+                ? ("Disable", "Off", "fa-light fa-shield")
+                : ("Enable", "On", "fa fa-shield-quartered text-gray-400");
+            <form asp-page="/Staff/Index" asp-page-handler="@handler" method="post" class="p-2">
+                <input type="hidden" id="returnUrl" name="returnUrl" value="@ViewContext.HttpContext.Request.Path"/>
+                <button type="submit" class="has-tooltip-right" data-tooltip="Turn Staff Mode @onOff">
+                    <i class="@iconClass"></i>
+                </button>
+            </form>
+        }
+    </div>
+
+    <div class="hidden md:flex flex-col grow p-2 sm:p-0 border-b md:border-b-0 border-gray-300 z-10 md:relative" id="js-nav-content">
+
+        @if (member is not null) {
+            <div class="flex items-center mx-2 mt-4">
+                <div class="relative shrink-0">
+                    <img class="w-6 h-6 rounded-full" src="@member.User.Avatar" alt=""/>
+
+                    <object data="@teamAvatar" type="image/png" class="h-4 w-4 rounded-full absolute -bottom-0.5 -right-1">
+                        <img src="/img/unknown-organization.png" alt="">
+                    </object>
+                </div>
+
+                <div class="ml-4 mr-8">
+                    <p class="font-semibold -mb-1 truncate max-w-xs" title="@member.DisplayName">
+                        @member.DisplayName
+                    </p>
+
+                    <p class="text-gray-500 truncate max-w-xs" title="@member.DisplayName">
+                        @platformDomain
+                    </p>
+                </div>
+            </div>
+        }
+
+        <ul class="my-4 font-medium gap-y-1 flex flex-col">
+            <li asp-authz-policy="@AuthorizationPolicies.CanManageConversations">
+                <a class="flex items-center text-black hover:bg-gray-100 px-3 py-1 rounded"
+                   nav-active-class="bg-indigo-50" nav-exact-match href="/"
+                   data-controller="read-url" data-read-url-key-value="conversations" data-action="read-url#navigateToSavedUrl" data-hotkey="g c">
+
+                    <span class="w-6 h-6 text-gray-500 mr-3 inline-flex items-center"
+                          nav-active-class="text-black" active-for="/">
+                        <i class="fa-regular fa-wave-pulse"></i>
+                    </span>
+
+                    Activity
+                </a>
+            </li>
+
+            <li asp-authz-policy="@AuthorizationPolicies.CanManageConversations">
+                <a class="flex items-center text-black hover:bg-gray-100 px-3 py-1 rounded"
+                   nav-active-class="bg-indigo-50" asp-page="/Customers/Index"
+                   data-controller="read-url" data-read-url-key-value="customers" data-action="read-url#navigateToSavedUrl">
+
+                    <span class="w-6 h-6 text-gray-500 mr-3 inline-flex items-center"
+                          nav-active-class="text-black" active-for="/Customers">
+                        <i class="fa-regular fa-building-user"></i>
+                    </span>
+
+                    Customers
+                </a>
+            </li>
+
+            <li asp-authz-policy="@AuthorizationPolicies.RequireAgentRole" feature="@FeatureFlags.Playbooks">
+                <a class="flex items-center text-black hover:bg-gray-100 px-3 py-1 rounded"
+                   nav-active-class="bg-indigo-50" asp-page="/Playbooks/Index" data-hotkey="g s">
+                    <span class="w-6 h-6 text-gray-500 mr-3 inline-flex items-center"
+                          nav-active-class="text-black" active-for="/playbooks">
+                        <i class="fa-regular fa-book"></i>
+                    </span>
+
+                    Playbooks
+                </a>
+            </li>
+
+            <li asp-authz-policy="@AuthorizationPolicies.CanManageConversations" feature="@FeatureFlags.Tasks">
+                <a class="flex items-center text-black hover:bg-gray-100 px-3 py-1 rounded"
+                   nav-active-class="bg-indigo-50" nav-exact-match asp-page="/Tasks/Index"
+                   data-controller="read-url" data-read-url-key-value="tasks" data-action="read-url#navigateToSavedUrl" data-hotkey="g t">
+
+                    <span class="w-6 h-6 text-gray-500 mr-3 inline-flex items-center"
+                          nav-active-class="text-black" active-for="/">
+                        <i class="fa-solid fa-list-check"></i>
+                    </span>
+
+                    Tasks
+                </a>
+            </li>
+
+            <li asp-authz-policy="@AuthorizationPolicies.CanManageConversations">
+                <a class="flex items-center text-black hover:bg-gray-100 px-3 py-1 rounded"
+                   nav-active-class="bg-indigo-50" nav-exact-match asp-page="/Settings/Rooms/Index" data-hotkey="g r">
+                    <span class="w-6 h-6 text-gray-500 mr-3 inline-flex items-center"
+                          nav-active-class="text-black" active-for="/settings/rooms">
+                        <i class="fa-regular fa-hashtag"></i>
+                    </span>
+
+                    Rooms
+                </a>
+            </li>
+
+            <li asp-authz-policy="@AuthorizationPolicies.RequireAgentRole">
+                <a class="flex items-center text-black hover:bg-gray-100 px-3 py-1 rounded"
+                   nav-active-class="bg-indigo-50" asp-page="/Announcements/Index" data-hotkey="g a">
+                    <span class="w-6 h-6 text-gray-500 mr-3 inline-flex items-center"
+                          nav-active-class="text-black" active-for="/announcements">
+                        <i class="fa-regular fa-megaphone"></i>
+                    </span>
+
+                    Announcements
+                </a>
+            </li>
+
+            <li asp-authz-policy="@AuthorizationPolicies.RequireAgentRole">
+                <a class="flex items-center text-black hover:bg-gray-100 px-3 py-1 rounded"
+                   nav-active-class="bg-indigo-50" asp-page="/Insights/Index" data-controller="read-url" data-read-url-key-value="insights" data-action="read-url#navigateToSavedUrl" data-hotkey="g i">
+                    <span class="w-6 h-6 text-gray-500 mr-3 inline-flex items-center"
+                          nav-active-class="text-black" active-for="/insights">
+                        <i class="fa-solid fa-chart-bar"></i>
+                    </span>
+
+                    <span>Insights</span>
+                </a>
+            </li>
+
+            <li asp-authz-policy="@AuthorizationPolicies.RequireAgentRole">
+                <a class="flex items-center text-black hover:bg-gray-100 px-3 py-1 rounded"
+                   nav-active-class="bg-indigo-50" asp-page="/Skills/Index" data-hotkey="g s">
+                    <span class="w-6 h-6 text-gray-500 mr-3 inline-flex items-center"
+                          nav-active-class="text-black" active-for="/skills">
+                        <i class="fa-regular fa-scroll"></i>
+                    </span>
+
+                    Skills
+                </a>
+            </li>
+        </ul>
+
+        <div class="border-t">
+            <ul class="my-4 font-medium gap-y-1 flex flex-col">
+                <li>
+                    <a class="flex items-center text-black hover:bg-gray-100 px-3 py-1 rounded"
+                       nav-active-class="bg-indigo-50" asp-page="/Settings/Account/Index" active-for="/settings/account">
+                        <span class="w-6 h-6 text-gray-500 mr-3 inline-flex items-center"
+                              nav-active-class="text-black" active-for="/settings/account,/activity">
+                            <i class="fa-regular fa-user-gear"></i>
+                        </span>
+
+                        Account settings
+                    </a>
+                </li>
+
+                <li asp-authz-policy="@AuthorizationPolicies.RequireAdministratorRole">
+                    <a class="flex items-center text-black hover:bg-gray-100 px-3 py-1 rounded"
+                       nav-active-class="bg-indigo-50" asp-page="/Settings/Organization/Index" active-for="/settings/organization,/activity">
+                        <span class="w-6 h-6 text-gray-500 mr-3 inline-flex items-center"
+                              nav-active-class="text-black" active-for="/settings/organization,/activity">
+                            <i class="fa-regular fa-users-gear"></i>
+                        </span>
+
+                        Organization
+                    </a>
+                </li>
+
+                <li>
+                    <a href="https://docs.ab.bot"
+                       data-turbo="false"
+                       class="flex items-center text-black hover:bg-gray-100 px-3 py-1 rounded">
+                        <span class="w-6 h-6 text-gray-500 mr-3 inline-flex items-center">
+                            <i class="fa-regular fa-books"></i>
+                        </span>
+
+                        Documentation
+                    </a>
+                </li>
+
+                <li class="mt-2">
+                    <a asp-controller="Account" asp-action="Logout"
+                       data-turbo="false"
+                       class="flex items-center text-black hover:bg-gray-100 px-3 py-1 rounded">
+                        <span class="w-6 h-6 text-gray-500 mr-3 inline-flex items-center">
+                            <i class="fa-regular fa-arrow-right-from-bracket"></i>
+                        </span>
+
+                        Log out
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main class="bg-gray-50 min-w-0 flex flex-col h-full overflow-y-auto w-full">
+    <environment exclude="Production">
+        <div class="bg-blue-900 border-yellow-200 p-2 flex justify-center gap-x-6 text-white">
+            <p>
+                <span class="font-semibold">Non-production test environment.</span>
+                This is a pre-production test environment. Do not store personally-identifiable information in this environment.
+                <a asp-page="/Status/NonProduction" class="text-yellow-200 hover:text-white">More information</a>
+            </p>
+        </div>
+    </environment>
+    <div class="bg-blue-900 border-yellow-200 p-4 justify-center gap-x-6 text-white">
+        <p>
+            <strong class="text-2xl">Abbot will be shutting down on October 27!</strong>
+        </p>
+        <p>
+            Thanks so much for being a customer, but Abbot is going away soon. Please get in touch if you need any assistance migrating to another system. Thank you again!
+        </p>
+    </div>
+
+    @if (organization is not null && ViewData["HideInstallBanner"] is null) {
+        if (!botInstalled) {
+            <div class="bg-yellow-100 border-yellow-200 p-2 flex justify-center items-center">
+                <div class="flex flex-col lg:flex-row gap-x-2">
+                    <span class="font-semibold">@botAppName is not yet connected to the <i>@organization.Name</i> workspace.</span>
+                    @if (organization.TrialEligible) {
+                        <span>A @(TrialPlan.TrialLengthDays)-day trial will start once @botAppName is connected to your workspace.</span>
+                    }
+                </div>
+                <div class="self-center ml-2">
+                    <vc:add-to-slack-button verb="Connect" first="true"/>
+                </div>
+            </div>
+        } else if (!PlatformRequirements.HasRequiredScopes(organization)) {
+            <div class="bg-yellow-100 border-yellow-200 p-5 flex justify-center gap-x-6">
+                <div>
+                    <p>
+                        <span class="font-semibold">@botAppName has new capabilities!</span>
+                    </p>
+                    <p>
+                        These capabilities require updated permissions from Slack and must be re-approved
+                        <span class="has-tooltip-multiline has-tooltip-bottom" data-tooltip="If you do not have permissions to do so, you may need to ask your @platformName administrator to complete this step">
+                            <i class="fa-light fa-circle-question more-info"></i>
+                        </span>
+                    </p>
+                </div>
+                <div class="self-center">
+                    <vc:add-to-slack-button verb="Reinstall" first="true"/>
+                </div>
+            </div>
+        } else if (organization.Trial is { Expiry: var expiry }) {
+            var trialRemaining = expiry - DateTime.UtcNow;
+            <div class="bg-yellow-100 border-yellow-200 p-2 flex justify-center gap-x-6">
+                <p>
+                    You have <span class="font-semibold">@trialRemaining.Humanize(maxUnit: TimeUnit.Day)</span> remaining in your trial.
+                    @if (User.IsAdministrator()) {
+                        <a asp-page="/Settings/Organization/Billing/Index">Manage your subscription →</a>
+                    }
+                </p>
+            </div>
+        } else if (usedSeats > purchasedSeats) {
+            <div class="bg-yellow-100 border-yellow-200 p-2 flex justify-center gap-x-6">
+                <p>
+                    <i class="fa-regular fa-triangle-exclamation"></i>
+                    <strong>
+                        Your organization has @usedSeats.ToQuantity("agent") assigned to seats, which is more than the
+                        @purchasedSeats.ToQuantity("seat") purchased.
+                    </strong> Either <a asp-page="organization/Users">unassign users from the Agent role</a>
+                    or <a asp-page="/Settings/Organization/Billing/Index">purchase more seats</a>.
+                </p>
+            </div>
+        }
+    }
+
+    <div class="notifications">
+        <partial name="_CookieConsentPartial"/>
+        @RenderSection("Notifications", required: false)
+    </div>
+
+    <div class="max-h-full h-full flex flex-col p-6">
+        <div class="flex flex-col grow">
+            @RenderBody()
+        </div>
+
+        <partial name="_Footer"/>
+    </div>
+</main>
+</div>
+
+<partial name="_ShortcutCheatSheet"/>
+</div>
+
+@RenderSection("FooterScripts", false)
+</body>
+<!-- commit @Program.BuildMetadata.CommitId -->
+</html>

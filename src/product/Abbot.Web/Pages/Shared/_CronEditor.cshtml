@@ -1,0 +1,123 @@
+@using Hangfire
+
+
+<div class="modal relative bg-gray-900 bg-opacity-75" id="cron-editor">
+    <div class="bg-white border border-gray-700 h-52 w-full cron-editor flex flex-col">
+        <header class="bg-blue-500 text-white px-2 flex items-center">
+            <h1 id="dialogTitle">Edit schedule</h1>
+            <button class="bg-white text-blue-500 hover:text-gray-900 flex p-1 my-1 ml-auto w-6 justify-center" aria-label="close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </header>
+
+        <section class="p-4">
+            <div class="flex">
+                <div class="mb-2 mr-2">
+                    <div class="form-select-wrapper">
+                        <select id="recurrence"
+                                class="form-select">
+                            <option value="never">Never</option>
+                            <option value="minutes">Every 10 minutes…</option>
+                            <option value="hourly">Every hour at…</option>
+                            <option value="daily">Every day at…</option>
+                            <option value="weekly">Every week at…</option>
+                            <option value="monthly">Every month on the…</option>
+                            <option value="cron">I know CRON…</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <div id="never" class="text-gray-500 is-hidden text-sm mt-1">
+                        This will disable this trigger so it never runs.
+                        <input class="form-input modal-value text-sm" value="@Cron.Never()" type="hidden" />
+                    </div>
+
+                    <div id="minutes" class="is-hidden">
+                        <div id="test" class="field">
+                            <input class="modal-value form-input" value="*/10 * * * *" type="hidden" />
+                        </div>
+                    </div>
+
+                    <div id="daily" class="is-hidden">
+                        <div class="field has-addons">
+                            <div class="form-select-wrapper">
+                                <cronhour class="cron-time modal-value form-select" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="hourly" class="is-hidden">
+                        <div class="field has-addons">
+                            <div class="flex items-center">
+                                <div class="form-select-wrapper">
+                                    <cronminute class="cron-time modal-value form-select" />
+                                </div>
+                                <span class="text-gray-500 ml-1 text-sm">Minutes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="weekly" class="is-hidden">
+                        <div class="field has-addons">
+                            <div class="control">
+                                <div class="form-select-wrapper">
+                                    <cronhour class="cron-time modal-value form-select" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="-ml-40">
+                            <partial name="Shared/_DayOfWeek"/>
+                        </div>
+                    </div>
+
+                    <div id="monthly" class="is-hidden">
+                        <div class="field is-grouped">
+                            <div class="control">
+                                <div class="form-select-wrapper">
+                                    <cronmonthday class="cron-month modal-value form-select" />
+                                </div>
+                            </div>
+                            <div class="control text">
+                                <div>at</div>
+                            </div>
+                            <div class="field has-addons">
+                                <div class="control">
+                                    <div class="form-select-wrapper">
+                                        <cronhour class="cron-time modal-value form-select" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="cron" class="is-hidden">
+                        <div class="field">
+                            <div class="control">
+                                <input
+                                    id="cron-schedule"
+                                    class="form-input modal-value"
+                                    type="text"
+                                    value="10 * * * *" />
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="control">
+                                <span data-cron="cron-schedule" class="cron-description text-gray-500 text-sm"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="flex p-4 mt-auto">
+            <div class="ml-auto">
+                <button class="btn" aria-label="close">Cancel</button>
+                <button class="btn btn-primary ml-2 modal-success-button">Done</button>
+            </div>
+        </footer>
+    </div>
+</div>

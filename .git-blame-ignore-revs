@@ -1,0 +1,20 @@
+# See https://www.moxio.com/blog/43/ignoring-bulk-change-commits-with-git-blame
+# This file lists commits SHAs that should be ignored in Git blame.
+# Right now, there's no "standard" for this, but you can use the file in your own local 'git blame' runs like this:
+#
+#  git blame --ignore-revs-file .git-blame-ignore-revs
+#
+# Many projects are aligning on a standard of having this '.git-blame-ignore-revs' file in the repo to store a default list of "ignored" revs
+# GitHub [now supports this as a standard](https://docs.github.com/en/repositories/working-with-files/using-files/viewing-a-file#ignore-commits-in-the-blame-view).
+
+# Auto-Reformat prior to enabling format check
+8066441cc907505b1b0e5b7c2e8411ffdd9b08ee
+
+# Manual naming fixes prior to enabling format check
+8bece02bd8a55226e6de510cea8aa946fde001ac
+
+# Changed insert_final_newline and reformatted entire solution
+6b735d3265e50796ce535866c88cd214e5bf4c61
+
+# Moved bunch of unit tests to a different project.
+1f4bae9be8618c86c26e240e1f0151aa4b8e8768

@@ -1,0 +1,30 @@
+@model SkillChainModel
+
+@if (Model.Items.Any()) {
+    <div class="columns mt-3">
+        <div class="column">
+            <div class="description text-gray-500 mb-1">
+                Signal chain <span class="has-tooltip-multiline" data-tooltip="This is the chain of signals raised by skills that lead to this skill run event."><i class="fa-light fa-circle-question more-info"></i></span>
+            </div>
+            <ul class="signal-chain">
+                @foreach (var skillEvent in Model.Items) {
+                    <li class="mb-1">
+                        <span class="font-semibold">
+                        @if (skillEvent.Identifier != Model.Identifier) {
+                                <code><i class="fa-regular fa-circle-play"></i> <a asp-route-id="@skillEvent.Identifier">@skillEvent.SourceSkill</a></code>
+                            } else {
+                                <code><i class="fa-regular fa-circle-play"></i> <text>@skillEvent.SourceSkill</text></code>
+                            }
+                        </span>
+                        &nbsp;via
+                        @if (skillEvent.Signal is not null) {
+                            <text>signal</text> <code><i class="fa-regular fa-signal-stream"></i> @skillEvent.Signal</code> <text>raised by</text>
+                        } else {
+                            <span class="italic">@skillEvent.Source</span>
+                        }
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+}

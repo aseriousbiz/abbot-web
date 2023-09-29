@@ -1,0 +1,88 @@
+﻿@page "/staff/tools/queries/{db}"
+@model Serious.Abbot.Pages.Staff.Tools.QueryDetailsModel
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Queries - Top", "Staff Top Queries");
+}
+
+<partial name="Staff/_Header"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+<partial name="_Header"/>
+
+<back-link asp-page="Queries">Back to Databases List</back-link>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">
+            Queries for @Model.Db
+            @if (!Model.Enabled)
+            {
+                <span class="tag is-danger">Not Configured</span>
+            }
+        </h2>
+
+        @if (Model.TopQueries.Count == 0)
+        {
+            <p>No queries found!</p>
+        }
+        else
+        {
+            <form>
+                <input type="hidden" asp-for="Filter.user" />
+                <label>
+                    <input type="checkbox" asp-for="Filter.system" />
+                    System?
+                </label>
+                <label>Include: <input type="text" asp-for="Filter.include" placeholder="include filter" /></label>
+                <label>Exclude: <input type="text" asp-for="Filter.exclude" placeholder="exclude filter" /></label>
+                <button type="submit">
+                    Filter
+                </button>
+            </form>
+            <table style="width: 100%; table-layout: fixed">
+                <thead>
+                    <tr>
+                        <th>query_type</th>
+                        <th>user_name</th>
+                        <th class="text-right">calls</th>
+                        <th class="text-right">total_time</th>
+                        <th class="text-right">min_time</th>
+                        <th class="text-right">max_time</th>
+                        <th class="text-right">mean_time</th>
+                        <th class="text-right">rows/call</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var filters = ModelState.ToDictionary(kvp => kvp.Key, kvp => kvp.Value?.RawValue?.ToStringInvariant() ?? "");
+                    }
+                    @foreach (var qs in Model.TopQueries)
+                    {
+                        <tr>
+                            <td>
+                                <details id="query-@qs.query_id">
+                                    <summary>@qs.query_type</summary>
+                                    <pre>@qs.query_sql_text</pre>
+                                </details>
+                            </td>
+                            <td>
+                                <a asp-all-route-data="filters" asp-route-Filter.user="@qs.usename">
+                                    @qs.usename
+                                </a>
+                                @if (qs.is_system_query == true)
+                                {
+                                    <i class="fa-light fa-database" title="System Query"></i>
+                                }
+                            </td>
+                            <td class="text-right">@Html.DisplayFor(_ => qs.calls)</td>
+                            <td class="text-right">@Html.DisplayFor(_ => qs.total_time)</td>
+                            <td class="text-right">@Html.DisplayFor(_ => qs.min_time)</td>
+                            <td class="text-right">@Html.DisplayFor(_ => qs.max_time)</td>
+                            <td class="text-right">@Html.DisplayFor(_ => qs.mean_time)</td>
+                            <td class="text-right">@Html.DisplayFor(_ => qs.rows_per_call)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </round-box>
+</page-body>

@@ -1,0 +1,105 @@
+<Project>
+    <PropertyGroup>
+        <LangVersion>11.0</LangVersion>
+        <Company>A Serious Business, Inc.</Company>
+        <Copyright>Copyright © 2021</Copyright>
+        <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+        <RootDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))</RootDir>
+        <CIBuild Condition=" '$(NBGV_CloudBuildNumber)' != '' or '$(GITHUB_SHA)' != '' ">true</CIBuild>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <RestoreLockedMode Condition=" '$(RestoreLockedMode)' == '' and '$(CIBuild)' == 'true' ">true</RestoreLockedMode>
+        <Nullable>enable</Nullable>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <AbbotMSBuildExtensions>$([System.IO.Path]::Combine($(RootDir), 'msbuild'))</AbbotMSBuildExtensions>
+        <DefaultTargetFramework>net7.0</DefaultTargetFramework>
+    </PropertyGroup>
+
+    <!-- Global Warning Suppressions -->
+    <PropertyGroup>
+        <!--
+            CS1998 - Async methods must have 'await' operator. 
+            The intent is good, but we often prototype async methods and having to put "Task.FromResult" everywhere is unnecessary.
+            We can use code review to ensure we don't have unnecessary async methods, and even when we DO have unnecessary 'async' methods, the impact is minor.
+        -->
+        <NoWarn>CS1998;$(NoWarn)</NoWarn>
+
+        <!--
+            The System.Uri Warnings.
+
+            I love System.Uri, you love System.Uri, we all love System.Uri.
+            But it has a time and a place.
+            When modelling APIs that provide URIs, we often need to model the URI as a string.
+            When representing relative URIs, it's a pain to use UriKind.
+            And 90% of the time, the URIs we have are opaque strings we're carrying from one place to another.
+            Let System.Uri be used when we need to have a _parsed_ URI.
+            Otherwise, let people use string.
+        -->
+        <NoWarn>CA1054;CA1055;CA1056;CA2234;$(NoWarn)</NoWarn>
+
+        <!--
+            Prefer ToUpper instead of ToLower.
+
+            Look, I get it.
+            ToLower isn't technically a safe way to do case-insensitive comparisons.
+            But it looks better in a lot of cases and we use it heavily.
+            It's also how you have to do case-insensitive comparison in Postgres.
+            We'll use code review to catch the bad cases.
+        -->
+        <NoWarn>CA1308;$(NoWarn)</NoWarn>
+
+        <!--
+            Use properties where appropriate
+
+            This frequently interferes with cases where we are _intentionally_ avoiding a property.
+            For example a more costly "GetFoo" method should not be replaced by a property named "Foo".
+        -->
+        <NoWarn>CA1024;$(NoWarn)</NoWarn>
+
+        <!--
+            Do not expose generic lists
+        -->
+        <NoWarn>CA1002;$(NoWarn)</NoWarn>
+        
+        <!--
+            Catch a more specific allowed exception type.
+        -->
+        <NoWarn>CA1031;$(NoWarn)</NoWarn>
+        
+        <!--
+            Type can be sealed.
+        -->
+        <NoWarn>CA1852;$(NoWarn)</NoWarn>
+
+        <!--
+            Follow the "Dispose Pattern"
+
+            This is only ever necessary if you're directly dealing with unmanaged resources.
+            We don't really do that, so just ignore it.
+        -->
+        <NoWarn>CA1063;CA1816;$(NoWarn)</NoWarn>
+
+        <!--
+            CA1304: Specify CultureInfo
+            CA11311: Specify a culture or use an invariant version
+
+            These are good warnings, but they don't apply when we're building an
+            expression to use as an EF Core query, and we do that a lot!
+        -->
+        <NoWarn>CA1304;CA1311;$(NoWarn)</NoWarn>
+
+
+        <!--
+        Operator overloads have named alternates. We don't care about other
+        languages right now.
+        -->
+        <NoWarn>CA2225;$(NoWarn)</NoWarn>
+
+        <!--
+          A project containing analyzers or source generators should specify the property
+          '<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>'
+
+          We're not an analyzers project.
+        -->
+        <NoWarn>RS1036;$(NoWarn)</NoWarn>
+    </PropertyGroup>
+</Project>

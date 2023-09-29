@@ -1,0 +1,65 @@
+@page
+@model Serious.Abbot.Pages.Settings.Rooms.CreateCustomersPage
+
+@{
+    ViewContext.SetPageInfo("Settings", "Rooms Customer Creation");
+}
+
+<page-header>
+    Create Customers for Rooms
+</page-header>
+
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+
+<page-body class="mt-4">
+    <div class="rounded border border-gray-300 bg-white p-2">
+        @if (Model.Rooms.Any()) {
+            <form method="post" data-controller="prefix-stripper">
+                <p class="p-2">
+                    The following customer names have been extracted from the room names.
+                    Feel free to edit them as needed.
+                </p>
+                <div class="p-2 border-b">
+                    <label asp-for="CommonPrefix">Common Prefix:</label>
+                    <input asp-for="CommonPrefix"
+                           class="form-input text-sm"
+                           data-prefix-stripper-target="prefix"/>
+                    <div class="text-xs text-gray-600">
+                        If most of the rooms have the same prefix, we'll guess the prefix and strip it from the
+                        beginning of each customer name.
+                        If we guessed wrong, feel free to edit the prefix and then fix up the names below. Only
+                        the rooms that have the prefix will be affected (the others are grayed out).
+                    </div>
+                </div>
+
+                @for (int i = 0; i < Model.CustomerNames.Count; i++) {
+                    var customerName = Model.CustomerNames[i];
+                    var room = Model.Rooms[i];
+                    <div class="p-2 border-b" role="row">
+                        <input asp-for="CustomerNames"
+                               value="@customerName"
+                               class="form-input text-sm"
+                               data-original-value="@customerName"
+                               data-prefix-stripper-target="input"/>
+                        <input asp-for="RoomIds" value="@room.Id" type="hidden" />
+
+                        <span class="text-gray-500">for #</span><a asp-page="Room" asp-route-roomId="@room.PlatformRoomId">@room.Name</a>
+                        @if (room.RoomType is not RoomType.PublicChannel) {
+                            <i class="fa-regular fa-lock text-gray-500 has-tooltip" data-tooltip="private channel"></i>
+                        }
+                        <span class="text-xs text-gray-500 hidden" role="note">This will be ignored</span>
+                    </div>
+                }
+                <div class="p-2">
+                    <button type="submit" class="btn btn-primary">Create customers</button>
+                    <span class="text-gray-500 text-xs">Leave a customer name blank to ignore it.</span>
+                </div>
+            </form>
+        } else {
+            <blankslate>
+                <div class="text-gray-500">All tracked rooms have an associated customer!</div>
+                <div>You&#8217;re all set!</div>
+            </blankslate>
+        }
+    </div>
+</page-body>

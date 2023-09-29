@@ -1,0 +1,36 @@
+@page "/settings/organization/users/{id}/restore"
+@model Serious.Abbot.Pages.Settings.Organization.Users.RestoreUserPage
+@{
+    ViewContext.SetPageInfo("Settings", "User Restore", "Restore user");
+}
+
+<partial name="../_Header" model="Model.Viewer"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold"><a asp-page="Index">Users</a> / @Model.Subject.DisplayName</h2>
+        <div class="mt-5">
+            <span class="font-semibold text-lg">Are you sure you want to restore @Model.Subject.DisplayName&#8217;s access to this site?</span>
+            <p class="italic">Restoring the user will add them to the <code>Agent</code> role.</p>
+        </div>
+        <div class="flex mt-5">
+            <img class="w-16 h-16 border-gray-300 border-4 rounded-full" src="@Model.Subject.User.Avatar" alt="" />
+            <div class="flex flex-col ml-3">
+                <div class="font-semibold">@Model.Subject.DisplayName</div>
+            </div>
+        </div>
+
+        @if (Model.HasEnoughPurchasedSeats) {
+            <form method="post" class="mt-5">
+                <button type="submit" class="btn btn-danger">Yes, restore @Model.Subject.DisplayName</button>
+                <a class="btn" asp-page="Index">No, take me back</a>
+            </form>
+        } else {
+            <partial name="_NotEnoughSeatsMessage" />
+            <p class="mt-5">
+                <a class="btn" asp-page="Index">Nevermind, take me back</a>
+            </p>
+        }
+    </round-box>
+</page-body>

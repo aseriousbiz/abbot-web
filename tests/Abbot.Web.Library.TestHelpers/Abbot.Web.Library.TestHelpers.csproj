@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <RootNamespace>Abbot.Common.TestHelpers</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\product\Abbot.Common\Abbot.Common.csproj" />
+      <ProjectReference Include="..\..\src\product\Abbot.Web.Library\Abbot.Web.Library.csproj" />
+      <ProjectReference Include="..\..\src\product\Abbot.Web\Abbot.Web.csproj" />
+      <ProjectReference Include="..\Serious.TestHelpers\Serious.TestHelpers.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+      <PackageReference Include="NSubstitute" />
+      <PackageReference Include="Verify.DiffPlex" />
+      <PackageReference Include="Verify.MassTransit" />
+      <PackageReference Include="Verify.MicrosoftLogging" />
+      <PackageReference Include="Verify.Xunit" />
+      <PackageReference Include="Verify.EntityFramework" />
+      <PackageReference Include="xunit.assert" />
+      <PackageReference Include="Meziantou.Xunit.ParallelTestFramework" />
+    </ItemGroup>
+
+</Project>

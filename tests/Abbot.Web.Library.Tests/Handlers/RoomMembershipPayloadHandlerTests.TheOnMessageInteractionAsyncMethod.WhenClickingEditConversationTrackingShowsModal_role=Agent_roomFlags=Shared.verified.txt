@@ -1,0 +1,65 @@
+﻿{
+  target: {
+    Room: {
+      Name: Test Room 4,
+      PlatformRoomId: C0004,
+      ManagedConversationsEnabled: false,
+      Persistent: true,
+      Shared: true,
+      RoomType: PublicChannel,
+      Deleted: false,
+      Archived: false,
+      BotIsMember: true,
+      Modified: 1999-01-02 03:04:05 Utc,
+      OrganizationId: 1,
+      Id: 1,
+      Created: 1999-01-02 03:04:05 Utc
+    },
+    TimeToRespond: {},
+    OpenModals: {
+      $type: Dictionary<string, ViewUpdatePayload>,
+      the-trigger-id: {
+        Title: {
+          Emoji: true,
+          Text: Conversation Tracking,
+          Type: plain_text
+        },
+        Close: {
+          Emoji: true,
+          Text: Close,
+          Type: plain_text
+        },
+        Blocks: [
+          {
+            $type: Section,
+            Text: {
+              $type: MrkdwnText,
+              Verbatim: false,
+              Text: :information_source: Abbot App is not tracking conversations in this room.,
+              Type: mrkdwn
+            },
+            Accessory: {
+              $type: ButtonElement,
+              Text: {
+                Emoji: true,
+                Text: Track conversations,
+                Type: plain_text
+              },
+              Style: primary,
+              ActionId: EnableConversationTracking,
+              Type: button
+            },
+            Type: section
+          }
+        ],
+        PrivateMetadata: C0004|https://example.com/callback,
+        CallbackId: i:RoomMembershipPayloadHandler,
+        ClearOnClose: false,
+        NotifyOnClose: false,
+        SubmitDisabled: false,
+        Type: modal
+      }
+    },
+    AnalyticsClient: {}
+  }
+}

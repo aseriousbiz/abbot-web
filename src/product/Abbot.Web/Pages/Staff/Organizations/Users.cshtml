@@ -1,0 +1,56 @@
+@page "/staff/organizations/{id}/users"
+@model Serious.Abbot.Pages.Staff.Organizations.UsersPage
+
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Organization Users", $"Users for {Model.Organization.Name}");
+}
+
+<page-body>
+    <round-box>
+        <div class="mt-5 bg-yellow-200 p-4">
+            <p>Refresh @Model.MemberCount.ToQuantity("user")</p>
+            <form method="post">
+                <button class="btn btn-danger" type="submit" data-tooltip="This will iterate all users, query the Slack API, and try to refresh our database with values from the API.">Resync Database Values from Chat Platform</button>
+            </form>
+        </div>
+    </round-box>
+
+    <round-box>
+        <h2 class="text-3xl font-semibold">Admins</h2>
+        <partial name="_UsersTable" model="Model.Admins" />
+        <partial name="_Paginator" model="Model.Admins" />
+
+        <h2 class="text-3xl font-semibold mt-5">Pending</h2>
+        <partial name="_UsersTable" model="Model.Pending" />
+        <partial name="_Paginator" model="Model.Pending" />
+
+        <h2 class="text-3xl font-semibold mt-5">Members</h2>
+        <partial name="_UsersTable" model="Model.Members" />
+        <partial name="_Paginator" model="Model.Members" />
+
+        <h2 class="text-3xl font-semibold mt-5">Archived</h2>
+        <partial name="_UsersTable" model="Model.Inactive" />
+        <partial name="_Paginator" model="Model.Inactive" />
+    </round-box>
+
+    <round-box>
+        <strong>Everything below should not be seen in customers settings page.</strong>
+        <h2 class="text-3xl font-semibold mt-5">Other Known Users</h2>
+        <p class="text-sm">These are users known to Abbot via Slack, but who have not logged in to the website.</p>
+        <partial name="_UsersTable" model="Model.Known" />
+        <partial name="_Paginator" model="Model.Known" />
+
+        <h2 class="text-3xl font-semibold mt-5">Corrupt Foreign Users</h2>
+        <p class="text-sm">These are users which were incorrectly assigned to this org, but who have a team ID that doesn't match this org.</p>
+        <partial name="_UsersTable" model="Model.Foreign" />
+        <partial name="_Paginator" model="Model.Foreign" />
+
+        <h2 class="text-3xl font-semibold mt-5">Guests</h2>
+        <partial name="_UsersTable" model="Model.Guests" />
+        <partial name="_Paginator" model="Model.Guests" />
+
+        <h2 class="text-3xl font-semibold mt-5">Bots</h2>
+        <partial name="_UsersTable" model="Model.Bots" />
+        <partial name="_Paginator" model="Model.Bots" />
+    </round-box>
+</page-body>

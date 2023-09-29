@@ -1,0 +1,47 @@
+﻿{
+  target: {
+    BusTestHarness: {
+      Messages: [
+        {
+          Published: PublishConversationNotification,
+          MessageId: Guid_1,
+          ConversationId: Guid_2,
+          DestinationAddress: Serious.Abbot.Eventing.Messages:PublishConversationNotification,
+          Message: {
+            OrganizationId: 1,
+            ConversationId: 1,
+            Notification: {
+              Type: TicketError,
+              Icon: 🎫,
+              Headline: Ticket Error,
+              Message:
+<@Uforeign> could not create Fake Ticketing ticket for <https://example.com/|this conversation>.
+
+The ticket may have been created, but I can't find its link. Contact 'support@ab.bot' if you're stuck.,
+              MentionGroups: [
+                {
+                  RecipientType: FirstResponder
+                }
+              ]
+            },
+            Broadcast: false
+          }
+        }
+      ]
+    },
+    AnalyticsClient: {
+      Tracked: {
+        (6, Ticket Created): {
+          feature: Integrations,
+          integration: fake-ticketing,
+          organization: 1,
+          organization_name: Test Organization,
+          plan: Unlimited,
+          platform_id: Thome,
+          reason: null,
+          success: true
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+@model RoomPage
+
+@if (!Model.FirstResponders.Members.Any() && Model.DefaultFirstResponders.Any()) {
+    <div class="mt-1">
+        <p><i class="fa-solid fa-triangle-exclamation"></i> This room has no first responders assigned.</p>
+        <div class="text-black flex-row">
+            <em>The <a asp-page="Index" asp-fragment="default-first-responders">default first responders</a></em>
+            @foreach (var firstResponder in Model.DefaultFirstResponders) {
+                <partial name="Shared/_SmallAvatar" model="firstResponder.User"/>
+            }
+            <em> will be notified instead.</em>
+        </div>
+    </div>
+} else {
+    <div class="flex gap-2">
+
+        <span class="text-gray-500">Time coverage:</span>
+        @if (Model.FirstResponderCoverage.Any()) {
+            @foreach (var (i, coverage) in Model.FirstResponderCoverage.Enumerate()) {
+                var value = coverage.Humanize();
+                if (i < Model.FirstResponderCoverage.Count - 1) {
+                    value += ", ";
+                }
+                <span class="font-semibold">@value</span>
+            }
+            <span class="font-semibold">@(Model.Viewer.TimeZoneId ?? "UTC")</span>
+        } else {
+            <span class="font-semibold">None</span>
+        }
+    </div>
+}
+
+<partial name="_RespondersList" model="Model.FirstResponders"/>

@@ -1,0 +1,24 @@
+{
+  "token": "REDACTED_TOKEN",
+  "team_id": "T013108BYLS",
+  "api_app_id": "A01TG9GPJQ3",
+  "event": {
+    "type": "team_rename",
+    "name": "A Serious Business",
+    "team_id": "T000000001",
+    "event_ts": "1641494657.198900"
+  },
+  "type": "event_callback",
+  "event_id": "Ev02T2D2EKRA",
+  "event_time": 1641494657,
+  "authorizations": [
+    {
+      "enterprise_id": null,
+      "team_id": "T013108BYLS",
+      "user_id": "U01TG976JSW",
+      "is_bot": true,
+      "is_enterprise_install": false
+    }
+  ],
+  "is_ext_shared_channel": false
+}

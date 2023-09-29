@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\functions\Abbot.Functions.DotNet\Abbot.Functions.DotNet.csproj" />
+      <ProjectReference Include="..\Abbot.Functions.TestHelpers\Abbot.Functions.TestHelpers.csproj" />
+      <ProjectReference Include="..\Serious.TestHelpers\Serious.TestHelpers.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="NSubstitute" />
+        <PackageReference Include="xunit.analyzers" />
+        <PackageReference Include="xunit.core" />
+        <PackageReference Include="xunit.runner.visualstudio">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="xunit.assert" />
+        <PackageReference Include="coverlet.collector">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Meziantou.Xunit.ParallelTestFramework" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Scripting\Compilers\AssemblyCompilationCacheTests.cs" />
+    </ItemGroup>
+</Project>

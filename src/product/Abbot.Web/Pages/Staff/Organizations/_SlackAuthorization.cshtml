@@ -1,0 +1,70 @@
+﻿@model Serious.Abbot.Integrations.SlackApp.SlackAuthorization
+@inject PlatformRequirements PlatformRequirements
+@if (Model is null)
+{
+    <em>Not Set Up</em>
+    return;
+}
+
+<div class="grid gap-2 items-baseline" style="grid-template-columns: max-content 1fr;">
+    <label><span asp-display-name-for="AppId"></span>:</label>
+    <span>
+        <code>@Model.AppId</code>
+    </span>
+    <label><span asp-display-name-for="AppName"></span>:</label>
+    <span>
+        <code>@Model.AppName</code>
+    </span>
+    <label><span asp-display-name-for="ApiToken"></span>:</label>
+    <span>
+        @(Model.ApiToken is { Empty: false } ? "✅" : "❌")
+    </span>
+    <label><span asp-display-name-for="BotId"></span>:</label>
+    <span>
+        <code>@Model.BotId</code>
+    </span>
+    <label><span asp-display-name-for="BotUserId"></span>:</label>
+    <span>
+        <code>@Model.BotUserId</code>
+    </span>
+    <label><span asp-display-name-for="BotName"></span>:</label>
+    <span>
+        <code>@Model.BotName</code>
+    </span>
+    <label><span asp-display-name-for="BotAvatar"></span>:</label>
+    <span>
+        <code>@Model.BotAvatar</code>
+        @if (Model.BotAvatar is { } botAvatar) {
+            <img src="@botAvatar" alt="@botAvatar" width="72"/>
+        }
+    </span>
+    @if (Model.BotResponseAvatar is { } botResponseAvatar) {
+        <label><span asp-display-name-for="BotResponseAvatar"></span>:</label>
+        <span>
+            <code>@botResponseAvatar</code>
+            <img src="@botResponseAvatar" alt="@botResponseAvatar" width="72"/>
+        </span>
+    }
+    <label><span asp-display-name-for="Scopes"></span>:</label>
+    <details>
+        <summary>
+            @if (Model.Scopes is null or "") {
+                <text>❌</text>
+            } else if (PlatformRequirements.MissingScopes(Model).ToList() is { Count: > 0 } missing)
+            {
+                <text>
+                    ⚠️ Missing:
+                    <code>@(string.Join(",", missing))</code>
+                </text>
+            } else
+            {
+                <text>✅</text>
+            }
+        </summary>
+        <ul>
+        @foreach(var scope in (Model.Scopes ?? "").Split(',')) {
+            <li><code>@scope</code></li>
+        }
+        </ul>
+    </details>
+</div>

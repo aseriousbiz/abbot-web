@@ -1,0 +1,30 @@
+@page "/skills/{skill}/triggers/{trigger}/{triggerType}/activity/{id}"
+@model Serious.Abbot.Pages.Activity.DetailsModel
+
+@{
+    ViewContext.SetPageInfo("Activity", "Activity Detail");
+}
+
+<header class="page-header">
+    <div class="container">
+        <div class="mb-4">
+            <small>
+                <i class="fa-light fa-arrow-left"></i>
+                Back to
+                <a asp-page="Index"
+                    asp-route-skill="@RouteData.Values["skill"]"
+                    asp-route-trigger="@RouteData.Values["trigger"]"
+                    asp-route-triggerType="@RouteData.Values["triggerType"]">
+                    Triggers
+                </a>
+            </small>
+        </div>
+        <h1 class="title is-3">Details for activity @Model.AuditEvent.Identifier</h1>
+    </div>
+</header>
+
+<section class="section">
+    <div class="container">
+        <partial name="Shared/Activity/_DetailsPage" />
+    </div>
+</section>

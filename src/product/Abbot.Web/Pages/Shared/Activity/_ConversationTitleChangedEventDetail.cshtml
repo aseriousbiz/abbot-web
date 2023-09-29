@@ -1,0 +1,66 @@
+@using Serious.Abbot.Messaging
+@using Serious.Abbot.Infrastructure.TagHelpers
+@model Serious.Abbot.Pages.Activity.DetailsModel
+@inject IMessageRenderer Renderer
+@{
+  var auditEvent = Model.AuditEvent as ConversationTitleChangedEvent
+        ?? throw new InvalidOperationException($"AuditEvent is not a {nameof(ConversationTitleChangedEvent)}.");
+
+    var oldTitle = await Renderer.RenderMessageAsync(auditEvent.OldTitle, auditEvent.Organization);
+    var newTitle = await Renderer.RenderMessageAsync(auditEvent.NewTitle, auditEvent.Organization);
+}
+
+<div class="p-4">
+    <header>
+        <h1 class="mb-2 text-gray-500">Summary</h1>
+    </header>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div>
+            <partial name="Shared/Activity/_OccurrenceDetails" model="auditEvent"/>
+        </div>
+
+        <div>
+            <h2 class="font-bold text-sm mb-1">Type</h2>
+            <div>
+                Conversation Title Changed
+            </div>
+        </div>
+
+        <div>
+            <h2 class="font-bold text-sm mb-1">Actor</h2>
+            <div>
+                <partial name="Shared/Activity/_UserDetail" model="@auditEvent.Actor" />
+            </div>
+        </div>
+
+        <div>
+            <h2 class="font-bold text-sm mb-1">Old Title</h2>
+            <div>
+                <message-renderer message="@oldTitle" />
+            </div>
+        </div>
+
+        <div>
+            <h2 class="font-bold text-sm mb-1">New Title</h2>
+            <div>
+                <message-renderer message="@newTitle" />
+            </div>
+        </div>
+
+        <div>
+            <h2 class="font-bold text-sm mb-1">Current Title</h2>
+            <div>
+                @if (Model.Conversation is not null) {
+                    var currentTitle = await Renderer.RenderMessageAsync(Model.Conversation.Title, Model.Organization);
+                    <a asp-page="/Conversations/View" asp-route-conversationId="@Model.Conversation.Id" class="text-blue-500">
+                        <message-renderer message="@currentTitle" />
+                    </a>
+                } else {
+                    <em>This conversation has since been deleted.</em>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>

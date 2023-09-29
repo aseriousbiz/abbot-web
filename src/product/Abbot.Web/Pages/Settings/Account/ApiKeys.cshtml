@@ -1,0 +1,87 @@
+@page "{id?}/{handler?}"
+@model Serious.Abbot.Pages.Settings.Account.ApiKeysPage
+
+@{
+    ViewContext.SetPageInfo("Settings", "API Keys");
+}
+
+<partial name="_Header" model="Model.Viewer" />
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage" />
+
+<page-body>
+    <round-box>
+        <h2 class="text-xl font-semibold">API Keys</h2>
+        <p>
+            An API key is a token that can identify you to Abbot.
+        </p>
+        <p>
+            The Abbot command-line utility allows you to download, edit, and submit skills to Abbot using your API key to authenticate.
+        </p>
+
+        @if (Model.CreatedOrRegeneratedApiKeyId > 0) {
+            <div class="bg-yellow-200 mt-5 p-3 rounded-lg flex flex-col">
+                @if (!Model.Regenerated) {
+                    <p>
+                        A new API key has been created.
+                    </p>
+                } else {
+                    <p>
+                        Your API key has been regenerated.
+                    </p>
+                }
+                <p>
+                    Make sure to copy your new API key now using the <i class="fa-regular fa-clipboard"></i> <span class="font-semibold">Copy</span> button below. You will not be able to do so again.
+                </p>
+            </div>
+        }
+
+        <div class="border border-gray-300 bg-white rounded-lg shadow-sm mt-5 overflow-auto whitespace-nowrap">
+            <table class="w-full">
+                <thead>
+                <tr>
+                    <th class="text-left border-b p-3">Name</th>
+                    <th class="text-left border-b p-3">Key</th>
+                    <th class="text-left border-b p-3">Expires</th>
+                    <th class="text-left border-b p-3"></th>
+                </tr>
+                </thead>
+                <tbody id="@ApiKeysPage.ApiKeysContainerId">
+                @foreach (var key in Model.ApiKeys)
+                {
+                    <partial name="_ApiKeyRow" model="key" />
+                }
+                </tbody>
+            </table>
+        </div>
+    </round-box>
+
+    <round-box>
+        <h3 class="text-xl font-semibold">Create a new API key</h3>
+        <form method="post" class="mt-2 flex flex-col">
+            <label class="font-semibold" asp-for="Input.Name"></label>
+            <input class="form-input" asp-for="Input.Name" data-val-event="change"/>
+            <p>
+                <small>Provide a friendly name to help you remember where you are using this key.</small>
+            </p>
+
+            <div class="flex items-center mt-2">
+                <label class="mt-2 font-semibold" asp-for="Input.ExpiresIn"></label>
+                <div class="ml-2">
+                    <div class="form-select-wrapper">
+                        <select class="form-select" asp-for="Input.ExpiresIn">
+                            <option value="1">1 day</option>
+                            <option value="90">90 days</option>
+                            <option value="180">180 days</option>
+                            <option value="270">270 days</option>
+                            <option value="365">365 days</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-2">
+                <button class="btn btn-primary" type="submit">Create</button>
+            </div>
+        </form>
+    </round-box>
+</page-body>

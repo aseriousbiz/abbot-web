@@ -1,0 +1,25 @@
+name: Add Issue/PR To Project
+
+on:
+  issues:
+    types: [opened]
+  pull_request:
+    types: [opened]
+
+jobs:
+  add-issue-to-project:
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: GitHub App token
+        id: generate_token
+        uses: tibdex/github-app-token@v1.7.0
+        with:
+          app_id: ${{ secrets.SERIOUSBOT_APPID }}
+          private_key: ${{ secrets.SERIOUSBOT_KEY }}
+      - name: Check out the repo
+        uses: actions/checkout@v3.1.0
+      - uses: actions/add-to-project@v0.3.0
+        with:
+          project-url: https://github.com/orgs/aseriousbiz/projects/6
+          github-token: ${{ steps.generate_token.outputs.token }}

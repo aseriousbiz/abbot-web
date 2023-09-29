@@ -1,0 +1,112 @@
+@page "/skills/create/{language}"
+@model Serious.Abbot.Pages.Skills.CreatePage
+@{
+    var language = Model.Language == CodeLanguage.CSharp
+        ? "C#"
+        : Model.Language.ToString();
+    var name = Model.Input.Name;
+    var saveButtonLabel = Model.PackageBeingInstalled is not null
+        ? "Create skill from package"
+        : "Create skill";
+
+    var gridStyles = Model.PackageBeingInstalled is not null
+        ? "sm:grid grid-cols-4"
+        : "";
+    ViewContext.SetPageInfo("Skills", "Skill Create", saveButtonLabel);
+}
+
+<div class="mx-auto">
+    <div class="border border-gray-300 m-8 bg-white">
+        <header class="mx-2 mt-2">
+            <h1 class="bg-blue-50 px-2 font-semibold text-lg">
+                @if (Model.PackageBeingInstalled is not null) {
+                    <text>Install @language package: <span class="font-mono">@name</span></text>
+                } else {
+                    <text>
+                        Create @language skill
+                        @if(language is "Ink") {
+                            <span class="preview-pill text-lg">
+                                Preview
+                            </span>
+                        }
+                    </text>
+                }
+            </h1>
+        </header>
+
+        <section>
+            <div id="status-message">
+                <partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+            </div>
+
+            <div class="@gridStyles">
+                <form method="post" class="col-span-2 p-2 sm:border-r border-gray-200">
+                    <input type="hidden" asp-for="Input.Type"/>
+                    <div class="px-2">
+                        <div asp-validation-summary="ModelOnly"></div>
+
+                        <div class="mb-3">
+                            <label class="form-label font-semibold mb-0" asp-for="Input.Name"></label>
+                            <p class="text-gray-500 text-sm mb-1">Required. This is how you call the skill.</p>
+                            <span asp-validation-for="Input.Name"></span>
+                            <input class="form-input" id="skillName" asp-for="Input.Name" data-val-event="change"/>
+                        </div>
+
+                        <div class="my-3">
+                            <label class="form-label font-semibold mb-0" asp-for="Input.Description"></label>
+                            <p class="text-gray-500 text-sm mb-1">Let people know what the skill does. This also shows up when using the <span class="font-mono font-semibold text-sm bg-gray-50 border border-gray-300 rounded px-1 py-0.5">help</span> skill.</p>
+                            <span asp-validation-for="Input.Description"></span>
+                            <input class="form-input w-full" asp-for="Input.Description" />
+                        </div>
+
+                        <div class="my-3">
+                            <label class="form-label font-semibold mb-0" asp-for="Input.Usage"></label>
+                            <p class="text-sm text-gray-500 mb-1">It can be helpful to think through the user interface of a skill before writing it. However, it's fine to save this for later.</p>
+                            <span asp-validation-for="Input.Usage"></span>
+                            <div class="control">
+                                <textarea
+                                    class="form-input w-full"
+                                    asp-for="Input.Usage"
+                                    placeholder="Provide examples of usage. Simple markdown formatting allowed such as using backticks ` to surround the usage example and _ to surround the description of what the usage example does.">
+                                </textarea>
+                            </div>
+                        </div>
+
+                        <div class="my-3">
+                            <div class="flex justify-end">
+                                @if (Model.PackageBeingInstalled is not null)
+                                {
+                                    <a asp-page="/Packages/Details"
+                                       asp-route-organization="@Model.PackageBeingInstalled.OrganizationSlug"
+                                       asp-route-name="@Model.PackageBeingInstalled.Name"
+                                       class="btn flex-shrink-0">Cancel</a>
+                                }
+                                else
+                                {
+                                    <a class="btn flex-shrink-0" asp-page="Index">Cancel</a>
+                                }
+                                <button id="saveButton"
+                                        class="btn btn-primary ml-2"
+                                        type="submit">
+                                    @saveButtonLabel
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                @if (Model.PackageBeingInstalled is not null) {
+                    <div class="py-2 px-3 col-span-2">
+                        <h2 class="font-semibold">Code preview</h2>
+                        <p class="text-sm text-gray-500">Code from a package cannot be modified during installation</p>
+                        <textarea
+                            class="code-viewer"
+                            data-readonly="true"
+                            data-language="@Model.Language">@Model.Code</textarea>
+                    </div>
+                }
+            </div>
+        </section>
+    </div>
+</div>

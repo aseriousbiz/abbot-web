@@ -1,0 +1,45 @@
+{
+  "type": "block_actions",
+  "user": {
+    "id": "U012LKJFG0P",
+    "username": "haacked",
+    "name": "haacked",
+    "team_id": "T013108BYLS"
+  },
+  "api_app_id": "A01TG9GPJQ3",
+  "token": "AUBq0lzDhvfWfOieKqkC1l7D",
+  "container": {
+    "type": "message",
+    "message_ts": "1649469609.041200",
+    "channel_id": "C01A3DGTSP9",
+    "is_ephemeral": true
+  },
+  "trigger_id": "3370619278612.1103008406706.e969c4695e1214a04c1876572493bb72",
+  "team": {
+    "id": "T013108BYLS",
+    "domain": "aseriousbiz"
+  },
+  "is_enterprise_install": false,
+  "channel": {
+    "id": "C01A3DGTSP9",
+    "name": "haacked-playground"
+  },
+  "state": {
+    "values": {}
+  },
+  "response_url": "https://example.com/stae",
+  "actions": [
+    {
+      "action_id": "8agr",
+      "block_id": "b:forget",
+      "text": {
+        "type": "plain_text",
+        "text": "Yes",
+        "emoji": true
+      },
+      "value": "test --force",
+      "type": "button",
+      "action_ts": "1649469639.830652"
+    }
+  ]
+}

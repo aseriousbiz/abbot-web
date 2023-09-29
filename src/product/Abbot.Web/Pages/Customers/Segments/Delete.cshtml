@@ -1,0 +1,36 @@
+@page "{id:int}"
+@model Serious.Abbot.Pages.Customers.Segments.DeletePage
+
+@{
+    ViewContext.SetPageInfo("Settings", "Delete Customer Segment");
+}
+
+<page-header>
+    <div class="flex items-center mb-4">
+        <a asp-page="../Index">Customers</a><span class="mx-1">/</span> <a asp-page="Index">Segments</a> <span class="mx-1">/</span> Delete @Model.Segment.Name
+    </div>
+</page-header>
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <div class="mt-5">
+            <span class="font-semibold text-lg">
+                Are you sure you want to delete the <pill size="Medium">@Model.Segment.Name</pill> customer segment?
+            </span>
+            <p class="italic">
+                Deleting this segment will remove it from @Model.Segment.Assignments.Count.ToQuantity("customer").
+            </p>
+        </div>
+        <div class="flex mt-5">
+            <div class="flex flex-col ml-3">
+                <div class="font-semibold">@Model.Segment.Name</div>
+            </div>
+        </div>
+        <form method="post" class="mt-5">
+            <button type="submit" class="btn btn-danger">Yes, delete @Model.Segment.Name</button>
+            <a class="btn btn-primary" asp-page="Index">No, take me back</a>
+        </form>
+    </round-box>
+</page-body>

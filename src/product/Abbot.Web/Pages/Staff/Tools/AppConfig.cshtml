@@ -1,0 +1,348 @@
+@page
+@using Microsoft.Extensions.Configuration
+@using Microsoft.FeatureManagement.FeatureFilters
+@using System.Runtime.InteropServices
+@using Microsoft.Extensions.Diagnostics.HealthChecks
+@model Serious.Abbot.Pages.Staff.Tools.AppConfigModel
+@{
+    ViewContext.SetPageInfo("Staff", "Staff App Config");
+}
+
+<partial name="Staff/_Header"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+<partial name="_Header"/>
+
+<page-body>
+    <round-box>
+        <div class="flex">
+            <img class="w-16 h-16 border-gray-300 border-4 rounded-full" src="/img/logo-abbot-login-58x58.png"/>
+            <div class="flex flex-col ml-3">
+                <div><span class="font-semibold">@Program.BuildMetadata.Name</span>, running in the <code>@Model.EnvironmentName</code> environment since <em title="@Model.StartTime.ToString("O")">@Model.StartTime.Humanize()</em></div>
+                <div>
+                    <span class="font-semibold">@Program.BuildMetadata.Configuration</span> Build,
+                    Version <span class="font-semibold">@Program.BuildMetadata.InformationalVersion</span>
+                    (from <a target="_blank" href="https://github.com/aseriousbiz/abbot/commit/@Program.BuildMetadata.CommitId"><code>@Program.BuildMetadata.CommitId?[..8]…</code><i class="fa fa-external-link"></i></a>
+                     @if (Program.BuildMetadata.PullRequestNumber is {} pullRequestNumber) {
+                         <text>in <a target="_blank" href="https://github.com/aseriousbiz/abbot/pull/@pullRequestNumber">PR #@pullRequestNumber</a></text>
+                     }
+                     else if (Program.BuildMetadata.Branch is not null or "") {
+                         <text>on <a target="_blank" href="https://github.com/aseriousbiz/abbot/commits/@Program.BuildMetadata.Branch">Branch <code>@Program.BuildMetadata.Branch</code></a></text>
+                     }
+                     <text>built <em>@Program.BuildMetadata.BuildDate.Humanize()</em>)</text>
+                </div>
+                <div>
+                    Running on <span class="font-semibold">@RuntimeInformation.FrameworkDescription @RuntimeInformation.RuntimeIdentifier</span> (in <code>@Model.DotNetRuntimePath</code>).
+                    @if (Model.DotNetReleaseChannel is not null) {
+                        <span>a <code>@Model.DotNetReleaseChannel.SupportPhase</code> release</span>
+                        @if (Model.DotNetReleaseChannel.EndOfLifeDate is {} endOfLifeDate) {
+                            <span>reaching end-of-life <span class="font-semibold">@endOfLifeDate.Humanize()</span></span>
+                        }
+                    }
+                </div>
+                <div>Content Root Path: <code>@Model.ContentRootPath</code></div>
+                @if (Model.DataProtectionAppDiscriminator is {Length: >0}) {
+                    <div>Data Protection Discriminator: <code>@Model.DataProtectionAppDiscriminator</code></div>
+                }
+                @if (Model.DotNetReleaseChannel is {LatestRuntime: {Length: >0} latestRuntime, LatestReleaseDate: {} latestReleaseDate } && latestRuntime != Environment.Version.ToString()) {
+                    <div class="text-red-500">.NET @latestRuntime was released @latestReleaseDate.Humanize()</div>
+                }
+            </div>
+        </div>
+    </round-box>
+
+    <round-box>
+        <h2 class="text-3xl font-semibold">Application Health</h2>
+        <div class="hard-box mt-5">
+            <table class="w-full">
+                <thead>
+                <tr>
+                    <th class="text-left border-b p-3">Check</th>
+                    <th class="text-left border-b p-3">Status</th>
+                    <th class="text-left border-b p-3">Duration</th>
+                    <th class="text-left border-b p-3">Details</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var (name, report) in Model.HealthReport.Entries) {
+                    <tr>
+                        <td class="align-middle p-3">@name</td>
+                        @if (report.Status == HealthStatus.Healthy) {
+                            <td class="align-middle p-3">✅Healthy</td>
+                        } else if (report.Status == HealthStatus.Degraded) {
+                            <td class="align-middle p-3">⚠️Degraded</td>
+                        } else {
+                            <td class="align-middle p-3">❌Unhealthy</td>
+                        }
+                        <td class="align-middle p-3">
+                            @report.Duration.Humanize()
+                        </td>
+                        <td class="align-middle p-3">
+                            @if(report.Description is {Length: >0}) {
+                                <div class="text-sm">@report.Description</div>
+                            }
+                            @if (report.Exception is not null) {
+                                <pre>@report.Exception.ToString()</pre>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </round-box>
+
+    <round-box>
+        <h2 class="text-3xl font-semibold">Completed Data Seeders</h2>
+        <div class="hard-box mt-5">
+            <ul class="p-3">
+                @foreach(var seeder in Model.CompletedDataSeeders) {
+                    var splat = seeder.Split('|');
+                    <li><code>@splat[0]</code> version <code>@splat[1]</code></li>
+                }
+            </ul>
+        </div>
+
+        <h2 class="text-3xl font-semibold mt-5">Latest Migrations</h2>
+        <div class="hard-box mt-5">
+            <ul class="p-3">
+                @foreach(var migrationId in Model.LatestMigrations)
+                {
+                    <li><code>@migrationId</code></li>
+                }
+            </ul>
+        </div>
+    </round-box>
+
+    <round-box>
+        <h2 class="text-3xl font-semibold">Features</h2>
+        <div class="hard-box mt-5">
+            <table class="w-full">
+                <thead>
+                <tr>
+                    <th class="text-left border-b p-3">Name</th>
+                    <th class="text-left border-b p-3">Enabled for You?</th>
+                    <th class="text-left border-b p-3">Enabled For?</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var feature in Model.Features)
+                {
+                    <tr>
+                        <td class="align-middle p-3">@feature.Name</td>
+                        <td class="align-middle p-3">
+                            <feature name="@feature.Name">
+                                Yes
+                            </feature>
+                            <feature name="@feature.Name" negate="true">
+                                No
+                            </feature>
+                        </td>
+                        <td class="align-middle p-3">
+                            @if (feature.EnabledFor.Any(f => f.Name == "AlwaysOn"))
+                            {
+                                <strong>Everyone - 100%</strong>
+                            }
+                            else
+                            {
+                                <ul>
+                                    @foreach (var filter in feature.EnabledFor)
+                                    {
+                                        if (filter.Name == "Microsoft.Targeting")
+                                        {
+                                            var settings = filter.Parameters.Get<TargetingFilterSettings>();
+                                            if (settings is { Audience: not null })
+                                            {
+                                                if (settings.Audience.Users is not null)
+                                                {
+                                                    foreach (var user in settings.Audience.Users)
+                                                    {
+                                                        <li>@user - 100%</li>
+                                                    }
+                                                }
+
+                                                if (settings.Audience.Groups is not null)
+                                                {
+                                                    foreach (var group in settings.Audience.Groups)
+                                                    {
+                                                        <li>@group.Name - @(group.RolloutPercentage)%</li>
+                                                    }
+                                                }
+                                                <li><strong>Everyone else</strong> - @(settings.Audience.DefaultRolloutPercentage)%</li>
+                                            }
+                                        }
+                                    }
+                                </ul>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.YourActor is not null) {
+            var targetingContext = Model.YourActor.GetTargetingContext();
+            <h3 class="text-2xl font-semibold mt-5">Your Feature Actor</h3>
+
+            <div class="mt-5 grid gap-2" style="grid-template-columns: max-content 1fr;">
+                <span class="font-semibold">User ID:</span>
+                <span><code>@targetingContext.UserId</code></span>
+                @foreach (var group in targetingContext.Groups) {
+                    <span class="font-semibold">Group:</span>
+                    <span><code>@group</code></span>
+                }
+            </div>
+        }
+    </round-box>
+
+    <round-box>
+        <h2 class="text-3xl font-semibold">Database Connection</h2>
+
+        <div class="hard-box mt-5">
+            <table class="w-full">
+                <thead>
+                <tr>
+                    <th class="text-left border-b p-3">Name</th>
+                    <th class="text-left border-b p-3">Value</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="align-middle p-3">Host</td>
+                        <td class="align-middle p-3"><code>@Model.DatabaseHost</code></td>
+                    </tr>
+                    <tr>
+                        <td class="align-middle p-3">Port</td>
+                        <td class="align-middle p-3"><code>@Model.DatabasePort</code></td>
+                    </tr>
+                    <tr>
+                        <td class="align-middle p-3">Database</td>
+                        <td class="align-middle p-3"><code>@Model.DatabaseName</code></td>
+                    </tr>
+                    <tr>
+                        <td class="align-middle p-3">User</td>
+                        <td class="align-middle p-3"><code>@Model.DatabaseUser</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </round-box>
+
+    <round-box>
+        <h2 class="text-3xl font-semibold">Environment</h2>
+
+        <div class="hard-box mt-5">
+            <table class="w-full">
+                <thead>
+                <tr>
+                    <th class="text-left border-b p-3">Name</th>
+                    <th class="text-left border-b p-3">Value</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var setting in Model.ConfigValues)
+                {
+                    <tr>
+                        <td class="align-middle p-3">@setting.Key</td>
+                        <td class="align-middle p-3">@setting.Value</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </round-box>
+
+    <round-box>
+        <h2 class="text-3xl font-semibold">Hosts</h2>
+
+        <div class="hard-box mt-5">
+            <table class="w-full">
+                <thead>
+                <tr>
+                    <th class="text-left border-b p-3">Name</th>
+                    <th class="text-left border-b p-3">Value(s)</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="align-middle p-3">@(nameof(AllowedHosts.Web))</td>
+                        <td class="align-middle p-3">
+                            <ul>
+                                <li>
+                                    <pill size="Small">Default</pill>
+                                    <a href="https://@(WebConstants.DefaultHost)/">
+                                        <code>@(WebConstants.DefaultHost)</code>
+                                    </a>
+                                </li>
+                                @foreach(var host in AllowedHosts.Web) {
+                                    <li><a href="https://@host/"><code>@host</code></a></li>
+                                }
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="align-middle p-3">@(nameof(AllowedHosts.Api))</td>
+                        <td class="align-middle p-3">
+                            <ul>
+                                @foreach(var host in AllowedHosts.Api) {
+                                    <li><a href="https://@host/"><code>@host</code></a></li>
+                                }
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="align-middle p-3">@(nameof(AllowedHosts.Ingestion))</td>
+                        <td class="align-middle p-3">
+                            <ul>
+                                <li>
+                                    <pill size="Small">Default</pill>
+                                    <a href="https://@(WebConstants.DefaultIngestionHost)/">
+                                        <code>@(WebConstants.DefaultIngestionHost)</code>
+                                    </a>
+                                </li>
+                                @foreach(var host in AllowedHosts.Ingestion) {
+                                    <li><a href="https://@host/"><code>@host</code></a></li>
+                                }
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="align-middle p-3">@(nameof(AllowedHosts.Live))</td>
+                        <td class="align-middle p-3">
+                            <ul>
+                                @foreach(var host in AllowedHosts.Live) {
+                                    <li><a href="https://@host/"><code>@host</code></a></li>
+                                }
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="align-middle p-3">@(nameof(AllowedHosts.Trigger))</td>
+                        <td class="align-middle p-3">
+                            <ul>
+                                @foreach(var host in AllowedHosts.Trigger) {
+                                    <li><a href="https://@host/"><code>@host</code></a></li>
+                                }
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </round-box>
+
+    <round-box>
+        <h2 class="text-3xl font-semibold">Route Table</h2>
+        <div id="@Model.RouteTableDomId" class="hard-box mt-5 overflow-y-scroll">
+            <blankslate>
+                <div class="flex flex-col items-center gap-2">
+                    <i class="fa fa-eye-slash text-3xl"></i>
+                    <span class="text-gray-500">Route Table is not visible by default as it can take a while to load.</span>
+                    <form asp-page-handler="RouteTable">
+                        <button type="submit" class="btn btn-danger">Show Route Table</button>
+                    </form>
+                </div>
+            </blankslate>
+        </div>
+    </round-box>
+</page-body>

@@ -1,0 +1,416 @@
+{
+  "triggers": [
+    {
+      "id": "http_webhook_customer",
+      "type": "http.webhook.customer",
+      "inputs": {}
+    }
+  ],
+  "dispatch": {
+    "customerSegments": []
+  },
+  "startSequence": "start_sequence",
+  "sequences": {
+    "start_sequence": {
+      "actions": [
+        {
+          "branches": {},
+          "id": "system_create_customer",
+          "type": "system.create-customer",
+          "inputs": {
+            "customer": "{{ trigger.outputs.customer }}",
+            "continue_if_exists": false
+          }
+        },
+        {
+          "branches": {},
+          "id": "slack_create_channel_for_customer",
+          "type": "slack.create-channel-for-customer",
+          "inputs": {
+            "prefix": "team-",
+            "private": false,
+            "customer": "{{ outputs.customer.id }}"
+          }
+        },
+        {
+          "branches": {},
+          "id": "slack_invite_to_shared_channel",
+          "type": "slack.invite-to-shared-channel",
+          "inputs": {
+            "channel": "{{ outputs.channel.id }}",
+            "invitee": "{{ outputs.invitee }}",
+            "expiration": "15.00:00:00"
+          }
+        },
+        {
+          "branches": {
+            "true": "system_if_1:true",
+            "false": "system_if_1:false"
+          },
+          "id": "system_if_1",
+          "type": "system.if",
+          "inputs": {
+            "left": "{{ outputs.invitation_response }}",
+            "right": {
+              "label": "Accepted",
+              "value": "accepted"
+            },
+            "comparison": "ExactMatch"
+          }
+        },
+        {
+          "branches": {},
+          "id": "system_wait",
+          "type": "system.wait",
+          "inputs": {
+            "duration": "P14D"
+          }
+        },
+        {
+          "branches": {
+            "true": "system_if_2:true",
+            "false": "system_if_2:false"
+          },
+          "id": "system_if_2",
+          "type": "system.if",
+          "inputs": {
+            "left": "{{ outputs.customer.last_activity_days }}",
+            "right": "12",
+            "comparison": "GreaterThanOrEqualTo"
+          }
+        }
+      ]
+    },
+    "system_if_1:true": {
+      "actions": [
+        {
+          "branches": {},
+          "id": "abbot_notify_responders",
+          "type": "abbot.notify-responders",
+          "inputs": {
+            "mrkdwn": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "text": "You can meet them in ",
+                      "type": "text"
+                    },
+                    {
+                      "type": "channel",
+                      "attrs": {
+                        "id": "{{ outputs.channel.id }}",
+                        "label": "Channel from outputs"
+                      }
+                    },
+                    {
+                      "text": ".",
+                      "type": "text"
+                    }
+                  ]
+                }
+              ]
+            },
+            "channel": "{{ outputs.channel.id }}",
+            "headline": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "emoji",
+                      "attrs": {
+                        "id": "sparkles",
+                        "label": "✨"
+                      }
+                    },
+                    {
+                      "text": " Yay, ",
+                      "type": "text"
+                    },
+                    {
+                      "type": "handlebars",
+                      "attrs": {
+                        "id": "trigger.outputs.customer.name",
+                        "label": "Customer name from trigger"
+                      }
+                    },
+                    {
+                      "text": " accepted our invitation.",
+                      "type": "text"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "branches": {},
+          "id": "slack_send_message",
+          "type": "slack.send-message",
+          "inputs": {
+            "mrkdwn": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "emoji",
+                      "attrs": {
+                        "id": "smile",
+                        "label": "😄"
+                      }
+                    },
+                    {
+                      "text": " Welcome to Abbot! Here are some tips to get the most of Abbot.",
+                      "type": "text"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph"
+                },
+                {
+                  "type": "orderedList",
+                  "attrs": {
+                    "start": 1
+                  },
+                  "content": [
+                    {
+                      "type": "listItem",
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "text": "Create a Playbook!",
+                              "type": "text",
+                              "marks": [
+                                {
+                                  "type": "link",
+                                  "attrs": {
+                                    "href": "https://app.ab.bot/playbooks",
+                                    "class": null,
+                                    "target": "_blank"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "listItem",
+                      "content": [
+                        {
+                          "type": "paragraph",
+                          "content": [
+                            {
+                              "text": "Contact us! support@ab.bot",
+                              "type": "text"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "message_target": "{{ outputs.channel.id }}"
+          }
+        },
+        {
+          "branches": {},
+          "id": "system_complete_playbook_1",
+          "type": "system.complete-playbook",
+          "inputs": {}
+        }
+      ]
+    },
+    "system_if_2:true": {
+      "actions": [
+        {
+          "branches": {},
+          "id": "abbot_notify_responders_2",
+          "type": "abbot.notify-responders",
+          "inputs": {
+            "mrkdwn": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "text": "Perhaps you want to archive this room.",
+                      "type": "text"
+                    }
+                  ]
+                }
+              ]
+            },
+            "channel": "{{ outputs.channel.id }}",
+            "headline": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "text": "Hey, it looks like you gave it a try but ",
+                      "type": "text"
+                    },
+                    {
+                      "type": "handlebars",
+                      "attrs": {
+                        "id": "trigger.outputs.customer.name",
+                        "label": "Customer name from trigger"
+                      }
+                    },
+                    {
+                      "text": " is not having it.",
+                      "type": "text"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "system_if_1:false": {
+      "actions": [
+        {
+          "branches": {},
+          "id": "abbot_notify_responders_1",
+          "type": "abbot.notify-responders",
+          "inputs": {
+            "mrkdwn": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "text": "Sad trombone. I'll remind you in a couple of weeks to archive the channel ",
+                      "type": "text"
+                    },
+                    {
+                      "type": "channel",
+                      "attrs": {
+                        "id": "{{ outputs.channel.id }}",
+                        "label": "Channel from outputs"
+                      }
+                    },
+                    {
+                      "text": " ",
+                      "type": "text"
+                    }
+                  ]
+                }
+              ]
+            },
+            "channel": "{{ outputs.channel.id }}",
+            "headline": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "emoji",
+                      "attrs": {
+                        "id": "cry",
+                        "label": "😢"
+                      }
+                    },
+                    {
+                      "text": " Unfortunately, ",
+                      "type": "text"
+                    },
+                    {
+                      "type": "handlebars",
+                      "attrs": {
+                        "id": "trigger.outputs.customer.name",
+                        "label": "Customer name from trigger"
+                      }
+                    },
+                    {
+                      "text": " did not accept our invitation.",
+                      "type": "text"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "system_if_2:false": {
+      "actions": [
+        {
+          "branches": {},
+          "id": "abbot_notify_responders_3",
+          "type": "abbot.notify-responders",
+          "inputs": {
+            "mrkdwn": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "text": "Do you still want to archive the room?",
+                      "type": "text"
+                    }
+                  ]
+                }
+              ]
+            },
+            "channel": "{{ outputs.channel.id }}",
+            "headline": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "handlebars",
+                      "attrs": {
+                        "id": "trigger.outputs.customer.name",
+                        "label": "Customer name from trigger"
+                      }
+                    },
+                    {
+                      "text": " didn't accept our invite, but there's been activity in ",
+                      "type": "text"
+                    },
+                    {
+                      "type": "channel",
+                      "attrs": {
+                        "id": "{{ outputs.channel.id }}",
+                        "label": "Channel from outputs"
+                      }
+                    },
+                    {
+                      "text": " ",
+                      "type": "text"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

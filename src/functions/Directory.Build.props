@@ -1,0 +1,11 @@
+<Project>
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+  <PropertyGroup>
+    <ResetOutputPath Condition=" '$(BaseOutputPath)' == '$(BaseOutputPath)' OR '' == '$(RepoBinPath)' ">1</ResetOutputPath>
+    <BaseOutputPath Condition=" '$(ResetOutputPath)' == '1' ">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))$(MSBuildProjectName)\bin\</BaseOutputPath>
+    <OutputPath Condition=" '$(ResetOutputPath)' == '1' ">$(BaseOutputPath)output</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GitVersionBaseDirectory>$(MSBuildThisFileDirectory)</GitVersionBaseDirectory>
+  </PropertyGroup>
+
+</Project>

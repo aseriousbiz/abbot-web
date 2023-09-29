@@ -1,0 +1,6 @@
+version: 2
+web_addr: localhost:4040
+console_ui: iftty
+log_level: info
+log_format: term
+log: stdout

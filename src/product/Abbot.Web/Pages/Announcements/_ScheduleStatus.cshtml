@@ -1,0 +1,24 @@
+@model (Announcement, Member)
+@{
+    var (announcement, member) = Model;
+    var tz = member.TimeZoneId is {Length: >0} ? member.TimeZoneId : "America/Los_Angeles";
+    var scheduled = member.ToTimeZone(announcement.ScheduledDateUtc ?? announcement.Created)
+        .ToString("MMMM dd, yyyy h:mm tt");
+}
+@if (announcement.DateCompletedUtc is { } dateCompletedUtc) {
+    <span data-tooltip="Scheduled @scheduled">
+        posted <date utc="@dateCompletedUtc" timezone="@tz"/>
+    </span>
+} else if (announcement.DateStartedUtc is { } startedUtc) {
+    <span data-tooltip="Scheduled @scheduled">
+        started <date utc="@startedUtc" timezone="@tz"/>
+    </span>
+} else if (announcement.ScheduledDateUtc > DateTime.UtcNow) {
+    <span class="text-yellow-700">
+        scheduled for <date utc="@announcement.ScheduledDateUtc" timezone="@tz" />
+    </span>
+} else {
+    <span>
+        created <date utc="@announcement.Created" timezone="@tz"/>
+    </span>
+}

@@ -1,0 +1,54 @@
+@page "/staff/organizations/{id}/skills"
+@model Serious.Abbot.Pages.Staff.Organizations.SkillsPage
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Skill List");
+}
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">Skills</h2>
+
+        <div class="hard-box mt-5">
+            @if (Model.Skills.Any()) {
+                <table class="w-full">
+                    <thead>
+                    <tr>
+                        <th class="text-left border-b p-3">Id</th>
+                        <th class="text-left border-b p-3">Name</th>
+                        <th class="text-left border-b p-3">Description</th>
+                        <th class="text-left border-b p-3">Language</th>
+                        <th class="text-left border-b p-3">Enabled</th>
+                        <th class="text-left border-b p-3">Restricted</th>
+                        <th class="text-left border-b p-3">Created</th>
+                        <th class="text-left border-b p-3">Modified</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var skill in Model.Skills) {
+                        <tr>
+                            <td class="align-middle p-3"><code>@skill.Id</code></td>
+                            <td class="align-middle p-3"><code>@skill.Name</code></td>
+                            <td class="align-middle p-3">@skill.Description</td>
+                            <td class="align-middle p-3">@skill.Language</td>
+                            <td class="align-middle p-3">@skill.Enabled</td>
+                            <td class="align-middle p-3">@skill.Restricted</td>
+                            <td class="align-middle p-3"><timeago datetime="@skill.Created"/></td>
+                            <td class="align-middle p-3"><timeago datetime="@skill.Modified"/></td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            } else {
+                <blankslate>
+                    <div class="text-center text-xl h-6 text-gray-500 mb-2">
+                        <i class="fa-regular fa-lightbulb-slash"></i>
+                    </div>
+
+                    <h2 class="text-center text-lg text-gray-700">
+                        This organization has no skill
+                    </h2>
+                </blankslate>
+            }
+        </div>
+    </round-box>
+</page-body>

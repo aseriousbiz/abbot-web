@@ -1,0 +1,40 @@
+@model RoomPage
+@if (Model.ZendeskRoomLink is not { } roomLink)
+{
+    return;
+}
+
+@if (roomLink.DisplayName is { Length: > 0 } && roomLink.Link is not null) {
+    <form asp-page-handler="UnlinkZendeskOrganization" method="post" class="mt-2 flex gap-2 items-baseline">
+        This room is currently linked to
+        <a target="_blank" href="@roomLink.Link.WebUrl">
+            @roomLink.DisplayName <i class="fa fa-external-link"></i>
+        </a>
+        <button asp-authz-policy="@AuthorizationPolicies.CanManageConversations"
+                type="submit" class="btn btn-danger">
+           Remove this link
+       </button>
+    </form>
+} else {
+    <p class="mt-2">
+        This room is not linked to a Zendesk organization.
+    </p>
+}
+
+<div asp-authz-policy="@AuthorizationPolicies.CanManageConversations">
+    <h3 class="mt-2 text-lg font-semibold">Link to a different Zendesk organization</h3>
+    <p>Start typing and select an organization from the popup to change the Zendesk organization this room is linked to.</p>
+    <div class="mt-2 relative" data-controller="autocomplete" data-autocomplete-url-value="@Url.Page(null, "AutocompleteZendeskOrganizations")">
+        <div class="flex items-baseline">
+            <input data-action="autocomplete#lookup click->autocomplete#lookup"
+                   data-autocomplete-target="input"
+                   class="form-input w-full"
+                   placeholder="Start typing to search for Zendesk Organizations...">
+            <div data-autocomplete-target="indicator" class="hidden -ml-6">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+            </div>
+        </div>
+        <div class="hidden absolute w-max z-10" data-autocomplete-target="results">
+        </div>
+    </div>
+</div>

@@ -1,0 +1,14 @@
+@model DiffPlex.DiffBuilder.Model.DiffPiece
+@using ChangeType = DiffPlex.DiffBuilder.Model.ChangeType
+
+@if (!string.IsNullOrEmpty(Model.Text)) {
+    if (Model.Type is ChangeType.Deleted or ChangeType.Inserted or ChangeType.Unchanged) {
+        @Model.FormatLineForWeb()
+    }
+    else if (Model.Type is ChangeType.Modified) {
+        foreach (var character in Model.SubPieces) {
+            if (character.Type == ChangeType.Imaginary) { continue; }
+            <span class="@character.Type.ToString()Character piece">@character.Text.Replace(" ", "\u00B7")</span>
+        }
+    }
+}

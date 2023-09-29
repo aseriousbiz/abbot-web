@@ -1,0 +1,64 @@
+@model CohortModel
+@{
+    var cohorts = Model.Cohorts;
+    var maxCohortNumber = Model.CohortIntervalCount;
+    var dateFormat = Model.CohortInterval is "Month"
+        ? "MMM, yyyy"
+        : "MMM dd, yyyy";
+}
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Cohort @Model.CohortInterval</th>
+        <th>Cohort Size</th>
+        @for (int i = 0; i <= maxCohortNumber; i++) {
+            <th>@Model.CohortInterval @i</th>
+        }
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var cohort in cohorts) {
+        <tr>
+            <td>
+                @cohort.Key.ToString(dateFormat, CultureInfo.CurrentCulture)
+            </td>
+            <td>@cohort.First().Size</td>
+            @for (int i = 0; i <= maxCohortNumber; i++) {
+                var metric = cohort.FirstOrDefault(c => c.Number == i);
+                <td style="background-color: @BgColor(metric); color: @Color(metric);">
+                    @metric?.Percentage.ToString("P1")
+                </td>
+            }
+        </tr>
+    }
+    </tbody>
+</table>
+
+@functions {
+    public string BgColor(Cohort? cohort)
+    {
+        if (cohort is null)
+        {
+            return "#ffffff";
+        }
+            
+        var percentage = (1.0 - cohort.Percentage);
+        var red = Math.Max(20, (int)(percentage * 150));
+        var green = Math.Max(40, (int)(percentage * 250));
+        var blue = Math.Min((int)(percentage * 255) + 100, 255);
+        return $"#{red:X2}{green:X2}{blue:X2}";
+    }
+
+    public string Color(Cohort? cohort)
+    {
+        if (cohort is null)
+        {
+            return "#000000";
+        }
+
+        return cohort.Percentage > .5
+            ? "#ffffff"
+            : "#000000";
+    }
+}

@@ -1,0 +1,13 @@
+@model InviteIndexPage
+
+<div class="flex gap-x-2 mt-2 items-center">
+    <input type="text" class="form-input w-96" autofocus="autofocus" asp-for="Email" placeholder="Slack email address" />
+    <button type="submit" class="btn" asp-page-handler="Add">Look Up</button>
+
+    <p class="ml-auto" data-user-invitation-target="subject">
+        <button type="submit" class="btn btn-primary">Send Invitations</button>
+    </p>
+</div>
+
+<span asp-validation-for="Email"></span>
+

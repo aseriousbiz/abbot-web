@@ -1,0 +1,22 @@
+﻿{
+  target: {
+    Conversation: {
+      RoomId: 1,
+      FirstMessageId: 1111.0007,
+      ThreadIds: [
+        1111.0007
+      ],
+      Title: Test Conversation 7,
+      IsImported: false,
+      LastMessagePostedOn: 1999-01-02 03:04:05 Utc,
+      LastStateChangeOn: 1999-01-02 03:04:05 Utc,
+      State: New,
+      StartedById: 3,
+      HubId: 2,
+      Properties: {},
+      OrganizationId: 1,
+      Id: 1,
+      Created: 1999-01-02 03:04:05 Utc
+    }
+  }
+}

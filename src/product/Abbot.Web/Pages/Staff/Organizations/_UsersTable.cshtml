@@ -1,0 +1,113 @@
+@model IPaginatedList<Member>
+
+@{
+    bool showOrg = ViewData.TryGetValue("show-org", out var showOrgValue) && showOrgValue is not null && (bool)showOrgValue;
+}
+
+<div class="hard-box mt-5 overflow-auto whitespace-nowrap">
+    @if (Model.Any()) {
+        <table class="w-full">
+            <thead>
+            <tr>
+                <th class="text-left border-b p-3">User</th>
+                @if (showOrg) {
+                    <th class="text-left border-b p-3">Org</th>
+                }
+                <th class="text-left border-b p-3">Info</th>
+                <th class="text-left border-b p-3">Other</th>
+                <th class="text-left border-b p-3">Roles</th>
+                <th class="text-left border-b p-3">Access RequestDate</th>
+                <th class="text-left border-b p-3">Joined</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var member in Model) {
+                <tr>
+                    <td class="align-middle p-3">
+                        <div class="flex items-middle gap-2">
+                            <partial name="Shared/_Avatar" model="@member.User"/>
+                            <div class="flex flex-col">
+                                <a asp-page="/Staff/Organizations/Member"
+                                   class="align-middle"
+                                   asp-route-orgId="@member.Organization.PlatformId"
+                                   asp-route-id="@member.User.PlatformUserId">
+                                    @member.RealName
+                                </a>
+                                <span class="text-sm">
+                                    <span class="text-black">@@@member.DisplayName</span>
+                                    <span class="text-gray-600">(@member.User.PlatformUserId)</span>
+                                </span>
+                                @if (member.User.SlackTeamId is not null && member.Organization.PlatformId != member.User.SlackTeamId) {
+                                    <span class="text-sm text-red-500">Slack Team ID mismatch: @member.User.SlackTeamId</span>
+                                }
+                                <span class="text-sm text-gray-600">@member.User.NameIdentifier</span>
+                            </div>
+                        </div>
+                    </td>
+                    @if (showOrg) {
+                        <td class="align-middle p-3">
+                            <a asp-page="../Organizations/Users" asp-route-id="@member.Organization.PlatformId">@member.Organization.Name</a> (<code>@member.Organization.PlatformId</code>)
+                        </td>
+                    }
+                    <td class="align-middle p-3">
+                        <div>
+                            @if (member.User.Email is { Length: > 0 }) {
+                                <text>@member.User.Email</text>
+                            } else {
+                                <em class="text-gray-600">No email provided</em>
+                            }
+                        </div>
+                        <div>
+                            @if (member.TimeZoneId is { Length: > 0 }) {
+                                <text>@member.TimeZoneId</text>
+                            } else {
+                                <em class="text-gray-600">No timezone provided</em>
+                            }
+                        </div>
+
+                    </td>
+                    <td class="align-middle p-3 flex flex-col gap-2">
+                        <span>
+                            <display for="@member.Welcomed" />
+                        </span>
+                        <span>
+                            <display for="@member.Active" />
+                        </span>
+                        <span>
+                            <display for="@member.User.IsBot" />
+                            @if (member.IsAbbot()) {
+                                <span class="ml-1" data-tooltip="Abbot!">
+                                    <img class="inline-block" src="/img/abbot-avatar-small.png" width="16" alt="Abbot" />
+                                </span>
+                            }
+                        </span>
+                        <span>
+                            <display for="@member.IsGuest" />
+                        </span>
+                    </td>
+                    <td class="align-middle p-3">
+                        @foreach (var role in member.MemberRoles) {
+                            <div>@role.Role.Name</div>
+                        }
+                    </td>
+                    <td class="align-middle p-3">@member.AccessRequestDate</td>
+                    <td class="align-middle p-3"><timeago datetime="@member.Created"/></td>
+                    <td><a asp-page="/Staff/Users/DeleteMember" asp-route-id="@member.Id" class="btn">Delete</a></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <blankslate>
+            <div class="text-center text-xl h-6 text-gray-500 mb-2">
+                <i class="fa-regular fa-user-slash"></i>
+            </div>
+
+            <h2 class="text-center text-lg text-gray-700">
+                No users here!
+            </h2>
+        </blankslate>
+    }
+</div>

@@ -1,0 +1,333 @@
+﻿{
+  RunGroup: {
+    PlaybookId: 1,
+    Version: 1,
+    CorrelationId: Guid_1,
+    Properties: {
+      RootAuditEventId: Guid_2,
+      DispatchSettings: {},
+      Trigger: system_schedule,
+      TriggerType: system.schedule
+    },
+    CreatedById: 2,
+    Id: 1,
+    Created: 1999-01-02 03:04:05 Utc
+  },
+  Run: {
+    CorrelationId: Guid_3,
+    PlaybookId: 1,
+    Version: 1,
+    GroupId: 1,
+    State: Final,
+    StartedAt: 1999-01-02 03:04:05 Utc,
+    CompletedAt: 1999-01-02 03:04:05 Utc,
+    Properties: {
+      ActivityId: <unknown>,
+      Trigger: system_schedule,
+      Result: {
+        Outcome: Succeeded
+      },
+      StepResults: {
+        slack_send_message: {
+          Inputs: {
+            channel: C012ZJGPYTF,
+            message: {"type":"doc","content":[{"type":"paragraph","content":[{"text":"It's time for standup! https://us02web.zoom.us/j/81477272433?pwd=RFd6dXB2bXNtY3lRR056OTVlRWU2dz09 ","type":"text"}]}]}
+          },
+          Notices: [
+            {
+              Title: Message sent to Test Room 4 (C012ZJGPYTF),
+              Details: It's time for standup! https://us02web.zoom.us/j/81477272433?pwd=RFd6dXB2bXNtY3lRR056OTVlRWU2dz09
+            }
+          ],
+          Outputs: {
+            message_id: 915246245.1:D6
+          }
+        },
+        system_schedule: {}
+      },
+      CompletedSteps: [
+        {
+          SequenceId: start_sequence,
+          ActionId: slack_send_message
+        }
+      ],
+      RootAuditEventId: Guid_4,
+      DispatchContext: {}
+    },
+    Id: 1,
+    Created: 1999-01-02 03:04:05 Utc
+  },
+  AuditLog: {
+    $type: List<AuditEventBase>,
+    $values: [
+      {
+        $type: AuditEvent,
+        Type: {
+          Subject: Playbook.RunGroup,
+          Event: Created
+        },
+        StaffPerformed: false,
+        Discriminator: AuditEvent,
+        Identifier: Guid_2,
+        ActorMemberId: 2,
+        ActorId: 2,
+        Description: Ran `Test` version `1`.,
+        Details: Started run group `Guid_1` of playbook `Test` from trigger `system.schedule`.,
+        StaffOnly: false,
+        EntityId: 1,
+        IsTopLevel: true,
+        SerializedProperties: {},
+        HasDetails: false,
+        OrganizationId: 1,
+        Id: 1,
+        Created: 1999-01-02 03:04:05 Utc
+      },
+      {
+        $type: AuditEvent,
+        Type: {
+          Subject: Playbook.Run,
+          Event: Created
+        },
+        StaffPerformed: false,
+        Discriminator: AuditEvent,
+        Identifier: Guid_4,
+        ParentIdentifier: Guid_2,
+        ActorMemberId: 2,
+        ActorId: 2,
+        Description: Running playbook `Test` version `1`,
+        Details: Started run `Guid_3` of playbook `Test` from trigger `system.schedule`.,
+        StaffOnly: false,
+        EntityId: 1,
+        IsTopLevel: false,
+        SerializedProperties: {"Name":"Test","Slug":"test","Version":1,"DispatchContext":{},"Trigger":{"Id":"system_schedule","Type":"system.schedule","Inputs":{"tz":"America/Los_Angeles","schedule":{"hour":9,"type":"weekly","minute":30,"weekdays":["monday","tuesday","wednesday","thursday"]}}},"CorrelationId":"Guid_3","GroupCorrelationId":"Guid_1","RunState":"Initial","PlaybookProperties":{"WebhookTokenSeed":"seedy"},"RunProperties":{"ActivityId":"<unknown>","Trigger":"system_schedule","StepResults":{"system_schedule":{"Notices":[],"SuspendState":{},"Outputs":{}}},"CompletedSteps":[],"DispatchContext":{},"CallStack":[]},"PlaybookDefinition":{"Triggers":[{"Id":"system_schedule","Type":"system.schedule","Inputs":{"tz":"America/Los_Angeles","schedule":{"hour":9,"type":"weekly","minute":30,"weekdays":["monday","tuesday","wednesday","thursday"]}}},{"Id":"system_schedule_1","Type":"system.schedule","Inputs":{"tz":"America/Los_Angeles","schedule":{"hour":9,"type":"weekly","minute":0,"weekdays":["friday"]}}}],"Dispatch":{"CustomerSegments":[]},"StartSequence":"start_sequence","Sequences":{"start_sequence":{"Actions":[{"Branches":{},"Id":"slack_send_message","Type":"slack.send-message","Inputs":{"channel":"C012ZJGPYTF","message":{"type":"doc","content":[{"type":"paragraph","content":[{"text":"It's time for standup! https://us02web.zoom.us/j/81477272433?pwd=RFd6dXB2bXNtY3lRR056OTVlRWU2dz09 ","type":"text"}]}]}}}]}}}},
+        HasDetails: false,
+        OrganizationId: 1,
+        Id: 2,
+        Created: 1999-01-02 03:04:05 Utc
+      },
+      {
+        $type: AuditEvent,
+        Type: {
+          Subject: Playbook.Step,
+          Event: Executed
+        },
+        StaffPerformed: false,
+        Discriminator: AuditEvent,
+        Identifier: Guid_5,
+        ParentIdentifier: Guid_4,
+        ActorMemberId: 2,
+        ActorId: 2,
+        Description: Executed `slack.send-message` step `slack_send_message` with outcome `Succeeded`,
+        StaffOnly: false,
+        EntityId: 1,
+        IsTopLevel: false,
+        SerializedProperties: {"Step":{"Branches":{},"Id":"slack_send_message","Type":"slack.send-message","Inputs":{"channel":"C012ZJGPYTF","message":{"type":"doc","content":[{"type":"paragraph","content":[{"text":"It's time for standup! https://us02web.zoom.us/j/81477272433?pwd=RFd6dXB2bXNtY3lRR056OTVlRWU2dz09 ","type":"text"}]}]}}},"Inputs":{"channel":"C012ZJGPYTF","message":{"type":"doc","content":[{"type":"paragraph","content":[{"text":"It's time for standup! https://us02web.zoom.us/j/81477272433?pwd=RFd6dXB2bXNtY3lRR056OTVlRWU2dz09 ","type":"text"}]}]}},"Result":{"Inputs":{"channel":"C012ZJGPYTF","message":{"type":"doc","content":[{"type":"paragraph","content":[{"text":"It's time for standup! https://us02web.zoom.us/j/81477272433?pwd=RFd6dXB2bXNtY3lRR056OTVlRWU2dz09 ","type":"text"}]}]}},"Notices":[{"Title":"Message sent to Test Room 4 (C012ZJGPYTF)","Details":"It's time for standup! https://us02web.zoom.us/j/81477272433?pwd=RFd6dXB2bXNtY3lRR056OTVlRWU2dz09"}],"SuspendState":{},"Outputs":{"message_id":"915246245.1:D6"}},"Duration":123},
+        HasDetails: false,
+        OrganizationId: 1,
+        Id: 3,
+        Created: 1999-01-02 03:04:05 Utc
+      }
+    ]
+  },
+  Logs: {
+    $type: List<LogEvent>,
+    $values: [
+      {
+        CategoryName: Serious.Abbot.Playbooks.PlaybookDispatcher,
+        LogLevel: Information,
+        EventId: {
+          Id: 14,
+          Name: TriggerConditionSatisfied
+        },
+        Message: Trigger condition satisfied system_schedule system.schedule: No conditions.,
+        State: {
+          $type: LoggerMessage.LogValues<string, string,
+          $values: [
+            {
+              TriggerId: system_schedule
+            },
+            {
+              TriggerType: system.schedule
+            },
+            {
+              TriggerReason: No conditions.
+            },
+            {
+              {OriginalFormat}: Trigger condition satisfied {TriggerId} {TriggerType}: {TriggerReason}
+            }
+          ]
+        },
+        Scopes: {
+          $type: List<object>,
+          $values: [
+            {
+              $type: LoggerMessage.LogValues<Id<Playbook>, string>,
+              $values: [
+                {
+                  PlaybookId: 1
+                },
+                {
+                  PlaybookSlug: test
+                },
+                {
+                  {OriginalFormat}: Playbook: {PlaybookId}, {PlaybookSlug}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<Id<PlaybookVersion>, int>,
+              $values: [
+                {
+                  PlaybookVersionId: 1
+                },
+                {
+                  VersionNumber: 1
+                },
+                {
+                  {OriginalFormat}: Playbook Version: {PlaybookVersionId} {VersionNumber}
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        CategoryName: Serious.Abbot.Playbooks.PlaybookDispatcher,
+        LogLevel: Information,
+        EventId: {
+          Id: 9,
+          Name: DispatchedRun
+        },
+        Message: Dispatched Run Guid_3 in Group Guid_1,
+        State: {
+          $type: LoggerMessage.LogValues<string, string>,
+          $values: [
+            {
+              PlaybookRunId: Guid_3
+            },
+            {
+              PlaybookRunGroupId: Guid_1
+            },
+            {
+              {OriginalFormat}: Dispatched Run {PlaybookRunId} in Group {PlaybookRunGroupId}
+            }
+          ]
+        },
+        Scopes: {
+          $type: List<object>,
+          $values: [
+            {
+              $type: LoggerMessage.LogValues<Id<Playbook>, string>,
+              $values: [
+                {
+                  PlaybookId: 1
+                },
+                {
+                  PlaybookSlug: test
+                },
+                {
+                  {OriginalFormat}: Playbook: {PlaybookId}, {PlaybookSlug}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<Id<PlaybookVersion>, int>,
+              $values: [
+                {
+                  PlaybookVersionId: 1
+                },
+                {
+                  VersionNumber: 1
+                },
+                {
+                  {OriginalFormat}: Playbook Version: {PlaybookVersionId} {VersionNumber}
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        CategoryName: Serious.Abbot.Eventing.StateMachines.AdvancePlaybookActivity,
+        LogLevel: Information,
+        EventId: {
+          Id: 1,
+          Name: AdvancingTo
+        },
+        Message: Advancing to slack_send_message#0 in sequence start_sequence,
+        State: {
+          $type: AdvancePlaybookActivityLoggingExtensions.__AdvancingToStruct,
+          $values: [
+            {
+              SequenceName: start_sequence
+            },
+            {
+              ActionId: slack_send_message
+            },
+            {
+              ActionIndex: 0
+            },
+            {
+              {OriginalFormat}: Advancing to {ActionId}#{ActionIndex} in sequence {SequenceName}
+            }
+          ]
+        }
+      },
+      {
+        CategoryName: Serious.Abbot.Eventing.StateMachines.AdvancePlaybookActivity,
+        LogLevel: Information,
+        EventId: {
+          Id: 2,
+          Name: AdvancingToEndOfSequence
+        },
+        Message: Advancing to the end of sequence start_sequence.,
+        State: {
+          $type: LoggerMessage.LogValues<string>,
+          $values: [
+            {
+              SequenceName: start_sequence
+            },
+            {
+              {OriginalFormat}: Advancing to the end of sequence {SequenceName}.
+            }
+          ]
+        }
+      },
+      {
+        CategoryName: Serious.Abbot.Eventing.StateMachines.AdvancePlaybookActivity,
+        LogLevel: Information,
+        EventId: {
+          Id: 5,
+          Name: ReachedEndOfSequence
+        },
+        Message: Reached end of sequence start_sequence.,
+        State: {
+          $type: LoggerMessage.LogValues<string>,
+          $values: [
+            {
+              SequenceName: start_sequence
+            },
+            {
+              {OriginalFormat}: Reached end of sequence {SequenceName}.
+            }
+          ]
+        }
+      }
+    ]
+  },
+  PostedMessages: [
+    {
+      Channel: C012ZJGPYTF,
+      Timestamp: 0000000001.000000,
+      ThreadTs: null,
+      Blocks: null,
+      IconUrl: null,
+      Message: null,
+      View: null,
+      Metadata: null,
+      ReplyBroadcast: false,
+      Text: It's time for standup! https://us02web.zoom.us/j/81477272433?pwd=RFd6dXB2bXNtY3lRR056OTVlRWU2dz09,
+      UserName: null
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+﻿{
+  target: {
+    BusTestHarness: {
+      Messages: [
+        {
+          Published: PublishConversationNotification,
+          MessageId: Guid_1,
+          ConversationId: Guid_2,
+          DestinationAddress: Serious.Abbot.Eventing.Messages:PublishConversationNotification,
+          Message: {
+            OrganizationId: 1,
+            ConversationId: 1,
+            Notification: {
+              Type: TicketError,
+              Icon: 🎫,
+              Headline: Ticket Error,
+              Message:
+<@Uhome> could not create Fake Ticketing ticket for <https://example.com/|this conversation>.
+
+Your organization does not have an integration enabled for Fake Ticketing.,
+              MentionGroups: [
+                {
+                  RecipientType: FirstResponder
+                },
+                {
+                  RecipientType: Actor,
+                  MentionIds: {
+                    $type: string[],
+                    $values: [
+                      Uhome
+                    ]
+                  }
+                }
+              ]
+            },
+            Broadcast: false
+          }
+        }
+      ]
+    },
+    AnalyticsClient: {}
+  }
+}

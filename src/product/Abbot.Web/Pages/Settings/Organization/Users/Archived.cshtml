@@ -1,0 +1,79 @@
+@page
+@model Serious.Abbot.Pages.Settings.Organization.Users.ArchivedPage
+@{
+    ViewContext.SetPageInfo("Settings", "Archived Users");
+    var restoreDisabled = Model.HasEnoughPurchasedSeats ? null : "disabled pointer-events-none";
+    var restoreTooltip = Model.HasEnoughPurchasedSeats
+        ? "Restoring the user adds them to the Agent role."
+        : "You do not have enough purchased seats to restore this user.";
+}
+
+<partial name="../_Header" model="Model.Viewer"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-xl font-semibold"><a asp-page="Index">Users</a> / Archived</h2>
+        <p class="mt-4">
+            These are users who have been archived or denied access to the site.
+            Restoring a user adds the user back to the Agent role.
+        </p>
+
+        <div class="border border-gray-300 rounded-lg bg-white mt-2">
+            @if (!Model.ArchivedUsers.Any()) {
+                <blankslate>
+                    <p>There are no archived users.</p>
+                </blankslate>
+            }
+            else {
+                if (!Model.HasEnoughPurchasedSeats) {
+                    <partial name="_NotEnoughSeatsMessage" />
+                }
+                <ul class="border-gray-300 divide-y">
+                    @foreach (var user in Model.ArchivedUsers)
+                    {
+                        <li class="p-4">
+                            <div class="flex items-center">
+                                <div class="-mb-2">
+                                    <partial name="Shared/_Avatar" model="@user.User"/>
+                                </div>
+
+                                <div class="sm:ml-2">
+                                    <h1 class="font-semibold">
+                                        @user.DisplayName
+                                    </h1>
+
+                                    <ul class="text-gray-500 sm:flex sm:list-disc list-outside text-sm">
+                                        <li class="mr-4 overflow-hidden">
+                                            <span class="text-black" title="@Model.Platform Username">
+                                                @user.DisplayName
+                                            </span>
+
+                                            <span title="@Model.Platform User Id">
+                                                (@user.User.PlatformUserId)
+                                            </span>
+                                        </li>
+
+                                        <li class="sm:ml-1 mr-4">
+                                            Joined <timeago datetime="@user.Created"/>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div class="ml-auto">
+                                    <span data-tooltip="@restoreTooltip">
+                                        <a class="btn btn-sm btn-danger @restoreDisabled" asp-page="RestoreUser" asp-route-id="@user.User.PlatformUserId">Restore</a>
+                                    </span>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+
+        <div class="p-3">
+            <partial name="Shared/_Paginator" model="@Model.ArchivedUsers"/>
+        </div>
+    </round-box>
+</page-body>

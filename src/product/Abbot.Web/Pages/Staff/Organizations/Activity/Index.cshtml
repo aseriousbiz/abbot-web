@@ -1,0 +1,17 @@
+@page "/staff/organizations/{orgId}/activity"
+@model Serious.Abbot.Pages.Staff.Organizations.Activity.IndexPage
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Activity Log");
+}
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">Activity</h2>
+        <p class="mt-5">Recent interactions across @Model.Organization.Name</p>
+        <section class="mt-4 border border-gray-300 rounded-lg">
+            <partial name="Shared/Activity/_ActivityLog" />
+        </section>
+    </round-box>
+</page-body>

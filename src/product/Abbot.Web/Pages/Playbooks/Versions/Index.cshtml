@@ -1,0 +1,36 @@
+@page "/playbooks/{slug}/versions"
+@model Serious.Abbot.Pages.Playbooks.Versions.IndexModel
+
+@{
+    ViewContext.SetPageInfo("Playbook", "Playbook Versions", "View Playbook Versions");
+}
+
+<page-header class="mx-4 my-3">
+    <div class="font-medium text-sm">
+        <a asp-page="../Index" preserve-staff>
+            Playbooks
+        </a>
+        /
+        <a asp-page="../View"
+           preserve-staff
+           asp-route-slug="@Model.VersionList.Playbook.Slug">@Model.VersionList.Playbook.Name</a>
+    </div>
+
+    <div class="flex items-center mb-4">
+        <div class="grow">
+            Versions
+        </div>
+        <div>
+            <a asp-page="Import" asp-route-slug="@Model.VersionList.Playbook.Slug" preserve-staff class="btn">
+                <i class="fa fa-upload"></i>
+                Import
+            </a>
+        </div>
+    </div>
+</page-header>
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body class="h-full">
+    <partial name="_VersionList" model="@Model.VersionList"/>
+</page-body>

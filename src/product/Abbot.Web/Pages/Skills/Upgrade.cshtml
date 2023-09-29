@@ -1,0 +1,141 @@
+@page "/skills/{skill}/upgrade"
+@model Serious.Abbot.Pages.Skills.UpgradeModel
+@{
+    ViewContext.SetPageInfo("Skills", "Skill Upgrade", "Upgrade skill to latest package version");
+    var package = Model.Package;
+    var skill = Model.Skill;
+}
+
+@if (Model.NewPackageVersions.Count > 0) {
+<section class="section">
+    <div class="container">
+        <div class="m-4">
+            <div>
+                <h1 class="text-2xl my-4 font-semibold flex items-center">
+                    <img class="w-8 rounded mr-2" src="@package.Icon"/>
+                    Upgrade <code class="mx-1 text-xl">@skill.Name</code> to <code class="text-xl mx-1">@package.Name</code> <code class="mx-1 text-xl">@package.Version</code>?
+                </h1>
+
+                @if (skill.DivergesFromPackage()) {
+                    <div class="bg-yellow-50 p-4 rounded text-yellow-900 border border-yellow-200 text-sm">
+                        <p class="font-semibold">This skill has custom changes.</p>
+                        <p>These changes could be lost if the package is upgraded.</p>
+                    </div>
+                }
+            </div>
+
+            <div>
+                <div class="bubble-box my-4 border border-gray-200">
+                    <header class="mb-4">
+                        <h2 class="font-semibold">Version Updates</h2>
+                        <p>
+                            This is the set of package updates that will be applied to the skill.
+                        </p>
+                    </header>
+                    <partial name="Shared/Packages/_VersionHistory" model="@Model.NewPackageVersions"/>
+                </div>
+
+                <div class="bubble-box my-4 border border-gray-200">
+                    <h2 class="font-semibold mb-4">Code</h2>
+                    <textarea
+                            class="code-viewer"
+                            data-readonly="true"
+                            data-language="@package.Language">@package.Code</textarea>
+                </div>
+
+                <div class="bubble-box border-gray-300 border">
+                    <div class="mb-2">
+                        <h2 class="font-semibold">Info</h2>
+                        <ul class="meta">
+                            <li>
+                                <i class="fa-regular fa-building"></i>
+                                by <span class="font-semibold">@package.OrganizationName</span>
+                            </li>
+                            <li>
+                                <i class="fa-solid fa-clock-rotate-left"></i>
+                                last updated <timeago datetime="@package.Modified"></timeago> by <partial name="Shared/_SmallAvatar" model="@package.ModifiedBy"/>
+                            </li>
+                            <li>
+                                <i class="fa-solid fa-download"></i>
+                                @package.TotalInstalls.ToQuantity("total install")
+                            </li>
+                            <li>
+                                <i class="fa-regular fa-file-lines"></i>
+                                <a href="https://choosealicense.com/licenses/mit/">MIT License</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-2">
+                        <h2 class="font-semibold">
+                            Description
+                        </h2>
+                        @if (package.Description is { Length: > 0 })
+                        {
+                            <p class="block">
+                                @package.Description
+                            </p>
+                        }
+                        else
+                        {
+                            <em>This package has no description</em>
+                        }
+                    </div>
+
+                    <div class="mb-2">
+                        <h2 class="font-semibold">Readme</h2>
+                        @if (package.Readme is { Length: > 0 })
+                        {
+                            <div class="content">
+                                <markdown>@package.Readme</markdown>
+                            </div>
+                        }
+                        else
+                        {
+                            <em>This package has no Readme</em>
+                        }
+                    </div>
+
+                    <div class="mb-2">
+                        <h2 class="font-semibold">Usage</h2>
+                        @if (package.Usage is { Length: > 0 })
+                        {
+                            <div class="content">
+                                <markdown>@package.Usage</markdown>
+                            </div>
+                        }
+                        else
+                        {
+                            <em>This package has no Usage examples</em>
+                        }
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <form method="post">
+                        <button class="btn btn-primary" type="submit">Confirm Upgrade</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+} else {
+<div class="info-page">
+    <section class="section info-content is-medium">
+        <div class="container has-text-centered">
+            <figure class="image is-128x128">
+                <img class="is-rounded" src="~/img/logo-abbot-login-58x58.png"/>
+            </figure>
+            <h1 class="title is-2">No package updates availale</h1>
+            <h2 class="subtitle">
+                The skill <code>@skill.Name</code> is up to date with the latest
+                version of the package <code>@package.Name</code>
+            </h2>
+            <p class="block content">
+                There is nothing left to do.
+            </p>
+        </div>
+    </section>
+</div>
+}

@@ -1,0 +1,87 @@
+@page
+@model Serious.Abbot.Pages.Settings.Organization.Advanced.IndexPage
+
+@{
+    ViewContext.SetPageInfo("Settings", "Advanced Settings");
+}
+
+<partial name="Settings/Organization/_Header" model="Model.Viewer"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-xl font-semibold">Bot Development Settings</h2>
+        <div>
+            <p>
+                Settings for skill authors and advanced bot customizations.
+            </p>
+            <form method="post" asp-page-handler="SaveUserSkillEnabled">
+                <label class="checkbox mt-5">
+                    <input asp-for="Input.UserSkillEnabled">
+                    <span class="font-semibold">Allow Custom Skills</span>
+                </label>
+
+                <p class="text-gray-500 text-sm">
+                    Controls whether members of the org can run custom skills.
+                </p>
+
+                <div class="mt-5 flex items-center">
+                    <input type="submit" class="btn btn-primary" value="Save"/>
+                </div>
+            </form>
+        </div>
+    </round-box>
+
+    <round-box>
+        <partial name="_OrgAvatarSetting"/>
+    </round-box>
+
+    <round-box>
+        <h3 class="text-xl font-semibold">Bot Customizations</h3>
+
+        <form method="post" asp-page-handler="SaveShortcutSetting">
+            <partial name="_BotShortcutSetting"/>
+        </form>
+
+        <form method="post" asp-page-handler="SaveFallbackSetting">
+            <div class="mt-4">
+                <label class="checkbox">
+                    <input asp-for="FallbackChatResponderEnabled">
+                    <span class="font-semibold">Allow Fallback Bot Responses</span>
+                </label>
+
+                <p class="text-gray-500 text-sm">
+                    When enabled, Abbot attempts to provide a helpful response when mentioned, but no skill is matched.
+                </p>
+            </div>
+
+            <input type="submit" class="btn btn-primary mt-1" value="Save"/>
+        </form>
+    </round-box>
+
+    <round-box>
+        <form method="post" asp-page-handler="SaveCommandLineApiSetting">
+            <h2 class="text-xl font-semibold">Security</h2>
+            <div class="mt-5">
+                <label class="checkbox">
+                    <input asp-for="ApiEnabled">
+                    <span class="font-semibold">Allow Command Line API</span>
+                </label>
+
+                <p class="text-gray-500 text-sm">
+                    Controls whether the Abbot API is enabled for this organization.
+                    This API is used by the <a href="https://github.com/aseriousbiz/abbot-cli">Abbot Command Line tool</a> in order to locally edit skills.
+                </p>
+
+                <p class="text-gray-500 text-sm">
+                    Even when enabled, access to the API still requires an authenticated API key
+                </p>
+            </div>
+
+             <div class="mt-5 flex items-center">
+                <input type="submit" class="btn btn-primary" value="Save"/>
+            </div>
+        </form>
+    </round-box>
+
+</page-body>

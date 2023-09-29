@@ -1,0 +1,62 @@
+@using Newtonsoft.Json.Linq
+@using Newtonsoft.Json
+@using Microsoft.EntityFrameworkCore.Scaffolding
+@model Serious.Abbot.Pages.Activity.DetailsModel
+
+<staff-only>
+    @if (Model.AuditEvent.EntityId is { } entityId) {
+        <div>
+            <h2 class="font-semibold text-sm mb-1">
+                Entity ID <span data-tooltip="You can see this because you're staff"><i class="fa-solid fa-shield-quartered"></i></span>
+            </h2>
+            <code>@entityId</code>
+        </div>
+    }
+    @if (Model.AuditEvent.SerializedProperties is not null && !Model.ShowProperties) {
+        // If Model.ShowProperties is true, we're already showing the properties in the main content area so we don't
+        // need to show it again here.
+        <div>
+            <details>
+                <summary class="font-semibold text-sm mb-1">
+                    Event Properties <span data-tooltip="You can see this because you're staff"><i class="fa-solid fa-shield-quartered"></i></span>
+                </summary>
+                <pre class="p-3 overflow-auto max-w-fit h-48">@JToken.Parse(Model.AuditEvent.SerializedProperties).ToString(Formatting.Indented).TrimEnd('\n')</pre>
+            </details>
+        </div>
+    }
+    <div>
+        <h2 class="font-semibold text-sm mb-1 block">
+            Request ID: <span data-tooltip="You can see this because you're staff"><i class="fa-solid fa-shield-quartered"></i></span>
+        </h2>
+        <copy-box>@Model.AuditEvent.TraceId</copy-box>
+    </div>
+</staff-only>
+
+@if (Model.ParentEvent is not null) {
+    <section class="mt-4">
+        <h2 class="font-semibold">Caused by</h2>
+        <p class="text-sm text-gray-500">
+            The event you're viewing occurred as a result of this event.
+        </p>
+        <div class="flex">
+            <partial name="Shared/Activity/_SimpleDescription" model="Model.ParentEvent"/>
+            <a class="ml-2"
+               asp-page="Details"
+               preserve-route-values
+               asp-route-id="@Model.ParentEvent.Identifier">
+                Details…
+            </a>
+        </div>
+    </section>
+}
+
+@* >1 because we don't want to show the event we're viewing as a related event *@
+@if (Model.RelatedEvents is {Count: >1}) {
+    <section class="mt-4">
+        <h2 class="font-semibold">Related Events</h2>
+        <p class="text-sm text-gray-500">
+            These are other events that are related to this event.
+        </p>
+        <partial name="Shared/Activity/_ActivityEventList" model="Model.RelatedEvents"/>
+    </section>
+}

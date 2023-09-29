@@ -1,0 +1,29 @@
+@page
+@model Serious.Abbot.Pages.Customers.DeleteAllCustomers
+
+@{
+    ViewContext.SetPageInfo("Customer", "Delete All Customers");
+}
+
+<page-header>
+    <div class="flex items-center mb-4">
+        <a asp-page="Index">Customers</a><span class="mx-1">/</span> Delete
+    </div>
+</page-header>
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <form method="post">
+            <div>
+                THIS WILL DELETE ALL CUSTOMERS (including their Playbook run history) PERMANENTLY!
+                There's no going back. Are you sure you want to delete all customers?
+            </div>
+            <div class="mt-2">
+                <button type="submit" class="btn btn-danger">Yes, delete all customers</button>
+                <a asp-page="Index" class="btn">Cancel</a>
+            </div>
+        </form>
+    </round-box>
+</page-body>

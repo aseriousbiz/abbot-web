@@ -1,0 +1,7 @@
+@model ConversationEvent
+
+<timeline-entry background-color="TailwindColor.Gray" actor="Model.Member" viewer-organization="Model.Conversation.Organization" staff-only="true">
+    <span class="font-mono">@@@Model.Member.DisplayName</span>
+
+    <em>Unknown Timeline Event of type <code>@Model:@Model.GetType().Name</code></em>
+</timeline-entry>

@@ -1,0 +1,78 @@
+@page "/staff/tools/slack/{id}/details"
+@model Serious.Abbot.Pages.Staff.Tools.SlackEventPage
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Slack Event Detail");
+}
+
+<partial name="Staff/_Header"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+<partial name="_Header"/>
+<back-link asp-page="SlackEvents">Back to Slack Event lookup</back-link>
+
+<page-body>
+    <round-box>
+        @if (Model.Details is null) {
+            <p>No event found</p>
+        }
+        else {
+            <h2 class="text-3xl font-semibold"><a asp-page="Index">Slack Events</a> / @Model.Details.EventId</h2>
+            <div class="grid gap-2 mt-5" style="grid-template-columns: max-content 1fr;">
+                <span class="font-semibold">Event ID</span>
+                <span>@Model.Details.EventId</span>
+                <span class="font-semibold">Event Type</span>
+                <span><code>@Model.Details.EventType</code></span>
+                <span class="font-semibold">Team Id</span>
+                <span><code>@Model.Details.TeamId</code></span>
+                <span class="font-semibold">App Id</span>
+                <span><code>@Model.Details.AppId</code></span>
+                <span class="font-semibold">Error</span>
+                @if (Model.Details.Error is null) {
+                    <em>Check our event logs for errors.</em>
+                } else {
+                    <pre>@Model.Details.Error</pre>
+                }
+                <span class="font-semibold">Event Timestamp</span>
+                <span><timeago datetime="@Model.Details.Created"></timeago></span>
+                <span class="font-semibold">Event Completed</span>
+                @if (Model.Details.Completed is {} completed) {
+                    <span><timeago datetime="@completed"></timeago></span>
+                } else {
+                    <span>Not yet completed</span>
+                }
+                <span class="font-semibold">Job Id</span>
+                <span>
+                    @if (Model.Details.JobId is { } jobId) {
+                        <code><a href="https://@WebConstants.DefaultHost/staff/jobs/jobs/details/@jobId" data-turbo="false">@jobId</a></code>
+                    } else {
+                        <em>(null)</em>
+                    }
+                </span>
+                <span class="font-semibold">Content</span>
+                <div class="flex flex-col">
+                    <span class="font-semibold">Content is encrypted by default.</span>
+
+                    <div asp-validation-summary="ModelOnly"></div>
+                    @if (Model.Details.Content.Empty) {
+                        <em>Empty: This means the event was processed successfully and cleared out.</em>
+                    } else {
+                        <div id="@Model.UnencryptedDomId">
+                            <form method="post" class="flex flex-col gap-2">
+                                <span>If you need to view the content, provide a reason and submit the form.</span>
+                                <div class="bg-yellow-200 p-4 place-self-start">
+                                    <i class="fa-solid fa-exclamation-triangle" aria-hidden="true"></i>
+                                    <strong>Warning:</strong> Viewing the content creates an entry in the customer's Activity Log.
+                                </div>
+                                <label class="font-semibold" asp-for="Input.Reason">
+                                    Reason to view the content
+                                </label>
+                                <span asp-validation-for="Input.Reason"></span>
+                                <input asp-for="Input.Reason" class="form-input"/>
+                                <button type="submit" class="btn btn-primary place-self-start">Click to view content</button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </round-box>
+</page-body>

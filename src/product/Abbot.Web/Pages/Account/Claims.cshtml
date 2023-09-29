@@ -1,0 +1,133 @@
+@page
+@model Serious.Abbot.Pages.Account.ClaimsModel
+
+@{
+    ViewContext.SetPageInfo("Account", "Claims");
+}
+<page-header>
+    Claims associated with current User (@User.GetPlatformUserId())
+</page-header>
+
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+
+<page-body>
+    <div>
+        <p>This page displays all the claims associated the the current User. This is useful when debugging to see which claims are being populated from the Auth0 ID Token.</p>
+
+        <h4>IsAuthenticated: @User.IsAuthenticated()</h4>
+
+        @if (User.IsInRole(Roles.Administrator)) {
+            <h4>User is an Administrator.</h4>
+        }
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>
+                    Claim
+                </th>
+                <th>
+                    Value
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var claim in User.Claims) {
+                <tr>
+                    <td>@claim.Type</td>
+                    <td>
+                        @if (claim.Type == "picture") {
+                            <img src="@claim.Value" alt="picture claim"/>
+                        }
+                        <span>@claim.Value</span>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.IsDebug) {
+        @if (Model.CurrentMember is not null) {
+            <section>
+                <div>
+                    <h2 class="title is-4">Member info</h2>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Member Id</th>
+                            <th>Org Id</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>@Model.CurrentMember.Id</td>
+                            <td>@Model.CurrentMember.OrganizationId</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <h2 class="title is-4">Permissions</h2>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Skill</th>
+                            <th>Capability</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var permission in Model.Permissions) {
+                            <tr>
+                                <td>@permission.Capability</td>
+                                <td>@permission.Skill.Name</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                    <h3 class="title is-5">Add new permission</h3>
+                    <form method="post">
+                        <div class="field is-grouped">
+                            <div class="control">
+                                <label class="label" asp-for="Capability"></label>
+                                <div class="select">
+                                    <select asp-for="Capability" asp-items="Html.GetEnumSelectList<Capability>()">
+                                        <option selected="selected" value="">Please select</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="control">
+                                <label class="label" asp-for="SkillId"></label>
+                                <div class="select">
+                                    <select asp-for="SkillId" asp-items="Model.Skills"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" asp-for="FormType" value="permission" />
+                        <button class="button" type="submit">Submit</button>
+                    </form>
+                </div>
+            </section>
+        }
+
+        <hr/>
+
+        <div>
+            <h2 class="title is-4">Role Manager</h2>
+            Change my role to...
+            <form method="post">
+                <div class="field is-grouped">
+                    <div class="control">
+                        <div class="select">
+                            <select asp-for="Roles" asp-items="Model.AvailableRoles"></select>
+                        </div>
+                    </div>
+
+                    <div class="control">
+                        <input type="hidden" asp-for="FormType" value="role"/>
+                        <button class="button" type="submit">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    }
+</page-body>

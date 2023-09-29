@@ -1,0 +1,1 @@
+export type HTMLValueBearingElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;

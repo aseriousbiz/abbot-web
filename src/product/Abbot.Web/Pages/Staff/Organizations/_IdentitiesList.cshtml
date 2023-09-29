@@ -1,0 +1,53 @@
+@model IReadOnlyList<LinkedIdentity>
+
+<div>
+    @if (Model?.Count > 0)
+    {
+        <table class="w-full">
+            <thead>
+            <tr>
+                <th class="text-left border-b p-3">Organization</th>
+                <th class="text-left border-b p-3">Type</th>
+                <th class="text-left border-b p-3">External ID</th>
+                <th class="text-left border-b p-3">External Name</th>
+                <th class="text-left border-b p-3">External Metadata</th>
+                <th class="text-left border-b p-3">Created</th>
+            </tr>
+            </thead>
+            @foreach (var identity in Model)
+            {
+                <tr>
+                    <td class="align-middle p-3">
+                        <a asp-page="Status" asp-route-id="@identity.Organization.PlatformId">@identity.Organization.Name</a>
+                    </td>
+                    <td class="align-middle p-3"><code>@identity.Type.ToString()</code></td>
+                    <td class="align-middle p-3">
+                        <form class="has-tooltip-arrow whitespace-nowrap"
+                              data-tooltip="Click to edit"
+                              method="post"
+                              asp-page-handler="EditExternalIdentity"
+                              asp-route-identityId="@identity.Id"
+                              data-controller="editable">
+                            <input type="hidden" name="externalId" value="" data-editable-target="hidden" />
+                            <code contentEditable="true" data-editable-target="content">@identity.ExternalId</code>
+                        </form>
+                    </td>
+                    <td class="align-middle p-3">@identity.ExternalName</td>
+                    <td class="align-middle p-3"><code>@identity.ExternalMetadata</code></td>
+                    <td class="align-middle p-3">
+                        <timeago datetime="@identity.Created"></timeago>
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+    else
+    {
+        <blankslate>
+            <div class="flex flex-col items-center gap-2">
+                <i class="fa fa-empty-set text-3xl"></i>
+                <span class="text-gray-500">No external identities found!</span>
+            </div>
+        </blankslate>
+    }
+</div>

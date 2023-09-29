@@ -1,0 +1,45 @@
+@page
+@{
+    Layout = "Shared/Layouts/_ErrorLayout";
+    ViewContext.SetPageInfo("Status", "Internal Server Error");
+}
+@using Serious.Abbot.Web
+@model Serious.Abbot.Pages.ErrorPage
+
+<section class="relative sm:w-1/2 mx-auto text-center flex flex-col items-center mt-16">
+    <img src="~/img/sad-abbot.svg"/>
+
+    <header class="static">
+        <h1 class="italic inline-block font-semibold text-6xl my-1">
+            Uh oh!
+        </h1>
+        <div class="text-2xl text-left mt-2 ml-2 text-red-500 transform -translate-y-0.5 text-center md:text-left md:absolute md:inline-block ">
+            <p>500</p>
+            <p class="font-semibold leading-4 whitespace-nowrap">Internal Server Error</p>
+        </div>
+    </header>
+
+    @if (Model.ExceptionMessage is not null) {
+        <p class="my-4 font-mono break-words w-full px-4">
+            @Model.ExceptionMessage
+        </p>
+    }
+
+    <p class="text-xl mt-4 mb-8">
+        This might be a temporary issue, please reload and try again! If you still see this error, please contact us at <a href="mailto:@WebConstants.SupportEmail">@WebConstants.SupportEmail</a>.
+    </p>
+
+    <details>
+        <summary class="font-semibold">Technical Details</summary>
+        <div class="text-left font-mono text-smw-full mx-auto overflow-auto" style="max-width: 50%;">
+            <code>Abbot version @ReflectionExtensions.GetAssemblyVersion(typeof(Startup))</code>
+            <p>
+                <strong>Request ID:</strong> <code>@(Activity.Current?.Id ?? string.Empty)</code>
+            </p>
+
+            @if (Model.ExceptionStackTrace != null) {
+                <div class="whitespace-pre text-sm">@Model.ExceptionStackTrace</div>
+            }
+        </div>
+    </details>
+</section>

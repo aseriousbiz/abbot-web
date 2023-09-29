@@ -1,0 +1,40 @@
+@model ConfigureModel
+
+<form id="@ConfigureModel.FormId" method="post" class="mt-5 grid gap-2 items-baseline" style="grid-template-columns: max-content 1fr minmax(24rem, max-content);">
+    <label asp-for="SelectedPipelineId"></label>
+    <div class="form-select-wrapper">
+        <select data-form-action-param="@Url.Page(null, "SelectPipeline")" data-action="form#submit" class="form-select w-full" asp-for="SelectedPipelineId" asp-items="Model.AvailablePipelines"></select>
+    </div>
+    <span asp-validation-for="SelectedPipelineId"></span>
+
+    @if (Model.SelectedPipeline is not null) {
+        <label asp-for="SelectedStageIdNew"></label>
+        <div class="form-select-wrapper">
+            <select class="form-select w-full" asp-for="SelectedStageIdNew" asp-items="Model.AvailableStages"></select>
+        </div>
+        <span asp-validation-for="SelectedStageIdNew"></span>
+
+        <label asp-for="SelectedStageIdWaiting"></label>
+        <div class="form-select-wrapper">
+            <select class="form-select w-full" asp-for="SelectedStageIdWaiting" asp-items="Model.AvailableStages"></select>
+        </div>
+        <span asp-validation-for="SelectedStageIdWaiting"></span>
+
+        <label asp-for="SelectedStageIdNeedsResponse"></label>
+        <div class="form-select-wrapper">
+            <select class="form-select w-full" asp-for="SelectedStageIdNeedsResponse" asp-items="Model.AvailableStages"></select>
+        </div>
+        <span asp-validation-for="SelectedStageIdNeedsResponse"></span>
+
+        <label asp-for="SelectedStageIdClosed"></label>
+        <div class="form-select-wrapper">
+            <select class="form-select w-full" asp-for="SelectedStageIdClosed" asp-items="Model.AvailableStages"></select>
+        </div>
+        <span asp-validation-for="SelectedStageIdClosed"></span>
+    }
+
+    <div>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a asp-page="Index" class="btn">Close</a>
+    </div>
+</form>

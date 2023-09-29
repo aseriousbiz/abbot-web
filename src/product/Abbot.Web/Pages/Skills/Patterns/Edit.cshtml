@@ -1,0 +1,40 @@
+@page "/skills/{skill}/patterns/{slug}/edit"
+@model Serious.Abbot.Pages.Skills.Patterns.EditPageModel
+@{
+    ViewContext.SetPageInfo("Patterns", "Pattern Edit", "Edit this pattern");
+}
+<partial name="_PatternBuilder" model="Model.TestInput" />
+
+<div class="mx-auto my-2">
+    <section class="border border-gray-200 mx-1 mt-2 sm:mt-0">
+        <header class="px-2 m-2 bg-blue-50">
+            <h1 class="text-sm">
+                Edit pattern for
+                <span class="font-bold">
+                    @Model.SkillName
+                </span>
+            </h1>
+        </header>
+
+        <section class="m-4">
+            <div asp-validation-summary="ModelOnly"></div>
+            <form method="post"
+                  data-controller="modal-listener"
+                  data-modal-listener-modal-value="pattern-builder">
+                <input type="hidden" asp-for="Input.Id"/>
+                <input type="hidden" asp-for="Input.Skill"/>
+
+                <editor for="Input" />
+
+                <div class="flex items-center">
+                    <skilllink class="btn btn-danger" asp-page="Delete" asp-route-slug="@Model.Slug">Delete</skilllink>
+
+                    <div class="ml-auto flex items-center">
+                        <skillbacklink class="btn"/>
+                        <button class="btn btn-primary ml-2">Update Pattern</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </section>
+</div>

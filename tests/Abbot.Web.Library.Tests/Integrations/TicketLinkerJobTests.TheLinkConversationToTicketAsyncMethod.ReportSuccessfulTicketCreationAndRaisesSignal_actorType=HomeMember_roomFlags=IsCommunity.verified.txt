@@ -1,0 +1,61 @@
+﻿{
+  target: {
+    BusTestHarness: {
+      Messages: [
+        {
+          Published: PublishConversationNotification,
+          MessageId: Guid_1,
+          ConversationId: Guid_2,
+          DestinationAddress: Serious.Abbot.Eventing.Messages:PublishConversationNotification,
+          Message: {
+            OrganizationId: 1,
+            ConversationId: 1,
+            Notification: {
+              Type: TicketCreated,
+              Icon: 🎫,
+              Headline: Ticket Created,
+              Message: <@Uhome> created <https://example.com/tickets/num|Fake Ticketing ticket> for <https://example.com/|this conversation>.,
+              MentionGroups: [
+                {
+                  RecipientType: FirstResponder
+                }
+              ]
+            },
+            Broadcast: false
+          }
+        }
+      ]
+    },
+    RaisedSignals: [
+      {
+        Name: system:conversation:linked:ticket,
+        Arguments: {"IntegrationType":99999,"ApiUrl":"https://api.example.com/tickets/num","WebUrl":"https://example.com/tickets/num"},
+        PlatformRoomId: C0004,
+        SenderId: 3,
+        TriggeringMessage: {
+          MessageId: 1111.0005,
+          Text: Test Conversation 5,
+          MessageUrl: https://testorg.example.com/archives/C0004/p11110005,
+          ConversationId: {
+            Value: 1
+          },
+          SenderId: 3
+        }
+      }
+    ],
+    AnalyticsClient: {
+      Tracked: {
+        (3, Ticket Created): {
+          feature: Integrations,
+          integration: fake-ticketing,
+          organization: 1,
+          organization_name: Test Organization,
+          plan: Unlimited,
+          platform_id: Thome,
+          reason: null,
+          success: true
+        }
+      }
+    }
+  }
+}

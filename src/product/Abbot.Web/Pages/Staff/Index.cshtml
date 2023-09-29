@@ -1,0 +1,80 @@
+@page "{handler?}"
+@model Serious.Abbot.Pages.Staff.IndexPage
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Home");
+}
+
+<partial name="_Header"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">Organizations</h2>
+        <p>There are <code>@Model.InstalledOrganizationCount</code> organizations with Abbot installed, and <code>@Model.TotalOrganizationCount</code> total organizations.</p>
+        <a asp-page="Stats/Index">Detailed Stats…</a>
+
+        <div class="hard-box mt-5 overflow-auto">
+            <div class="mt-3 mb-8 mx-4 mt-4">
+                <form method="get" class="flex gap-x-4 items-baseline">
+                    <input class="form-input flex-grow" asp-for="Filter" placeholder="Search for an organization by ID, name, domain, platform ID, Stripe customer/subscription ID">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                    <button class="btn btn-primary btn-outline" type="submit"
+                            name="@Html.NameFor(model => model.InstalledFilter)"
+                            value="@((!Model.InstalledFilter).ToString())">
+                        <img class="inline-block" src="/img/abbot-avatar-small.png" width="16" alt="Abbot Installed" />
+                    </button>
+                    <label asp-for="PlanFilter">Plan:</label>
+                    <div class="form-select-wrapper">
+                        <select class="form-select" data-action="form#submit" asp-for="PlanFilter" asp-items="IndexPage.PlanFilterOptions">
+                        </select>
+                    </div>
+                    <label asp-for="IntegrationFilter">Integration:</label>
+                    <div class="form-select-wrapper">
+                        <select class="form-select" data-action="form#submit" asp-for="IntegrationFilter" asp-items="IndexPage.IntegrationFilterOptions">
+                            <option></option>
+                        </select>
+                    </div>
+                    <label asp-for="OrderBy">Sort By:</label>
+                    <div class="form-select-wrapper">
+                        <select class="form-select" data-action="form#submit" asp-for="OrderBy" asp-items="Html.GetEnumSelectList<OrganizationSortBy>()">
+                        </select>
+                    </div>
+                </form>
+                @if (Model.Organizations.Any()) {
+                    <table class="mt-4 w-full">
+                        <thead>
+                        <tr>
+                            <th class="text-left border-b p-3"></th>
+                            <th class="text-left border-b p-3">Organization</th>
+                            <th class="text-left border-b p-3">Plan Type</th>
+                            <th class="text-left border-b p-3 whitespace-nowrap"># Agents</th>
+                            <th class="text-left border-b p-3 whitespace-nowrap"># Skills</th>
+                            <th class="text-left border-b p-3">Stripe</th>
+                            <th class="text-left border-b p-3">Joined</th>
+                            <th class="text-left border-b p-3">Last Activity</th>
+                            <th class="text-left border-b p-3"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var org in Model.Organizations) {
+                            <partial name="Shared/Staff/_OrgTableRow" model="org"/>
+                        }
+                        </tbody>
+                    </table>
+                    <partial name="Shared/_Paginator" model="@Model.Organizations"/>
+                }
+                else {
+                    <blankslate>
+                        <div class="text-center text-xl h-6 text-gray-500 mb-2">
+                            <i class="fa-regular fa-lightbulb-slash"></i>
+                        </div>
+
+                        <h2 class="text-center text-lg text-gray-700">
+                            No organizations found, check the Plan filter.
+                        </h2>
+                    </blankslate>
+                }
+            </div>
+        </div>
+    </round-box>
+</page-body>

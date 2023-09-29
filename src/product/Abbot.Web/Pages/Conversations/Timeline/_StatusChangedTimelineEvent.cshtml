@@ -1,0 +1,26 @@
+@model StateChangedEvent
+
+<timeline-entry icon="rotate" actor="Model.Member" viewer-organization="Model.Conversation.Organization" staff-only="Model.Implicit">
+    <div>
+        <p class="text-indigo-500 font-semibold text-sm">
+            Status changed
+
+            <span class="text-gray-500 font-normal" data-tooltip="@Model.Created" title="@Model.Created">
+                @Model.Created.Humanize()
+            </span>
+        </p>
+
+        <p class="font-semibold">
+            <span data-tooltip="@Model.Member.User.PlatformUserId">
+                @if (User.IsInRole(Roles.Staff)) {
+                    <a asp-page="/Staff/Users/Details" asp-route-id="@Model.Member.User.PlatformUserId">@@@Model.Member.DisplayName</a>
+                } else {
+                    <text>@@@Model.Member.DisplayName </text>
+                }
+            </span>
+            changed the status
+            <span class="font-normal">from @Model.OldState.ToDisplayString()</span>
+            to @Model.NewState.ToDisplayString().
+        </p>
+    </div>
+</timeline-entry>

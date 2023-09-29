@@ -1,0 +1,186 @@
+@page "/staff/organizations/{id}/integrations"
+@using Serious.Abbot.Integrations.SlackApp;
+@model Serious.Abbot.Pages.Staff.Organizations.IntegrationsPage
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Integrations");
+}
+
+<page-body>
+    <round-box>
+        <h2 class="title is-4 font-semibold">HubSpot</h2>
+        @if (Model.HubSpotIntegration is not {} hubSpotIntegration || Model.HubSpotSettings is not {} hubSpotSettings) {
+            <em>Not Set Up</em>
+        }
+        else {
+            <div class="grid gap-2 items-baseline" style="grid-template-columns: max-content 1fr;">
+                <label>Integration Id:</label>
+                <span>
+                    <code>@hubSpotIntegration.Id</code>
+                </span>
+                <label>Enabled:</label>
+                <span>
+                    <code>@hubSpotIntegration.Enabled</code>
+                </span>
+                <label>Integration External Id (Portal Id):</label>
+                <span>
+                    <code>@hubSpotIntegration.ExternalId</code>
+                </span>
+                <label>Hub Domain:</label>
+                <span>
+                    <code>@hubSpotSettings.HubDomain</code>
+                </span>
+                <label>Approved Scopes:</label>
+                <span>
+                    @if (hubSpotSettings is not { ApprovedScopes: { Count: > 0 } scopes }) {
+                        <code>None</code>
+                    } else {
+                        <code>@string.Join(", ", scopes)</code>
+                    }
+                </span>
+                <label>Has Api Credentials:</label>
+                <span>
+                    <code>@hubSpotSettings.HasApiCredentials</code>
+                </span>
+                <label>HasTicketConfig</label>
+                <span>
+                    <code>@hubSpotSettings.HasTicketConfig</code>
+                </span>
+                <label data-tooltip="The ID of the pipeline to create new tickets in.">TicketPipelineId:</label>
+                <span>
+                    <code>@hubSpotSettings.TicketPipelineId</code>
+                </span>
+                <label data-tooltip="The ID of the pipeline stage to create new tickets in.">
+                    @(nameof(hubSpotSettings.NewTicketPipelineStageId))
+                </label>
+                <span>
+                    <code>@hubSpotSettings.NewTicketPipelineStageId</code>
+                </span>
+                <label data-tooltip="The ID of the pipeline stage to create new tickets in.">
+                    @(nameof(hubSpotSettings.WaitingTicketPipelineStageId))
+                </label>
+                <span>
+                    <code>@hubSpotSettings.WaitingTicketPipelineStageId</code>
+                </span>
+                <label data-tooltip="The ID of the pipeline stage to create new tickets in.">
+                    @(nameof(hubSpotSettings.NeedsResponseTicketPipelineStageId))
+                </label>
+                <span>
+                    <code>@hubSpotSettings.NeedsResponseTicketPipelineStageId</code>
+                </span>
+                <label data-tooltip="The ID of the pipeline stage to create new tickets in.">
+                    @(nameof(hubSpotSettings.ClosedTicketPipelineStageId))
+                </label>
+                <span>
+                    <code>@hubSpotSettings.ClosedTicketPipelineStageId</code>
+                </span>
+                @if (Model.HubSpotFormSettings is {} formSettings) {
+                    <label>Form Settings</label>
+                    <p>This organization uses HubSpot Forms to create tickets.</p>
+                    <span></span>
+                    <div class="grid gap-2 items-baseline" style="grid-template-columns: max-content 1fr;">
+                        <label>Token Form Field:</label>
+                        <code>@formSettings.TokenFormField</code>
+                        <label>Form Guid</label>
+                        <code>@formSettings.HubSpotFormGuid</code>
+                    </div>
+                }
+            </div>
+        }
+    </round-box>
+    <round-box>
+        <h2 class="title is-4 font-semibold">Zendesk</h2>
+        @if (Model.ZenDeskIntegration is not {} zendeskIntegration || Model.ZendeskSettings is not {} zendeskSettings) {
+            <em>Not Set Up</em>
+        }
+        else {
+            <div class="grid gap-2 items-baseline" style="grid-template-columns: max-content 1fr;">
+                <label>Integration Id:</label>
+                <span>
+                    <code>@zendeskIntegration.Id</code>
+                </span>
+                <label>Enabled:</label>
+                <span>
+                    <code>@zendeskIntegration.Enabled</code>
+                </span>
+                <label>Integration External Id:</label>
+                <span>
+                    <code>@zendeskIntegration.ExternalId</code>
+                </span>
+                <label>Subdomain:</label>
+                <span>
+                    <code>@zendeskSettings.Subdomain</code>
+                </span>
+                <label>WebhookId:</label>
+                <span>
+                    <code>@zendeskSettings.WebhookId</code>
+                </span>
+                <label>HasApiCredentials:</label>
+                <span>
+                    <code>@zendeskSettings.HasApiCredentials</code>
+                </span>
+                <label>TriggerCategoryId:</label>
+                <span>
+                    <code>@zendeskSettings.TriggerCategoryId</code>
+                </span>
+                <label>CommentPostedTriggerId:</label>
+                <span>
+                    <code>@zendeskSettings.CommentPostedTriggerId</code>
+                </span>
+                <label>Token Prefix:</label>
+                <span>
+                    <code>@zendeskSettings.GetTokenPrefix()</code>
+                </span>
+                    @if (zendeskSettings.HasApiCredentials)
+                    {
+                        <form asp-page-handler="UninstallZendesk" method="post" class="col-span-2 flex flex-row justify-end">
+                            <input type="text" class="form-input text-sm" name="subdomain" placeholder="Confirm subdomain." />
+                            <button class="btn btn-danger btn-sm ml-2" type="submit">Uninstall</button>
+                        </form>
+                    }
+            </div>
+        }
+    </round-box>
+
+    <round-box>
+        <h2 class="title is-4 font-semibold">Slack App</h2>
+        @if (Model.SlackAppIntegration is not {} slackAppIntegration || Model.SlackAppSettings is not {} slackAppSettings) {
+            <em>Not Set Up</em>
+        }
+        else {
+            <div class="grid gap-2 items-baseline" style="grid-template-columns: max-content 1fr;">
+                <label>Integration Id:</label>
+                <span>
+                    <code>@slackAppIntegration.Id</code>
+                </span>
+                <label>Enabled:</label>
+                <span>
+                    <code>@slackAppIntegration.Enabled</code>
+                </span>
+                <label>Has Authorization:</label>
+                <span>
+                    <code>@slackAppSettings.HasAuthorization(slackAppIntegration)</code>
+                </span>
+                <label>Integration External Id:</label>
+                <span>
+                    <code>@slackAppIntegration.ExternalId</code>
+                </span>
+                <label>Slack App Id:</label>
+                <span>
+                    <code>@slackAppIntegration.ExternalId</code>
+                </span>
+                <label>Slack App Url:</label>
+                <span>
+                    <code>@SlackAppSettings.SlackAppUrl(slackAppIntegration)</code>
+                </span>
+                <label>Manifest:</label>
+                <span>
+                    <pre><code>@slackAppSettings.Manifest</code></pre>
+                </span>
+            </div>
+            <h3 class="title is-3 font-semibold mt-3">Custom Authorization</h3>
+            <partial name="_SlackAuthorization" model="@slackAppSettings.Authorization" />
+            <h3 class="title is-3 font-semibold mt-3">Default Authorization</h3>
+            <partial name="_SlackAuthorization" model="@slackAppSettings.DefaultAuthorization" />
+        }
+    </round-box>
+</page-body>

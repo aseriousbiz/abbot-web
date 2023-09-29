@@ -1,0 +1,63 @@
+@model Serious.Abbot.Pages.Activity.DetailsModel
+
+@{
+    var auditEvent = Model.AuditEvent as BuiltInSkillRunEvent
+                     ?? throw new InvalidOperationException($"AuditEvent is not a {nameof(BuiltInSkillRunEvent)}.");
+    bool success = auditEvent.ErrorMessage is null or {Length: 0};
+    var displayRoom = auditEvent.Room is { Length:> 0 } && auditEvent.Room[0] != '#'
+        ? $"#{auditEvent.Room}"
+        : auditEvent.Room;
+}
+
+<div class="p-4">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div>
+            <h2 class="font-bold text-sm mb-1">Skill</h2>
+            <div>
+                <code>@auditEvent.SkillName</code>
+            </div>
+        </div>
+
+        <div class="col-span-2">
+            <h2 class="font-bold text-sm mb-1">Arguments</h2>
+            <div>
+                @if (auditEvent.Arguments is { Length: > 0}) {
+                    <code>@auditEvent.Arguments</code>
+                } else {
+                    <span class="text-gray-500">No arguments specified</span>
+                }
+            </div>
+        </div>
+        
+        <div>
+            <h2 class="font-bold text-sm mb-1">Outcome</h2>
+            <p>
+                @if (success) {
+                    <span class="text-green-500">Success</span>
+                } else {
+                    <span class="text-red-500">Failed</span>
+                }
+            </p>
+        </div>
+
+        <div>
+            <h2 class="font-bold text-sm mb-1">Channel</h2>
+            <div>
+                @if (displayRoom is { Length: > 0 }) {
+                    <text>@displayRoom</text>
+                } else {
+                    <span class="text-gray-500">Unknown</span>
+                }
+            </div>
+        </div>
+
+        @if (Model.AuditEvent.ErrorMessage is not null) {
+            <div class="col-span-3">
+                <h2 class="font-bold text-sm mb-1">Error Message</h2>
+                <div>
+                    <code>@auditEvent.ErrorMessage</code>
+                </div>
+            </div>
+        }
+    </div>
+</div>

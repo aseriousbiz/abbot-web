@@ -1,0 +1,20 @@
+<Project>
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <TargetFramework>$(DefaultTargetFramework)</TargetFramework>
+        <RollForward>Major</RollForward>
+        <SemVersion>0.8.14</SemVersion>
+        <Company>A Serious Business, Inc.</Company>
+        <Copyright>Copyright © 2021</Copyright>
+        <AssemblyVersion>$(SemVersion).0</AssemblyVersion>
+        <InformationalVersion>$(SemVersion)-beta</InformationalVersion>
+        <FileVersion>$(SemVersion).0</FileVersion>
+        <Version>$(SemVersion).0</Version>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <RunAnalyzers>false</RunAnalyzers>
+        <Nullable>enable</Nullable>
+        <DefaultItemExcludes>*.received.*;$(DefaultItemExcludes)</DefaultItemExcludes>
+    </PropertyGroup>
+</Project>

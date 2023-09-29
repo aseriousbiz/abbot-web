@@ -1,0 +1,25 @@
+@using Microsoft.AspNetCore.Http.Features
+@{
+    var consentFeature = Context.Features.Get<ITrackingConsentFeature>();
+    var showBanner = !consentFeature?.CanTrack ?? false;
+    var cookieString = consentFeature?.CreateConsentCookie();
+}
+
+@if (showBanner) {
+    <div data-controller="cookie-consent"
+         data-cookie-consent-cookie-value="@cookieString"
+         class="notification-abbot sm:w-96 bg-white border border-gray-300 rounded p-4 m-2 fixed bottom-2 right-2 z-50 shadow-md"
+         style="border-color: #A5B4FC;"
+         role="alert">
+        <p>
+            <span class="emoji">🍪</span> We use cookies to provide necessary functionality and an improved experience.
+            Read our <a class="text-blue-500" href="/about/policy/privacy/cookies">Cookie Policy</a>.
+        </p>
+
+        <div class="flex justify-end">
+            <button type="button" class="btn btn-primary px-4" data-action="cookie-consent#accept">
+                OK
+            </button>
+        </div>
+    </div>
+}

@@ -1,0 +1,88 @@
+.content p,
+.content blockquote, 
+.content ul, 
+.content ol, 
+.content dl, 
+.content table, 
+.content pre {
+	margin: 15px 0;
+	}
+
+.content ul, .content ol {
+	padding-left: 30px;
+	}
+
+.content h1 {
+	border-bottom: 1px solid #ddd;
+	color: #000;
+	font-size: 2.0em;
+	}
+
+.content h2 {
+	border-bottom: 1px solid #eee;
+	color: #000;
+	font-size: 1.5em;
+	}
+
+.content h3 {
+	font-size: 1.2em;
+	}
+
+.content h4 {
+	font-size: 1.0em;
+	}
+
+.content h5 {
+	font-size: .75em;
+	}
+
+.content h6 {
+	color: #777;
+	font-size: .75em;
+	}
+
+.content h1, 
+.content h2, 
+.content h3, 
+.content h4, 
+.content h5, 
+.content h6 {
+	font-weight: bold;
+	line-height: 1.7;
+	margin: 1em 0 15px 0;
+	}
+
+.content h1 + p, .content h2 + p, .content h3 + p {
+	margin-top: 10px;
+	}
+	
+.content img {
+	max-width: 100%;
+}
+
+.content code,
+.content pre {
+	background-color: #F8F8F8;
+	border-radius: 3px;
+	border: 1px solid #DDD;
+	font-family: Consolas, "Liberation Mono", Courier, monospace;
+	font-size: 1em;
+	margin: 0 2px;
+	padding: 0 5px;
+	white-space: pre;
+}
+
+.content pre code {
+	border: none;
+	margin: 0;
+	padding: 0;
+	white-space: pre;
+}
+.content ol li {
+    list-style-type: decimal;
+}
+
+.content ul li {
+    list-style-type: disc;
+}
+

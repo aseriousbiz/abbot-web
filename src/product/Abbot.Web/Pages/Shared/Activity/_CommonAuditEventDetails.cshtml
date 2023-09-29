@@ -1,0 +1,84 @@
+@using Newtonsoft.Json.Linq
+@using Serious.AspNetCore.TagHelpers
+@using Newtonsoft.Json
+@model Serious.Abbot.Pages.Activity.DetailsModel
+
+<div>
+    <div class="w-full">
+        <h2 class="font-semibold text-sm mb-1 block">
+            Event ID:
+        </h2>
+        <p class="text-sm">
+            Provide this ID to Abbot Support if you have questions about this event.
+        </p>
+        <copy-box>@Model.AuditEvent.Identifier</copy-box>
+    </div>
+    <div class="mt-4 flex flex-wrap gap-4 items-baseline justify-between">
+        <div>
+            <h2 class="font-semibold text-sm mb-1 block">
+                Event:
+            </h2>
+            @if (Model.AuditEvent is AuditEvent auditEvent) {
+                <code>@auditEvent.Type</code>
+            } else {
+                <code>@Model.AuditEvent.Discriminator</code>
+            }
+        </div>
+        <div>
+            <h2 class="font-semibold text-sm mb-1 block">
+                Performed by:
+            </h2>
+            <span>
+                @if (Model.AuditEvent is StaffAuditEvent or AuditEvent { StaffPerformed: true } && !ViewContext.IsStaffMode()) {
+                @* Unless the viewer is staff, don't show them the staff actor *@
+                    <i class="fa-solid fa-shield-quartered"></i>
+                    <span>Abbot Staff</span>
+                } else if (Model.AuditEvent.ActorMember is not null) {
+                    <avatar member="Model.AuditEvent.ActorMember"></avatar>
+                    <span>@Model.AuditEvent.Actor.DisplayName</span>
+                } else {
+                    <partial name="Shared/_SmallAvatar" model="Model.AuditEvent.Actor"/>
+                    <span>@Model.AuditEvent.Actor.DisplayName</span>
+                }
+            </span>
+            <span data-tooltip="@Model.AuditEvent.Created.ToString("O")">
+                <timeago datetime="@Model.AuditEvent.Created"></timeago>
+            </span>
+        </div>
+    </div>
+    <div class="mt-4 flex gap-4 items-baseline">
+        @if (Model.AuditEvent is StaffAuditEvent or AuditEvent { StaffPerformed: true }) {
+            <div class="col-span-3 font-semibold text-sm">NOTE: A Staff Member of A Serious Business, Inc. performed this action. Contact <a href="mailto:@WebConstants.SupportEmail">@WebConstants.SupportEmail</a> if you have any questions.</div>
+            @if (Model.AuditEvent is StaffAuditEvent { Reason: var reason }) {
+                <div class="col-span-3">
+                    <h2 class="font-semibold text-sm mb-1" data-tooltip="The reason the staff user gave for performing this action">
+                        Reason
+                    </h2>
+                    <markdown>@reason</markdown>
+                </div>
+            } else if (Model.AuditEvent is AuditEvent { StaffReason: var reason2 }) {
+                <div class="col-span-3">
+                    <h2 class="font-semibold text-sm mb-1" data-tooltip="The reason the staff user gave for performing this action">
+                        Reason
+                    </h2>
+                    <markdown>@reason2</markdown>
+                </div>
+            }
+        }
+        <div class="col-span-3">
+            <h2 class="font-semibold text-sm mb-1">
+                Description
+            </h2>
+            <markdown>@Model.AuditEvent.Description</markdown>
+        </div>
+        @if (Model.AuditEvent.Details is not null && Model.AuditEvent.Details != Model.AuditEvent.Description
+             || Model.AuditEvent.SerializedProperties is not null) {
+            <div class="col-span-3">
+                <h2 class="font-semibold text-sm mb-1">
+                    Details
+                </h2>
+                <markdown>@Model.AuditEvent.Details</markdown>
+            </div>
+        }
+    </div>
+</div>

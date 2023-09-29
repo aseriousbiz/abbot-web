@@ -1,0 +1,55 @@
+name: Deploy .NET Skill Runner
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment"
+        required: true
+        type: environment
+      label:
+        description: "Image label"
+        default: "latest"
+        required: true
+        type: string
+
+env:
+  APP_DESCRIPTION: ".NET Skill Runner"
+
+# Only allow one active deployment per environment
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  deploy-runner-dotnet:
+    runs-on: ubuntu-latest
+    environment:
+      name: "${{ inputs.environment }}"
+      url: "${{ vars.ABBOT_RUNNER_CS_URL }}"
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: '{ "clientId": "${{ secrets.DEPLOYBOT_AZURE_AD_CLIENT_ID }}", "clientSecret": "${{ secrets.DEPLOYBOT_AZURE_AD_CLIENT_SECRET }}", "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}", "tenantId": "${{ secrets.AZURE_TENANT_ID }}" }'
+
+      - name: Login to abbotimages.azurecr.io
+        run: |
+          az acr login -n abbotimages -g abbot-global
+
+      - name: Generate a unique Deployment ID
+        run: |
+          echo "DEPLOYMENT_ID=$(uuidgen)" >> "$GITHUB_ENV"
+
+      - name: Tag the latest-deployed image on ACR
+        run: |
+          docker pull "abbotimages.azurecr.io/aseriousbiz/abbot/runner-dotnet:${{ inputs.label }}"
+          docker tag "abbotimages.azurecr.io/aseriousbiz/abbot/runner-dotnet:${{ inputs.label }}" "abbotimages.azurecr.io/aseriousbiz/abbot/runner-dotnet:deployed-${{ inputs.environment }}"
+          docker push "abbotimages.azurecr.io/aseriousbiz/abbot/runner-dotnet:deployed-${{ inputs.environment }}"
+
+      - name: Deploy to Runner
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: "${{ vars.ABBOT_RUNNER_CS_APP_NAME }}"
+          images: "abbotimages.azurecr.io/aseriousbiz/abbot/runner-dotnet:deployed-${{ inputs.environment }}"

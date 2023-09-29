@@ -1,0 +1,13 @@
+@{
+    Layout = "Layouts/_Layout";
+}
+
+@RenderBody()
+
+@section Scripts {
+    @RenderSection("StaffScripts", required: false)
+}
+
+@section FooterScripts {
+    @RenderSection("FooterScripts", false)
+}

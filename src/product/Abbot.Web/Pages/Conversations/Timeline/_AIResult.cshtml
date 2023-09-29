@@ -1,0 +1,37 @@
+@model Serious.Abbot.AI.AIResult
+
+taking <span data-tooltip="processing time reported by Open AI">@Model.ProcessingTime.Humanize()</span>.
+
+@if (ApplicationEnvironment.IsDevelopment()) {
+    <div>
+        <strong>Prompt:</strong> @Model.TokenUsage.PromptTokenCount.ToQuantity("token")
+        <details>
+            <pre class="text-gray-500 font-normal">@Model.Prompt.Reveal()</pre>
+        </details>
+    </div>
+} else {
+    <div>
+        <strong>Prompt template:</strong> @Model.TokenUsage.PromptTokenCount.ToQuantity("token") (after prompt filled in)
+        <details>
+            <pre class="text-gray-500 font-normal">@Model.PromptTemplate</pre>
+        </details>
+    </div>
+}
+
+<strong>Raw Summary:</strong> (@Model.TokenUsage.CompletionTokenCount.ToQuantity("token"))
+<div class="font-mono p-1 bg-yellow-50">
+    @Model.RawCompletion
+</div>
+
+<strong>Reasoned Actions</strong>
+<ul>
+    @foreach (var action in Model.ReasonedActions) {
+        <li>
+            <pre>
+Thought: @action.Thought
+Action: @action.Action
+</pre>
+
+        </li>
+    }
+</ul>

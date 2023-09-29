@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+#/ Usage: script/attach-runner-codespace
+#/ Description: Creates an SSH tunnel from the specified codespace back to the local machine on ports 4979 and 4978
+{ set +x; } 2>/dev/null
+source_dir="$( cd -P "$( dirname "$0" )" >/dev/null 2>&1 && pwd )"
+root_dir=$(cd $source_dir && cd ../ && pwd)
+cd $root_dir
+source script/helpers/_utils.sh
+
+while (( "$#" )); do
+  key="$1"
+  shift
+  case "$key" in
+    -\?|-h|--help)
+      grep '^#/' <"$0" | cut -c4-
+      exit
+    ;;
+  esac
+done
+
+if ! type gh >/dev/null 2>&1; then
+    echo "The GitHub ClI 'gh' is not installed. Please install it."
+    exit 1
+fi
+
+echo "Starting an SSH tunnel to project port 4979 into the codespace."
+echo "Keep this command running while you are working on the codespace."
+echo "Press Ctrl-C to stop the tunnel."
+gh cs ssh "$@" -- -R 4979:localhost:4979 -R 4978:localhost:4978 -N

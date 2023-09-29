@@ -1,0 +1,51 @@
+@page "{dumpName?}"
+@model Serious.Abbot.Pages.Staff.Tools.DumpsPage
+
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Dump List");
+}
+
+<partial name="Staff/_Header"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+<partial name="_Header"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-xl font-semibold">Memory Dumps</h2>
+        <p class="text-sm">Shows memory dumps found in <code>@Model.DumpPath</code></p>
+        @if (Model.Dumps.Any()) {
+            <ul class="rounded-lg bg-white divide-y divide-gray-200">
+                @foreach (var dump in Model.Dumps) {
+                    <li class="p-4 flex items-center">
+                        <div class="grow flex flex-col">
+                            <div>
+                                @dump.Name
+                            </div>
+
+                            <div class="text-gray-500 text-sm">
+                                Created <timeago datetime="@dump.CreationTimeUtc"></timeago>,
+                                Size
+                                @dump.SizeInBytes.Bytes().Humanize()
+                            </div>
+                        </div>
+                        <a href="@dump.Url" download class="btn" data-turbo="false">
+                            <i class="fa fa-download"></i>
+                            Download
+                        </a>
+                    </li>
+                }
+            </ul>
+        }
+        else {
+            <blankslate>
+                <div class="text-center text-xl h-6 text-gray-500 mb-2">
+                    <i class="fa-regular fa-file-slash"></i>
+                </div>
+
+                <h2 class="text-center text-lg text-gray-700">
+                    No Dumps yet!
+                </h2>
+            </blankslate>
+        }
+    </round-box>
+</page-body>

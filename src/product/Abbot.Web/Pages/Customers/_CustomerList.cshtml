@@ -1,0 +1,60 @@
+@model CustomerIndexPage
+
+@if (Model.Customers.Any()) {
+    <div class="table w-full rounded-xl bg-white border border-slate-300 shadow-sm">
+        <div class="table-header-group text-sm">
+            <div class="table-row">
+                <div class="table-cell rounded-tl-xl bg-slate-50 font-medium text-slate-600 px-4 py-3">
+                    Customer name
+                </div>    
+                
+                <div class="table-cell bg-slate-50 font-medium text-slate-600 px-4 py-3">
+                    <partial name="Shared/Filters/_FilterDropdown" model="Model.SegmentFilterModel"/>
+                </div>    
+                
+                <div class="table-cell bg-slate-50 font-medium text-slate-600 px-4 py-3">
+                    <partial name="Shared/Filters/_FilterDropdown" model="Model.RoomFilterModel"/>
+                </div>
+
+                <div class="table-cell bg-slate-50 font-medium text-slate-600 px-4 py-3">
+                    <partial name="Shared/Filters/_FilterDropdown" model="Model.ActivityFilterModel"/>
+                </div>
+                
+                <div class="table-cell rounded-tr-xl bg-slate-50 font-medium text-slate-600 px-4 py-3"></div>    
+            </div>
+        </div>
+        
+        <div class="table-row-group">
+            @foreach (var customer in Model.Customers) {
+                var customerModel = CustomerModel.FromCustomer(customer);
+                
+                <div class="table-row" id="@customer.GetDomId()">
+                    <partial name="_CustomerListItem" model="customerModel"/>
+                </div>
+            }
+        </div>
+    </div>
+    <partial name="_Paginator" model="@Model.Customers"/>
+} else {
+    <blankslate>
+        <div class="text-center text-xl h-6 text-gray-500 mb-2">
+            <i class="fa-regular fa-building-user"></i>
+        </div>
+
+        @if (Model.Filter.Any()) {
+            <h2 class="text-center text-lg text-gray-700">
+                No Customers match the filter. <a asp-page="Index">Clear filter</a>
+            </h2>
+        } else {
+            <h2 class="text-center text-lg text-gray-700">
+                No Customers yet!
+            </h2>
+        }
+        <p class="mt-2">
+            <a asp-page="Create" class="btn btn-primary">Create customer</a>
+            @if (Model.RoomsExist) {
+            <span> or </span>
+            <a asp-page="/Settings/Rooms/CreateCustomers">Create customers from rooms…</a>}
+        </p>
+    </blankslate>
+}

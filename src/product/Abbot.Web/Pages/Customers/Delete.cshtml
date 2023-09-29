@@ -1,0 +1,28 @@
+@page "{id:int}"
+@model Serious.Abbot.Pages.Customers.DeletePage
+
+@{
+    ViewContext.SetPageInfo("Customer", "Delete Customer");
+}
+
+<page-header>
+    <div class="flex items-center mb-4">
+        <a asp-page="Index">Customers</a><span class="mx-1">/</span> Delete
+    </div>
+</page-header>
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <form method="post">
+            <div>
+                Are you sure you want to delete <strong>@Model.Customer.Name</strong>?
+            </div>
+            <div class="mt-2">
+                <button type="submit" class="btn btn-danger">Yes, delete this customer</button>
+                <a asp-page="Index" class="btn">Cancel</a>
+            </div>
+        </form>
+    </round-box>
+</page-body>

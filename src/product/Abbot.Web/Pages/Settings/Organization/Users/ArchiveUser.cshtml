@@ -1,0 +1,28 @@
+@page "/settings/organization/users/{id}/archive"
+@model Serious.Abbot.Pages.Settings.Organization.Users.ArchiveUserPage
+@{
+    ViewContext.SetPageInfo("Settings", "User Archive", "Archive User");
+}
+
+<partial name="../_Header" model="Model.Viewer"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold"><a asp-page="Index">Users</a> / @Model.Subject.DisplayName</h2>
+        <div class="mt-5">
+            <span class="font-semibold text-lg">Are you sure you want to archive @Model.Subject.DisplayName?</span>
+            <p class="italic">Archiving the user will remove all access to this site.</p>
+        </div>
+        <div class="flex mt-5">
+            <img class="w-16 h-16 border-gray-300 border-4 rounded-full" src="@Model.Subject.User.Avatar" />
+            <div class="flex flex-col ml-3">
+                <div class="font-semibold">@Model.Subject.DisplayName</div>
+            </div>
+        </div>
+        <form method="post" class="mt-5">
+            <button type="submit" class="btn btn-danger">Yes, archive @Model.Subject.DisplayName</button>
+            <a class="btn btn-primary" asp-page="Index">No, take me back</a>
+        </form>
+    </round-box>
+</page-body>

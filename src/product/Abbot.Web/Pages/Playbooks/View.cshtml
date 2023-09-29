@@ -1,0 +1,125 @@
+@page "/playbooks/{slug}/view"
+@using TimeZoneNames
+@using Microsoft.AspNetCore.Antiforgery
+@model ViewPlaybookPage
+@inject IAntiforgery Antiforgery
+
+@{
+    ViewContext.SetPageInfo("Playbook", "Playbook", "View Playbook");
+
+    var languageCode = CultureInfo.CurrentUICulture.Name;
+    var timezones = TZNames.GetDisplayNames(languageCode, useIanaZoneIds: true);
+    var timeZonesJson = Json.Serialize(timezones.Select(tz => new {id = tz.Key, name = tz.Value}));
+
+    var requestVerificationToken = Antiforgery.GetAndStoreTokens(HttpContext).RequestToken;
+}
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body class="grow h-full">
+    <div class="flex flex-col grow flex-1 bg-slate-50 h-full">
+        <header class="mx-2 mb-4">
+            <div>
+                <div class="font-medium text-sm">
+                    <a asp-page="Index" preserve-staff>Playbooks</a>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-4">
+                    <h1 class="font-semibold text-lg" id="playbook-name">
+                        @Model.Playbook.Name
+                    </h1>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 place-content-between">
+                <div class="flex items-baseline gap-1">
+                    <div id="@Model.PlaybookLastPublishedStatusDomId">
+                        <partial name="_LastPublishedStatus" model="Model.Playbook" />
+                    </div>
+
+                    <a class="text-xs font-medium" asp-page="Versions/Index" asp-route-slug="@Model.Playbook.Slug" preserve-staff>
+                        View History
+                    </a>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <a asp-page="Settings" asp-route-slug="@Model.Playbook.Slug" class="btn" preserve-staff>
+                        <i class="fa-regular fa-gear"></i>
+                        Settings
+                    </a>
+
+
+                    <autocheckbox readonly="@Model.InStaffTools" asp-page-handler="SetEnabled" name="enabled" initial-value="Model.Playbook.Enabled">
+                        Enable
+
+                        <span class="" data-tooltip="Disabled Playbooks will never be triggered">
+                            <i class="fa-regular fa-circle-question text-slate-500 text-sm"></i>
+                        </span>
+                    </autocheckbox>
+
+                    <form method="post">
+                        <input type="hidden" id="playbook-definition" rows="5" asp-for="Input.Definition"/>
+
+                        @if (!Model.InStaffTools) {
+                            <div id="@Model.PlaybookPublishButtonDomId">
+                                <partial name="_PublishButton" model="Model.Playbook"/>
+                            </div>
+                        } else {
+                            <button disabled class="btn btn-disabled" data-tooltip="This view is read-only">Read-Only</button>
+                        }
+                    </form>
+                </div>
+            </div>
+        </header>
+
+        <div class="p-3 grow bg-white rounded-3xl shadow-sm min-h-[600px]">
+            <div class="h-full shadow-inner relative rounded-2xl bg-slate-50 border border-slate-200 flex flex-col grow gap-x-2 bg-dotted-spacing-4 bg-dotted-slate-200 z-20 scale-100">
+                <div class="flex flex-wrap items-center gap-2 z-10 p-4 rounded-t-2xl border-b border-slate-200 bg-slate-50 place-content-between">
+                    <div id="@Model.PlaybookManualTriggerDomId">
+                        <partial name="_ManualTrigger" model="Model" />
+                    </div>
+
+                    <div class="flex items-center gap-1 flex-wrap">
+                        <div id="@Model.PlaybookLastRunStatusDomId">
+                            <partial name="_LastRunStatus" model="Model.Playbook" />
+                        </div>
+
+                        <a class="text-xs font-medium ml-1" asp-page="Runs/Index" asp-route-slug="@Model.Playbook.Slug" preserve-staff>
+                            View Past Runs
+                        </a>
+                    </div>
+                </div>
+
+                @* Pass an antiforgery token to the react app: https://learn.microsoft.com/en-us/aspnet/core/security/anti-request-forgery?view=aspnetcore-7.0#javascript *@
+                <div id="react-root"
+                     data-antiforgery-token="@requestVerificationToken"
+                     data-readonly="@Model.InStaffTools"
+                     data-feature-flags="@string.Join(",", Model.ActiveFeatureFlags)"
+                     class="h-full">
+
+                    <div class="text-center">
+                        <i class="fa fa-spinner fa-spin-pulse"></i>
+                        Loading Playbook Editor...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</page-body>
+
+@*
+ * Yes, loading data this way is Haaaacky. We'll clean it up later.
+ * Though some of this data doesn't change so it's not a big deal.
+ *@
+<script id="timezone-json" type="text/json">
+    @timeZonesJson
+</script>
+
+<script id="webhook-trigger-url" type="text/json">
+    @Model.WebhookTriggerUrl
+</script>
+
+@section FooterScripts {
+    <script src="~/dist/js/react.js" asp-append-version="true">
+</script>
+}

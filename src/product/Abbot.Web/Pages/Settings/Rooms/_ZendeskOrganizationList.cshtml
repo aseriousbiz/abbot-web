@@ -1,0 +1,30 @@
+@model ZendeskOrganizationListModel
+
+<div class="absolute left-2 top-2 hard-box">
+    @if (Model.ErrorMessage is {Length: >0}) {
+        <div class="flex gap-2 w-max">
+            <div class="text-red-500">
+                @Model.ErrorMessage
+            </div>
+            <button type="button" data-action="autocomplete#clear"><i class="fa fa-xmark"></i></button>
+        </div>
+    } else if (Model.Organizations.Any()) {
+        <ol class="w-max divide-gray-200 divide-y" data-autocomplete-target="combobox" role="listbox">
+            @foreach (var organization in Model.Organizations) {
+                <li>
+                    <form id="zd-org-@organization.Id" asp-page-handler="SetZendeskOrganization" data-action="click->form#submit combobox:commit->form#submit" class="px-2 py-2 cursor-pointer hover:bg-gray-100 [&[aria-selected=true]]:bg-gray-100" role="option">
+                        <input id="organizationId" name="organizationId" type="hidden" value="@organization.Id" />
+                        <input id="organizationUrl" name="organizationUrl" type="hidden" value="@organization.Url" />
+                        <input id="organizationName" name="organizationName" type="hidden" value="@organization.Name" />
+                        @organization.Name
+                    </form>
+                </li>
+            }
+        </ol>
+    } else {
+        <div class="flex gap-2 w-max">
+            <div class="text-red-500">No matches found!</div>
+            <button type="button" data-action="autocomplete#clear"><i class="fa fa-xmark"></i></button>
+        </div>
+    }
+</div>

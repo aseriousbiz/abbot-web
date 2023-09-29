@@ -1,0 +1,75 @@
+@page
+@model Serious.Abbot.Pages.Customers.CreatePage
+
+@{
+    ViewContext.SetPageInfo("Customer", "Create Customer");
+}
+
+<page-header>
+    <div class="flex items-center mb-4">
+        <a asp-page="Index">Customers</a><span class="mx-1">/</span> Create
+    </div>
+</page-header>
+
+<page-body>
+    <form method="post">
+        <div class="my-4">
+            <label asp-for="Input.Name" class="form-label">
+                Name
+            </label>
+            <input asp-for="Input.Name" class="form-input w-64" />
+            <span asp-validation-for="Input.Name"></span>
+        </div>
+        
+        <div class="rounded-lg border border-gray-300 overflow-hidden bg-white shadow-sm my-4">
+            <header class="bg-gray-50 p-4 border-b border-gray-300">
+                <h2 class="font-semibold">Segments</h2>
+                
+                <p class="text-gray-500 text-sm">
+                    Customer segments make it easy to group customers for reporting and automation
+                </p>
+            </header>
+            
+            <ul class="px-4 py-2">
+                @foreach (var tag in Model.CustomerSegments) {
+                    <li class="my-2">
+                        <label class="flex items-center gap-x-2">
+                            <input type="checkbox" name="Input.SegmentIds" value="@tag.Id"/>
+                            <pill size="Small">@tag.Name</pill>
+                        </label>
+                    </li>
+                }
+                <li class="my-2">
+                    <label class="flex items-center gap-x-2">
+                        <a asp-page="Segments/Index">Manage Segments</a>
+                    </label>
+                </li>
+
+            </ul>
+        </div>
+        
+        <div class="rounded-lg border border-gray-300 overflow-hidden bg-white shadow-sm my-4">
+            <header class="bg-gray-50 p-4 border-b border-gray-300">
+                <h2 class="font-semibold">Slack channels</h2> 
+                
+                <p class="text-gray-500 text-sm">
+                    Select the channels that are associated with this customer
+                </p>
+            </header>
+
+            <ul class="px-4 py-2">
+                @foreach (var room in Model.Rooms) {
+                    <li class="my-2">
+                        <label class="flex items-center gap-x-2 text-sm">
+                            <input type="checkbox" name="Input.PlatformRoomIds" value="@room.PlatformRoomId" />@room.Name
+                        </label>
+                    </li>
+                }
+
+            </ul>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Create customer</button>
+        <a asp-page="Index" class="btn">Cancel</a>
+    </form> 
+</page-body>

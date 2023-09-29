@@ -1,0 +1,46 @@
+{
+  "id": "5bc511c6161c41ba811829eb460a83b8",
+  "createdAt": "2022-12-07T00:32:21.721Z",
+  "updatedAt": "2022-12-07T00:32:21.852Z",
+  "createdBy": "A-46685293",
+  "client": {
+    "clientType": "HUBSPOT"
+  },
+  "senders": [
+    {
+      "actorId": "A-46685293",
+      "name": "Phil Haack",
+      "senderField": "FROM",
+      "deliveryIdentifier": {
+        "type": "HS_EMAIL_ADDRESS",
+        "value": "support@22761544.hs-inbox.com"
+      }
+    }
+  ],
+  "recipients": [
+    {
+      "actorId": "E-haacked@example.com",
+      "recipientField": "TO",
+      "deliveryIdentifiers": [
+        {
+          "type": "HS_EMAIL_ADDRESS",
+          "value": "haacked@example.com"
+        }
+      ]
+    }
+  ],
+  "archived": false,
+  "text": "Ok, let's see if the webhook subscription works.",
+  "richText": "<div style=\"text-align: left\">Ok, let&#x27;s see if the webhook subscription works.</div>",
+  "attachments": [],
+  "subject": "Re: Test Ticket",
+  "truncationStatus": "TRUNCATED_TO_MOST_RECENT_REPLY",
+  "inReplyToId": "2cd4672286504f869af05f178ac505d1",
+  "status": {
+    "statusType": "SENT"
+  },
+  "direction": "OUTGOING",
+  "channelId": "1002",
+  "channelAccountId": "89315249",
+  "type": "MESSAGE"
+}

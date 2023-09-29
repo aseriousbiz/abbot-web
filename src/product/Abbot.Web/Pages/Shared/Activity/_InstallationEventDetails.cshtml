@@ -1,0 +1,66 @@
+@model Serious.Abbot.Pages.Activity.DetailsModel
+@{
+    var auditEvent = Model.AuditEvent.Require<InstallationEvent>();
+    var info = auditEvent.ReadProperties<InstallationInfo>().Require();
+}
+
+<div class="p-4 border-t">
+    <header>
+        <h1 class="mb-2 text-gray-500">Summary</h1>
+    </header>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div>
+            <partial name="Shared/Activity/_OccurrenceDetails" model="auditEvent"/>
+        </div>
+
+        <div>
+            <h2 class="font-bold text-sm mb-1">Type</h2>
+            <div>
+                @info.PlatformType.Humanize() @info.Action.Humanize()
+            </div>
+        </div>
+
+        <div>
+            <h2 class="font-bold text-sm mb-1">Actor</h2>
+            <div>
+                <partial name="Shared/Activity/_UserDetail" model="@auditEvent.Actor"/>
+            </div>
+        </div>
+
+        <div>
+            <h2 class="font-bold text-sm mb-1">Action Taken</h2>
+            <div>
+                <markdown>
+                    @auditEvent.Description
+                </markdown>
+            </div>
+        </div>
+
+        <div>
+            <h2 class="font-bold text-sm mb-1">App Name</h2>
+            <div>
+                @info.AppName
+                <p class="text-gray-500 text-sm">
+                    @info.AppId
+                </p>
+            </div>
+        </div>
+        <div>
+            <h2 class="font-bold text-sm mb-1">Bot Name</h2>
+            <div>
+                @info.BotName
+                <p class="text-gray-500 text-sm">
+                    @info.BotUserId
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="mt-4">
+        <h2 class="font-bold text-sm mb-1">Scopes</h2>
+        <div>
+            @info.Scopes?.Replace(",", ", ") @* Allow wrapping *@
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,295 @@
+@page
+@using Serious.Abbot.Services
+@using Microsoft.Extensions.Options
+@model IndexPageModel
+@inject IOptions<StripeOptions> StripeOptions
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Stats");
+
+    var numberFormat = new CultureInfo("en-US", false).NumberFormat;
+    numberFormat.PercentDecimalDigits = 2;
+    var dauChange = Model.CalculateChange(Model.DailyActiveUsers, Model.DauLastWeek);
+    var dauMonthChange = Model.CalculateChange(Model.DailyActiveUsers, Model.DauMonthAgo);
+    var mauChange = Model.CalculateChange(Model.MonthlyActiveUsers, Model.PreviousMonthlyActiveUsers);
+    var dauMauRatio = $"{Model.DailyActiveUsers / Model.MonthlyActiveUsers:P1}";
+    var interactionChange7Days = Model.CalculateChange(Model.AuditLogInteractionsPast7Days, Model.AuditLogInteractionsPrevious7Days);
+    var interactionChange30Days = Model.CalculateChange(Model.AuditLogInteractionsPast30Days, Model.AuditLogInteractionsPrevious30Days);
+}
+
+<partial name="_Header"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <section><a asp-page="Legacy">Legacy Stats</a></section>
+
+    <section class="flex flex-col gap-5 p-5 mb-5">
+        <div class="flex items-center">
+            <div class="flex flex-col flex-grow items-center">
+                <p class="text-5xl font-semibold">MRR: @string.Format(new CultureInfo("en-US"), "{0:C}", Model.MonthlyRecurringRevenue)</p>
+                <span class="text-sm">Goal: $83,333.34 By Sep 1, 2022. See <a href="@StripeOptions.Value.StripeDashboardBaseUrl">Stripe Dashboard</a> for more details.</span>
+            </div>
+            <div class="flex flex-col flex-grow items-center">
+                <p class="text-5xl font-semibold">MAU: @Model.MonthlyActiveUsers.ToString("0.##")</p>
+                <span class="text-sm">@mauChange over previous 30 days.</span>
+            </div>
+            <div class="flex flex-col flex-grow items-center">
+                <p class="text-5xl font-semibold">Total Agents: @Model.TotalAgentCount</p>
+                <span class="text-sm">All time (Goal: 1,200! ✨).</span>
+            </div>
+        </div>
+        <div class="flex items-center">
+            @{
+                var stats = new[]
+                {
+                    ("MAU 30 days ago", Model.PreviousMonthlyActiveUsers.ToString("0.##"), mauChange),
+                    ("Avg DAU", @Model.DailyActiveUsers.ToString("0.##"), $"({dauChange}) Average of last seven days not including today."),
+                    ("Avg DAU Last Week", Model.DauLastWeek.ToString("0.##"), "7 day average last week."),
+                    ("Avg DAU 28 days ago", Model.DauMonthAgo.ToString("0.##"), $"{dauMonthChange} 7 day average 28 days ago"),
+                    ("DAU/MAU ratio", dauMauRatio, "SaaS avg 10-20%"),
+                };
+            }
+            @foreach (var (title, value, note) in stats)
+            {
+                <div class="flex flex-col flex-grow items-center">
+                    <p class="text-md uppercase text-gray-500">@title</p>
+                    <p class="text-2xl font-semibold">@value</p>
+                    <span class="text-sm">@note</span>
+                </div>
+            }
+        </div>
+        <div class="w-full" style="height: 36rem;">
+            <div id="dau-graph" class="w-full h-full" data-take="@Model.Take"></div>
+        </div>
+        <div class="grid justify-items-center">
+            <div>
+                <div class="form-select-wrapper">
+                    <select id="stat-selector" class="form-select text-black">
+                    </select>
+                </div>
+                <div class="form-select-wrapper">
+                    <select id="take-selector" class="form-select text-black">
+                        <option value="30" selected="@(Model.Take == 30)">Last 30 days</option>
+                        <option value="60" selected="@(Model.Take == 60)">Last 60 days</option>
+                        <option value="90" selected="@(Model.Take == 90)">Last 90 days</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <round-box>
+        <h2 class="text-3xl font-semibold text-center">Abbot by the numbers</h2>
+        @{
+            var metrics = new[]
+            {
+                ("Total Organization", $"{Model.TotalOrganizationsCount}", "All of them"),
+                ("Interactions 7 days", $"{Model.AuditLogInteractionsPast7Days}", $"{interactionChange7Days} over previous 7 days"),
+                ("Interactions 30 days", $"{Model.AuditLogInteractionsPast30Days}", $"{interactionChange30Days} over previous 30 days"),
+                ("Avg Monthly Interactions", Model.AverageMonthlyAuditLogInteractions.ToString("0.###"), "Averaged by calendar months"),
+            };
+        }
+        <div class="grid grid-cols-4 gap-5 mt-5">
+            @foreach (var (title, value, note) in metrics)
+            {
+                <div class="flex flex-col flex-grow items-center">
+                    <p class="text-md whitespace-nowrap uppercase text-gray-500">@title</p>
+                    <p class="text-2xl font-semibold">@(value is {Length: >0} ? value : "<none>")</p>
+                    <span class="text-sm">@note</span>
+                </div>
+            }
+        </div>
+
+        <div class="grid grid-cols-4 gap-5 mt-5">
+            @{
+                var tables = new[]
+                {
+                    ("Organizations By Plan", Model.OrganizationByPlanCounts.Select(p => (p.Key.ToString(), p.Value.ToString())), "Includes us"),
+                    ("Organizations By Platform", Model.PlatformOrganizationCounts.Select(p => (p.Key.ToString(), p.Value.ToString())), "Includes us"),
+                    ("Interactions By Platform", Model.PlatformInteractionCounts.Select(p => (p.Key.ToString(), p.Value.ToString())), "Includes us"),
+                    ("Created Skills By Language", Model.SkillByLanguageCounts.Select(p => (p.Key.ToString(), p.Value.ToString())), "Excludes us and skills created from a package"),
+                };
+            }
+            @foreach (var (title, data, note) in tables) {
+                <div class="flex flex-col flex-grow items-center">
+                    <p class="text-md uppercase text-gray-500">@title</p>
+                    <div class="hard-box w-full">
+                        <table class="w-full">
+                            @if (data.Any())
+                            {
+                                @foreach (var (key, value) in data)
+                                {
+                                    <tr>
+                                        <td class="align-middle p-3"><code>@key</code></td>
+                                        <td class="align-middle p-3">@value</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <blankslate>
+                                    <div class="text-center text-xl h-6 text-gray-500 mb-2">
+                                        <i class="fa-regular fa-align-slash"></i>
+                                    </div>
+
+                                    <h2 class="text-center text-lg text-gray-700">
+                                        No data.
+                                    </h2>
+                                </blankslate>
+                            }
+                        </table>
+                    </div>
+                    <span class="text-sm mt-2">@note</span>
+                </div>
+            }
+
+            <div class="flex flex-col flex-grow items-center">
+                <p class="text-md uppercase text-gray-500">Organizations With Defaults</p>
+                <div class="hard-box w-full">
+                    <table class="w-full">
+                        <tr>
+                            <td class="align-middle p-3"><a asp-page="ResponseTimeDetails">Response Times</a></td>
+                            <td class="align-middle p-3">
+                                <a asp-page="ResponseTimeDetails"><code>@Model.TotalOrganizationsWithDefaultResponseTimes</code></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle p-3">First Responders</td>
+                            <td class="align-middle p-3"><code>@Model.TotalOrganizationsWithDefaultFirstResponders</code></td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle p-3">Escalation Responders</td>
+                            <td class="align-middle p-3"><code>@Model.TotalOrganizationsWithDefaultEscalationResponders</code></td>
+                        </tr>
+                    </table>
+                </div>
+                <span class="text-sm mt-2">
+                    Organizations that have default settings configured.
+                </span>
+            </div>
+
+            <div class="flex flex-col flex-grow items-center">
+                <p class="text-md uppercase text-gray-500">Organizations With Room Settings</p>
+                <div class="hard-box w-full">
+                    <table class="w-full">
+                        <tr>
+                            <td class="align-middle p-3">Response Times</td>
+                            <td class="align-middle p-3"><code>@Model.TotalOrganizationsWithResponseTimes</code></td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle p-3">First Responders</td>
+                            <td class="align-middle p-3"><code>@Model.TotalOrganizationsWithFirstResponders</code></td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle p-3">Escalation Responders</td>
+                            <td class="align-middle p-3"><code>@Model.TotalOrganizationsWithEscalationResponders</code></td>
+                        </tr>
+                    </table>
+                </div>
+                <span class="text-sm mt-2">
+                    Organizations that have settings configured for at least 1 room.
+                </span>
+            </div>
+
+            <div class="flex flex-col flex-grow items-center">
+                <p class="text-md uppercase text-gray-500">Conversations Count by State (Not US)</p>
+                <div class="hard-box w-full">
+                    <table class="w-full">
+                        @foreach (var (state, value) in Model.ConversationStateCounts) {
+                            <tr>
+                                <td class="align-middle p-3">@state</td>
+                                <td class="align-middle p-3"><code>@value</code></td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+                <span class="text-sm mt-2">
+                    Organizations that have settings configured for at least 1 room.
+                </span>
+            </div>
+        </div>
+    </round-box>
+
+    <round-box>
+        <h2 class="text-3xl font-semibold text-center">Top Ten Organizations</h2>
+
+        <div class="grid grid-cols-4 gap-5 mt-5">
+            @{
+                var orgTables = new[]
+                {
+                    ("Conversations (Last 7 days)", await Model.TopTenOrganizationsByConversations(7)),
+                    ("Conversations (Last 30 days)", await Model.TopTenOrganizationsByConversations(30)),
+                    ("Announcements (Last 7 days)", await Model.TopTenOrganizationsByAnnouncements(7)),
+                    ("Announcements (Last 30 days)", await Model.TopTenOrganizationsByAnnouncements(30)),
+                    ("Interactions (Last 7 days)", await Model.TopTenOrganizationsByInteractions(7)),
+                    ("Interactions (Last 30 days)", await Model.TopTenOrganizationsByInteractions(30)),
+                    ("New Skills (Last 7 days)", await Model.TopTenOrganizationsByNewSkills(7)),
+                    ("New Skills (Last 30 days)", await Model.TopTenOrganizationsByNewSkills(30)),
+                };
+            }
+            @foreach (var (title, table) in orgTables)
+            {
+                <div class="flex flex-col flex-grow items-center">
+                    <p class="text-md uppercase text-gray-500 border-b">@title</p>
+                    <partial name="Shared/Stats/_TopTenTable" model="@table" />
+                </div>
+            }
+        </div>
+    </round-box>
+
+    <round-box>
+        <h2 class="text-3xl font-semibold text-center">Monthly Breakdowns</h2>
+
+        <div class="grid grid-cols-4 gap-5 mt-5">
+            @{
+                #nullable enable
+
+                var monthlyCountTables = new (string, int?, IDictionary<DateTime, int>, string?)[]
+                {
+                    ("New Organizations", Model.TotalOrganizationsCount, Model.OrganizationCountByMonth, null),
+                    ("Conversations", Model.Conversations.TotalCount, Model.Conversations.MonthlyCounts, "Includes us"),
+                    ("Announcements", Model.TotalAnnouncementsCount, Model.AnnouncementsByMonth, "Includes us"),
+                    ("Agents", Model.TotalAgentCount, Model.AgentsCountByMonth, "Includes us"),
+                    ("User Tagged Conversations", Model.TotalTaggedConversationsCount, Model.TaggedConversationsByMonth, "Not including us"),
+                    ("AI Tagged Conversations", Model.TotalAITaggedConversationsCount, Model.TaggedAIConversationsByMonth, "Not including us"),
+                    ("Tagged Customers", Model.TotalTaggedCustomersCount, Model.TaggedCustomersByMonth, "Not including us")
+                };
+            }
+            @foreach (var (title, count, table, note) in monthlyCountTables)
+            {
+                <div class="flex flex-col flex-grow items-center">
+                    <p class="text-md uppercase text-gray-500">
+                        @title
+                        @if (count is not null)
+                        {
+                            <span>(@count)</span>
+                        }
+                    </p>
+                    <partial name="Shared/Stats/_MonthlyCountTable" model="table" />
+                    @if (note is {Length: >0})
+                    {
+                        <span class="text-sm mt-2">@note</span>
+                    }
+                </div>
+            }
+        </div>
+            <div class="columns">
+                <div class="column">
+                </div>
+            </div>
+    </round-box>
+
+    <round-box>
+        <h2 class="text-3xl font-semibold text-center">Operations</h2>
+
+        <h3 class="text-2xl mt-5">Max Ids</h3>
+        <div class="hard-box w-full p-4 mt-5">
+            <div class="grid gap-2" style="grid-template-columns: max-content 1fr;">
+                @foreach (var (table, id) in Model.MaxIds)
+                {
+                    <span class="font-semibold">@table</span>
+                    <span><code>@id</code></span>
+                }
+            </div>
+        </div>
+    </round-box>
+</page-body>

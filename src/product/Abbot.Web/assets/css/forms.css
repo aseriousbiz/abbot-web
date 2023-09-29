@@ -1,0 +1,64 @@
+/* Custom form styling */
+
+.form-checkbox {
+  padding-left: 20px;
+  margin: 15px 0 15px 50px;
+  vertical-align: middle;
+  
+  label {
+    font-weight: bold;
+    height: 32px;
+    line-height: 21px;
+  }
+
+  input[type=checkbox],
+  input[type=radio] {
+    float: left;
+    margin: 5px 0 0 -68px;
+    vertical-align: middle;
+  }
+  
+  .note {
+    display: block;
+    margin: 0;
+    font-size: 12px;
+    font-weight: 400;
+    min-height: 17px;
+  }
+  
+  .icon {
+    height: 32px;
+    width: 32px;
+    font-size: 32px;
+    vertical-align: text-bottom;
+    display: inline-block;
+    position: absolute;
+    left: -46px;
+  }
+  
+  .fa-book-open {
+    transform: scale(1, 1.2);
+  }
+}
+
+label.label {
+  display: inline-block;
+}
+
+.field-validation-error, .validation-summary-errors {
+  color: #c00;
+}
+
+.field-validation-error {
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+.code-editor-field .field-validation-error {
+  margin-bottom: 0;
+}
+
+.validation-summary-errors {
+  position: absolute;
+  top: -1em;
+}

@@ -1,0 +1,36 @@
+@page
+@model Serious.Abbot.Pages.Customers.Segments.CreatePage
+
+@{
+    ViewContext.SetPageInfo("Settings", "Create Customer Segment");
+}
+
+<page-header>
+    <div class="flex items-center mb-4">
+        <a asp-page="../Index">Customers</a><span class="mx-1">/</span> <a asp-page="Index">Segments</a> <span class="mx-1">/</span> Create
+    </div>
+</page-header>
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <form method="post">
+                <section class="py-2 px-4">
+                    <div class="mb-4">
+                        <label class="font-bold" asp-for="SegmentName"></label>
+                        <p class="text-sm text-gray-500 mb-1">
+                            *Required.
+                        </p>
+                        <input class="form-input w-full" asp-for="SegmentName" />
+                        <span asp-validation-for="SegmentName"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <button type="submit" class="btn btn-primary">Create</button>
+                        <a class="btn" asp-page="Index">Back</a>
+                    </div>
+                </section>
+            </form>
+    </round-box>
+</page-body>

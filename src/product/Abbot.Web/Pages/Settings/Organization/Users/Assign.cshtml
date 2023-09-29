@@ -1,0 +1,149 @@
+@page "/settings/organization/users/{id}/assign"
+@using Serious.AspNetCore.TagHelpers
+@model AssignPage
+
+@{
+    ViewContext.SetPageInfo("Settings", "User Roles", "Assign User Roles");
+    var subject = Model.Subject;
+}
+
+<partial name="../_Header" model="Model.Viewer"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">Assign Roles</h2>
+        <div class="sm:flex items-center mt-3">
+            <div class="mt-2">
+                <partial name="Shared/_LargeAvatar" model="@subject.User"/>
+            </div>
+            <ul class="text-gray-500 sm:list-none list-outside ml-3">
+                <li class="mr-4 overflow-hidden">
+                    <span class="text-black font-semibold">
+                        @@@subject.DisplayName
+                    </span>
+
+                    <span class="text-sm">
+                        (@subject.User.PlatformUserId)
+                    </span>
+                </li>
+
+                <li class="sm:ml-1 mr-4 text-sm">
+                    @subject.User.Email
+                </li>
+
+                <li class="sm:ml-1 mr-4 text-sm">
+                    Joined <timeago datetime="@subject.Created"/>
+                </li>
+            </ul>
+        </div>
+        <div class="mt-2">
+            @if (Model.FirstResponderRooms is { Count: > 0 } firstResponderRooms) {
+                <span>First Responder in the following rooms: <span class="text-gray-600">@firstResponderRooms.Humanize()</span></span>
+            } else {
+                <span>Not a First Responder.</span>
+            }
+        </div>
+
+        <div class="mt-5">
+            <h3 class="font-semibold text-2xl">Current Roles</h3>
+            <form method="post" asp-page="Assign" data-controller="checkboxes" data-checkboxes-exclusive-value="true">
+                @if (!Model.HasEnoughPurchasedSeats) {
+                    <partial name="_NotEnoughSeatsMessage"/>
+                }
+
+                <div class="p-2">
+                    <label>
+                        @if (!Model.IsSelf) {
+                            <input type="radio" data-checkboxes-target="toggle" />
+                            <strong class="font-semibold"> None</strong>
+                        } else {
+                            <input type="radio" data-checkboxes-target="toggle" disabled="disabled"
+                                   data-tooltip="You cannot remove yourself from the Administrator role."/>
+                            <strong class="font-semibold disabled"> None</strong>
+                        }
+                         <span class="text-gray-500 text-sm">(Removes user from all roles. User will not have access to the site. You will <strong>not be billed</strong> for this user.)</span>
+                    </label>
+                </div>
+                @foreach (var roleOption in Model.Roles) {
+                    var disabled = roleOption.Disabled ? "disabled" : null;
+                    var tooltip = roleOption.Value is Roles.Administrator && Model.IsSelf
+                        ? "You cannot remove yourself from the Administrator role."
+                        : roleOption.Value is Roles.Agent && !roleOption.Selected
+                            ? "You must purchase more seats to add an Agent."
+                            : null;
+                    <fieldset class="pl-2">
+                        <div class="mb-1">
+                            <label>
+                                <input type="checkbox"
+                                       name="@nameof(Model.SelectedRoles)"
+                                       value="@roleOption.Value"
+                                       checked="@roleOption.Selected"
+                                       disabled="@disabled"
+                                       data-checkboxes-target="item" />
+                                @if (disabled is not null && roleOption.Selected) {
+                                    @*
+                                        Disabled checkboxes don't send their value when the form is submitted
+                                        We need to preserve the current value.
+                                    *@
+                                    <input type="hidden" name="@nameof(Model.SelectedRoles)" value="@roleOption.Value" />
+                                }
+                                @if (tooltip is null) {
+                                    <strong class="font-semibold">@roleOption.Value</strong>
+                                } else {
+                                    <strong class="font-semibold @disabled" data-tooltip="@tooltip">@roleOption.Value</strong>
+                                }
+                                @if (roleOption.Value is Roles.Agent) {
+                                    <span class="text-gray-500 text-sm">(Users who may use the site. You <strong>will be billed</strong> for this user.)</span>
+                                }
+                                else if (roleOption.Value is Roles.Administrator) {
+                                    <span class="text-gray-500 text-sm">(Users who may administer the site. You will <strong>not be billed</strong> for this user. User will be removed from all responder assignments.)</span>
+                                }
+                            </label>
+                        </div>
+                    </fieldset>
+                }
+                <div class="mt-5">
+                    <button
+                        class="btn btn-primary"
+                        data-modal-id="unassign-modal"
+                        data-modal-condition="#no-role:checked"
+                        type="submit">Save</button>
+                    <a asp-page="Index" class="btn">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </round-box>
+</page-body>
+
+<dialog class="modal bg-gray-900 bg-opacity-75" id="unassign-modal">
+    <div class="rounded-lg p-2 border m-4 bg-white shadow-md max-w-lg"
+         role="dialog" aria-labelledby="dialogTitle" aria-describedby="dialogDescription">
+        <header class="bg-red-100 text-red-600 px-2 flex items-center">
+            <h1 id="dialogTitle" class="font-bold">Remove All Roles?</h1>
+            <button class="hover:text-gray-900 flex p-1 my-1 ml-auto w-6 justify-center" aria-label="close">
+                <i class="fa-solid fa-xmark" aria-label></i>
+            </button>
+        </header>
+        <section class="p-2">
+            <p>
+                Are you sure you want to remove all roles for this user? This will remove their access to this
+                site.
+            </p>
+            @if (Model.FirstResponderRooms is { Count:  > 0 }) {
+                <p class="mt-2">
+                    This will also remove this user as a First Responder from the following rooms: <span class="text-gray-700">@Model.FirstResponderRooms.Humanize()</span>.
+                </p>
+
+            }
+        </section>
+        <footer class="flex p-4 mt-auto">
+            <div class="ml-auto">
+                <form method="post">
+                    <button class="btn hover:bg-gray-100 text-gray-800" aria-label="close">Cancel</button>
+                    <button class="btn btn-primary ml-2 modal-success-button" type="submit">Continue</button>
+                </form>
+            </div>
+        </footer>
+    </div>
+</dialog>

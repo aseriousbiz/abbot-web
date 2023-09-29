@@ -1,0 +1,19 @@
+@page
+@model Serious.Abbot.Pages.Staff.Activity.IndexPage
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Activity Log");
+}
+
+<partial name="_Header"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">Logs</h2>
+        <p>Recent interactions across all Organizations</p>
+        <section class="mt-4 border border-gray-300 rounded-lg">
+            @{ ViewBag.ShowOrgColumn = true; }
+            <partial name="Shared/Activity/_ActivityLog" />
+        </section>
+    </round-box>
+</page-body>

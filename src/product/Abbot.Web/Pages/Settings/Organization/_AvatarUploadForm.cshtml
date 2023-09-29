@@ -1,0 +1,31 @@
+@model FileInputModel
+@{
+    var model = Model ?? throw new InvalidOperationException("Model should not be null.");
+    var prefix = model.Prefix;
+}
+
+<div class="">
+    <label class="flex items-center">
+        <input id="@prefix" class="file-upload js-file-input hide-file-selector-button image-upload w-0" type="file" asp-for="File" />
+
+        <div class="btn mr-2">
+            <i class="fa-solid fa-upload"></i>
+            Choose an image…
+        </div>
+
+        <span id="@(prefix)-file-name">
+            No file uploaded
+        </span>
+    </label>
+
+    <div class="mt-2">
+        <input id="@(prefix)-hidden-input" asp-for="Url" type="hidden" />
+        <input id="@(prefix)-hidden-input-checksum" asp-for="Checksum" type="hidden" />
+        <input id="@(prefix)-save-button"
+               type="submit"
+               class="btn btn-primary text-white"
+               value="Save Avatar"
+               asp-page-handler="@Model.SavePageHandler" disabled />
+    </div>
+    <p class="text-red-500" id="@(prefix)-error"></p>
+</div>

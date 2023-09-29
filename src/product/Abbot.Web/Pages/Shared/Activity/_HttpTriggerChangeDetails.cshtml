@@ -1,0 +1,44 @@
+@model Serious.Abbot.Pages.Activity.DetailsModel
+
+@{
+  var auditEvent = Model.AuditEvent as HttpTriggerChangeEvent
+        ?? throw new InvalidOperationException($"AuditEvent is not a {nameof(HttpTriggerChangeEvent)}.");
+}
+
+<partial name="Shared/Activity/_TriggerChangeSummary" />
+
+<div class="p-4 border-t">
+  <header>
+    <h1 class="mb-2">Additional Details</h1>
+  </header>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div>
+      <h2 class="font-bold text-sm mb-1">Language</h2>
+      <div>
+        @auditEvent.Language.Humanize()
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Trigger Description</h2>
+      <markdown>
+        @auditEvent.Description
+      </markdown>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Description</h2>
+      <div>
+        @if (auditEvent.TriggerDescription is {Length: > 0})
+        {
+          @auditEvent.TriggerDescription
+        }
+        else
+        {
+          <span class="text-gray-500">None</span>
+        }
+      </div>
+    </div>
+  </div>
+</div>

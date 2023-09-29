@@ -1,0 +1,29 @@
+@model MetadataEditorPage
+
+<form asp-page-handler="SaveMetadata" class="grid p-3 grid-cols-3 gap-2 border border-gray-200 rounded shadow-sm my-2 w-fit">
+    <div class="contents text-sm text-gray-700">
+        <div>Name</div>
+        <div>Value</div>
+        <div>Default Value</div>
+    </div>
+    @if (Model.EntityMetadataInputs.Any()) {
+        @for (int i = 0; i < Model.EntityMetadataInputs.Count; i++) {
+            <div class="contents">
+                <div class="font-semibold">@Model.EntityMetadataInputs[i].Name</div>
+                <div><input asp-for="EntityMetadataInputs[i].Value" class="px-2 py-1 border bg-gray-50 rounded block w-full"/></div>
+                <div><span class="text-gray-500">@Model.EntityMetadataInputs[i].DefaultValue</span></div>
+            </div>
+            <input type="hidden" asp-for="EntityMetadataInputs[i].Name"/>
+        }
+        <div class="contents">
+            <div class="col-span-3">
+                <button type="submit" class="btn btn-primary" asp-authz-policy="@AuthorizationPolicies.CanManageConversations">Save Changes</button>
+            </div>
+        </div>
+
+    } else {
+        <div class="contents">
+            <p>No Metadata Fields are configured yet.</p>
+        </div>
+    }
+</form>

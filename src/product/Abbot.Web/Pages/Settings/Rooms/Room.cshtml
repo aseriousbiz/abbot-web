@@ -1,0 +1,101 @@
+@page "/settings/rooms/{roomId}/{handler?}"
+@model RoomPage
+
+@{
+    ViewContext.SetPageInfo("Room Settings", "Room Settings", $"#{Model.Room.Name} Settings");
+    var disabled = Model.ReadOnly ? "disabled" : null;
+}
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-header>
+    # @Model.Room.Name
+</page-header>
+
+<back-link asp-page="Index"
+           asp-all-route-data="ViewContext.GetCurrentRouteValues()"
+           asp-route-roomId="">Back to room list</back-link>
+
+<page-body class="mt-4">
+
+    <partial name="Shared/_ReadOnlyHeader"/>
+    <round-box>
+        <h2 class="text-lg font-semibold mb-1">Conversation Tracking</h2>
+        <div id="@Model.ConversationTrackingDomId">
+            <partial name="_ConversationTrackingEditor" />
+        </div>
+    </round-box>
+    <round-box>
+        <h2 class="text-lg font-semibold">First Responders</h2>
+        <div id="@Model.FirstRespondersDomId">
+            <partial name="_FirstResponders" />
+        </div>
+    </round-box>
+
+    <round-box>
+        <h2 class="text-lg font-semibold">Escalation Responders</h2>
+        <div id="@Model.EscalationRespondersDomId">
+            <partial name="_EscalationResponders" />
+        </div>
+    </round-box>
+
+    <round-box>
+        <h2 class="text-xl font-semibold">Response Time Settings</h2>
+        <p>Abbot can send notifications and alerts where there hasn't been a response by a set time.</p>
+
+        <form method="post" class="mt-3">
+            <div id="@Model.ResponseTimesDomId">
+                <partial name="_ResponseTimesForm"/>
+            </div>
+            <div class="mt-3">
+                <button type="submit"
+                        class="btn @(Model.ReadOnly ? "btn-disabled" : "btn-primary")"
+                        disabled="@disabled"
+                        asp-authz-policy="@AuthorizationPolicies.CanManageConversations">Save changes</button>
+            </div>
+        </form>
+    </round-box>
+
+    <round-box>
+        <h2 class="text-xl font-semibold">Conversation Settings</h2>
+        <div id="@Model.ConversationSettingsDomId">
+            <partial name="_ConversationSettings" />
+        </div>
+    </round-box>
+
+    <round-box>
+        <h2 class="text-xl font-semibold">Room Metadata</h2>
+        <div id="@Model.MetadataStatusMessage"></div>
+
+        <div id="@Model.EntityMetadataId">
+            <partial name="Shared/Metadata/_EntityMetadataEditor"/>
+        </div>
+        <p>
+            New Metadata Fields for this organization can be added in the
+            <a asp-page="Index"
+               asp-all-route-data="ViewContext.GetCurrentRouteValues()"
+               asp-route-roomId="">room list page</a>
+        </p>
+    </round-box>
+
+    @if (Model.HubSpotRoomLink is not null) {
+        <round-box>
+            <h2 class="text-xl font-semibold" id="hubspot">HubSpot Settings</h2>
+            <p>You can specify a Company in your HubSpot account to map this room to. Any tickets created from conversations in this room will automatically be associated with that Company.</p>
+
+            <div id="@Model.HubSpotLinkDomId">
+                <partial name="_HubSpotLinking" />
+            </div>
+        </round-box>
+    }
+    @if (Model.ZendeskRoomLink is not null) {
+        <round-box>
+            <h2 class="text-xl font-semibold" id="zendesk">Zendesk Settings</h2>
+            <p>You can specify an Organization in your Zendesk account to map this room to. Any tickets created from conversations in this room will automatically be associated with that Organization.</p>
+
+            <div id="@Model.ZendeskLinkDomId">
+                <partial name="_ZendeskLinking" />
+            </div>
+        </round-box>
+    }
+</page-body>

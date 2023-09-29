@@ -1,0 +1,12 @@
+@model AuditEventBase
+@{
+    var auditEvent = Model;
+}
+
+<dl>
+    <dt class="text-sm font-bold mb-1">Occurred</dt>
+    <dd>
+        <timeago datetime="@auditEvent.Created"/>
+        <span class="text-gray-500">at @auditEvent.Created.ToString("o") UTC</span>
+    </dd>
+</dl>

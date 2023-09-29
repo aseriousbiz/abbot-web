@@ -1,0 +1,15 @@
+@{
+    Layout = "Staff/_Layout";
+}
+
+<partial name="Staff/Organizations/_Header" model="ViewData.GetOrganization()" />
+
+@RenderBody()
+
+@section StaffScripts {
+    @RenderSection("StaffScripts", required: false)
+}
+
+@section FooterScripts {
+    @RenderSection("FooterScripts", false)
+}

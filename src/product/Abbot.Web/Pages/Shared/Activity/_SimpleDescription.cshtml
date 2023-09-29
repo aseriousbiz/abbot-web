@@ -1,0 +1,38 @@
+@model AuditEventBase
+@{
+    // This is used for the activity feed. The information revealed is limited to prevent information disclosure.
+    var auditEvent = Model;
+}
+
+@switch (auditEvent) {
+    case BuiltInSkillRunEvent builtInSkillRunEvent:
+        <text>ran <code>@builtInSkillRunEvent.SkillName</code> </text>
+        if (builtInSkillRunEvent.ErrorMessage is { Length: > 0 }) {
+            <text>with errors.</text>
+        } else {
+            <text>successfully.</text>
+        }
+        break;
+    case SkillRunAuditEvent skillRunEvent:
+        <text>ran <code>@skillRunEvent.SkillName</code> </text>
+        if (skillRunEvent.ErrorMessage is { Length: > 0 }) {
+            <text>with errors.</text>
+        } else {
+            <text>successfully.</text>
+        }
+        break;
+    case SkillNotFoundEvent:
+        <text>told Abbot something that did not match a skill. </text>
+        break;
+    case SkillEditSessionAuditEvent skillEditEvent:
+        <text>edited <code>@skillEditEvent.SkillName</code>. </text>
+        break;
+    case StaffViewedCodeAuditEvent:
+        <text>(STAFF) viewed code</text>
+        break;
+    default:
+        <markdown>
+            @auditEvent.Description
+        </markdown>
+        break;
+}

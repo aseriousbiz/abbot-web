@@ -1,0 +1,37 @@
+@page "{handler?}"
+@model Serious.Abbot.Pages.Staff.SettingsModel
+
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Global Settings", "Global Settings");
+}
+
+<partial name="_Header"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+
+    <round-box>
+        <h2 class="text-3xl font-semibold">Global Settings</h2>
+
+        <div class="hard-box mt-5">
+            <form method="post" class="p-3">
+                <label class="label">Conversations Refresh Interval in seconds: </label>
+                <input asp-for="ConversationRefreshIntervalSeconds" class="form-input"/>
+                <button type="submit" class="btn btn-primary">Save</button>
+                <small class="text-gray-500"><em>Set to 0 or a negative number to turn it off.</em></small>
+            </form>
+        </div>
+
+        <div class="hard-box mt-5" id="@Model.SettingsListDomId">
+            <blankslate>
+                <div class="flex flex-col items-center gap-2">
+                    <i class="fa fa-eye-slash text-3xl"></i>
+                    <span class="text-gray-500">Settings are not visible by default because they may contain confidential information.</span>
+                    <form asp-page-handler="Settings">
+                        <button type="submit" class="btn btn-danger">Show Settings</button>
+                    </form>
+                </div>
+            </blankslate>
+        </div>
+    </round-box>
+</page-body>

@@ -1,0 +1,61 @@
+<page-header>
+    Staff Tools
+</page-header>
+<nav class="sm:grid grid-cols-4 gap-4 my-2">
+    <ul class="col-span-3 flex text-sm my-2">
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Staff/Index" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                <i class="fa-solid fa-city"></i> Organizations
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Staff/Users/Index" class="tabnav-btn" nav-active-class="tabnav-btn-active">
+                <i class="fa-solid fa-users"></i> Users
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Staff/Skills/Index" class="tabnav-btn" nav-active-class="tabnav-btn-active">
+                <i class="fa-regular fa-scroll"></i> Skills
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Staff/Stats/Index" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                <i class="fa-solid fa-chart-simple"></i> Stats
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Staff/Activity/Index" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                <i class="fa-solid fa-wave-pulse"></i> Activity
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Staff/Settings" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                <i class="fa-sharp fa-regular fa-sliders"></i> Settings
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Staff/Tools/Index" class="tabnav-btn" nav-active-class="tabnav-btn-active">
+                <i class="fa-solid fa-screwdriver-wrench"></i> Tools
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a asp-page="/Staff/Bus/Index" class="tabnav-btn" nav-exact-match nav-active-class="tabnav-btn-active">
+                <i class="fa fa-bus"></i> Bus
+            </a>
+        </li>
+        <li class="mr-2 flex-shrink-0">
+            <a href="/staff/jobs" class="tabnav-btn" data-turbo="false" target="_blank">
+                <i class="fa-solid fa-diagram-subtask"></i> Jobs <i class="fa-solid fa-up-right-from-square"></i>
+            </a>
+        </li>
+        @if (Environment.GetEnvironmentVariable("WEBSITE_HOSTNAME") is {Length: >0} mainHostname) {
+            // A little hacky to do this in the view, but it's the easiest way.
+            var scmHostName = mainHostname.Replace(".azurewebsites.net", ".scm.azurewebsites.net");
+            <li class="mr-2 flex-shrink-0">
+                <a href="https://@scmHostName/webssh/host" class="tabnav-btn" target="_blank">
+                    <i class="fa-sharp fa-rectangle-terminal"></i> SSH <i class="fa-solid fa-up-right-from-square"></i>
+                </a>
+            </li>
+        }
+    </ul>
+</nav>

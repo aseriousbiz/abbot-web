@@ -1,0 +1,35 @@
+@model Westwind.AspNetCore.Markdown.MarkdownModel
+@{
+    ViewContext.SetPageInfo("Markdown", "Markdown Page", Model.Title);
+    var cssClass = Model.Title.ToDashCase();
+    Layout = "Layouts/_Layout";
+    var yamlHeader = Model.YamlHeader ?? string.Empty;
+}
+
+@if (yamlHeader.Contains("ShowHero: true", StringComparison.Ordinal)) {
+    <section class="hero is-success is-bold">
+        <div class="hero-body">
+            <div class="container">
+                <div class="title">
+                    About
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+<header class="page-header">
+    <div class="container">
+        <vc:bread-crumb title="@Model.Title" />
+    </div>
+</header>
+
+<section class="section">
+    <div class="content container">
+        <div class="columns">
+            <div class="column is-three-fifths is-offset-one-fifth @cssClass">
+                @Model.RenderedMarkdown
+            </div>
+        </div>
+    </div>
+</section>

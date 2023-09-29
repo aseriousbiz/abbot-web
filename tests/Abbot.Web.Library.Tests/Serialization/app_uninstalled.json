@@ -1,0 +1,11 @@
+{
+  "token":"TOKEN123",
+  "team_id":"T12345678",
+  "api_app_id":"A12345678",
+  "event": {
+    "type": "app_uninstalled"
+  },
+  "type": "event_callback",
+  "event_id": "Ev12345678",
+  "event_time": 12345678
+}

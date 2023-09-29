@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>Serious.Abbot</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="references.txt" Watch="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\scripting\Abbot.Scripting.Interfaces\Abbot.Scripting.Interfaces.csproj" />
+  </ItemGroup>
+
+  <Target Name="GatherReferences" DependsOnTargets="ResolveReferences" AfterTargets="Restore;Build">
+    <ItemGroup>
+      <ScriptReferenceNames Include="@(ReferencePath->'%(filename)')" Exclude="System.Text.Json" Condition="$([System.String]::new('%(FullPath)').Contains('.nuget')) or $([System.String]::new('%(filename)').Contains('Immutable'))" />
+      <ScriptReferences Include="@(ReferencePath)" Condition="$([System.String]::new('%(FullPath)').Contains('.nuget')) or $([System.String]::new('%(filename)').Contains('Immutable'))" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(ScriptReferences)" DestinationFolder="$(BaseOutputPath)\refs" Condition="Exists('%(RootDir)%(Directory)%(Filename)%(Extension)')" />
+    <WriteLinesToFile File="references.txt" Lines="@(ScriptReferenceNames)" Overwrite="true" />
+  </Target>
+
+</Project>

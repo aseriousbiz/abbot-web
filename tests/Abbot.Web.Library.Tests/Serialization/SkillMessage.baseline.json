@@ -1,0 +1,194 @@
+{
+  "Version": 1,
+  "PassiveReplies": false,
+  "SkillInfo": {
+    "MessageId": "1234.5678",
+    "MessageUrl": "https://example.com/foo/bar",
+    "Message": {
+      "Text": "some text",
+      "MessageId": "1234.5678",
+      "MessageUrl": "https://example.com/foo/bar",
+      "Author": {
+        "Id": "U456",
+        "UserName": "cloud",
+        "Name": "Cloud Strife"
+      }
+    },
+    "PlatformType": "Slack",
+    "MessagePlatformType": "Slack",
+    "PlatformId": "T123",
+    "SkillName": "skillname",
+    "SkillUrl": "http://example.com/skill",
+    "Room": {
+      "Id": "C123",
+      "Name": "room"
+    },
+    "Arguments": "<@U123> skill <#room-id|room-name>",
+    "TokenizedArguments": [
+      {
+        "Mentioned": {
+          "Id": "U123",
+          "UserName": "user",
+          "Name": "user",
+          "Email": "example@example.com",
+          "Location": {
+            "TimeZone": "America/Los_Angeles",
+            "Coordinate": {
+              "Latitude": 42.0,
+              "Longitude": 23.0
+            },
+            "FormattedAddress": "420 elm street"
+          }
+        },
+        "Value": "<@U123>",
+        "OriginalText": "<@U123>"
+      },
+      {
+        "Value": "skill",
+        "OriginalText": "skill"
+      },
+      {
+        "Room": {
+          "Id": "room-id",
+          "Name": "room-name"
+        },
+        "Value": "<#room-id|room-name>",
+        "OriginalText": "<#room-id|room-name>"
+      }
+    ],
+    "Pattern": {
+      "Name": "PatternName",
+      "Description": "A pattern",
+      "PatternType": "RegularExpression",
+      "Pattern": "[A-Z]*",
+      "CaseSensitive": true
+    },
+    "From": {
+      "Id": "U888",
+      "UserName": "you",
+      "Name": "You",
+      "Email": "you@ab.bot",
+      "Location": {
+        "TimeZone": "America/Vancouver",
+        "Coordinate": {
+          "Latitude": 42.24,
+          "Longitude": 24.42
+        },
+        "FormattedAddress": "123 Jump St."
+      }
+    },
+    "Bot": {
+      "Id": "U999",
+      "UserName": "abbot",
+      "Name": "Abbot",
+      "Email": "me@ab.bot",
+      "Location": {
+        "TimeZone": "America/Vancouver",
+        "Coordinate": {
+          "Latitude": 42.24,
+          "Longitude": 24.42
+        },
+        "FormattedAddress": "123 Jump St."
+      }
+    },
+    "Mentions": [
+      {
+        "Id": "U123",
+        "UserName": "Paul Nakata"
+      }
+    ],
+    "Request": {
+      "Url": "https://example.com",
+      "RawBody": "RAW BODY",
+      "HttpMethod": "CONNECT",
+      "ContentType": "application/json",
+      "Headers": {
+        "Authorize": [
+          "Bar",
+          "Baz"
+        ]
+      },
+      "Form": {
+        "Foo": [
+          "Bar",
+          "Baz"
+        ]
+      },
+      "Query": {
+        "s": [
+          "Bar",
+          "Baz"
+        ]
+      },
+      "IsJson": true,
+      "IsForm": true
+    },
+    "IsRequest": true,
+    "IsChat": true,
+    "IsPlaybook": false,
+    "IsSignal": true,
+    "IsInteraction": true,
+    "CommandText": "skill <#room-id|room-name>"
+  },
+  "SignalInfo": {
+    "Name": "signal",
+    "Arguments": "a b c",
+    "Source": {
+      "AuditIdentifier": "00000000-0000-0000-0000-000000000000",
+      "Arguments": "d e f"
+    }
+  },
+  "ConversationInfo": {
+    "Id": "123",
+    "FirstMessageId": "1111.4444",
+    "Title": "Convo Title",
+    "WebUrl": "https://app.ab.bot/conversations/123",
+    "Room": {
+      "Id": "C999",
+      "Name": "midgar"
+    },
+    "StartedBy": {
+      "Id": "U888",
+      "UserName": "you",
+      "Name": "You",
+      "Email": "you@ab.bot",
+      "Location": {
+        "TimeZone": "America/Vancouver",
+        "Coordinate": {
+          "Latitude": 42.24,
+          "Longitude": 24.42
+        },
+        "FormattedAddress": "123 Jump St."
+      }
+    },
+    "Created": "2022-01-01T01:02:03+08:00",
+    "LastMessagePostedOn": "2022-01-01T01:02:03+08:00",
+    "Members": [
+      {
+        "Id": "U888",
+        "UserName": "you",
+        "Name": "You",
+        "Email": "you@ab.bot",
+        "Location": {
+          "TimeZone": "America/Vancouver",
+          "Coordinate": {
+            "Latitude": 42.24,
+            "Longitude": 24.42
+          },
+          "FormattedAddress": "123 Jump St."
+        }
+      }
+    ]
+  },
+  "RunnerInfo": {
+    "SkillId": 99,
+    "UserId": 420,
+    "MemberId": 53,
+    "Scope": "Organization",
+    "Code": "CODE",
+    "CacheKey": "CODE",
+    "Language": "Ink",
+    "Timestamp": 99999,
+    "AuditIdentifier": "00000000-0000-0000-0000-000000000000"
+  }
+}

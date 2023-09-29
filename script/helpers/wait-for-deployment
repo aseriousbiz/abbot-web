@@ -1,0 +1,23 @@
+#!/bin/bash
+URL="$1"
+DEPLOYMENT_ID="$2"
+
+attempts=0
+while true; do
+    current_id="$(curl -s $URL)"
+    if [[ "$current_id" == "$DEPLOYMENT_ID" ]]; then
+        break
+    fi
+
+    # 60 attempts * 5 seconds = 300 seconds = 5 minutes
+    if [[ "$attempts" -gt 60 ]]; then
+        echo "App failed to start"
+        exit 1
+    fi
+
+    echo "Waiting for app to reach deployment $DEPLOYMENT_ID (current = $current_id) ..."
+    sleep 5
+    attempts=$((attempts+1))
+done
+
+echo "Deployment $DEPLOYMENT_ID is live!"

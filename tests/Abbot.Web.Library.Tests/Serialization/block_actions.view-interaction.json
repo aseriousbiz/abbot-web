@@ -1,0 +1,97 @@
+{
+  "type": "block_actions",
+  "user": {
+    "id": "U012LKJFG0P",
+    "username": "haacked",
+    "name": "haacked",
+    "team_id": "T013108BYLS"
+  },
+  "api_app_id": "A01TG9GPJQ3",
+  "token": "AUBq0lzDhvfWfOieKqkC1l7D",
+  "container": {
+    "type": "view",
+    "view_id": "V03BSED55UZ"
+  },
+  "trigger_id": "3385024109829.1103008406706.3a56597e71a839e82f0289c127938ff9",
+  "team": {
+    "id": "T013108BYLS",
+    "domain": "aseriousbiz"
+  },
+  "is_enterprise_install": false,
+  "view": {
+    "id": "V03BSED55UZ",
+    "team_id": "T013108BYLS",
+    "type": "modal",
+    "blocks": [
+      {
+        "type": "section",
+        "block_id": "ji\u003d",
+        "text": {
+          "type": "mrkdwn",
+          "text": "*First Responders*\nUpdate the set of first responders for this room.",
+          "verbatim": false
+        },
+        "accessory": {
+          "type": "multi_users_select",
+          "initial_users": [
+            "haacked"
+          ],
+          "action_id": "VxT3T"
+        }
+      }
+    ],
+    "private_metadata": "",
+    "callback_id": "b:conversations",
+    "state": {
+      "values": {
+        "ji\u003d": {
+          "VxT3T": {
+            "type": "multi_users_select",
+            "selected_users": [
+              "U01316DKDT5",
+              "U02M9M339R9"
+            ]
+          }
+        }
+      }
+    },
+    "hash": "1649870814.z2q69eDo",
+    "title": {
+      "type": "plain_text",
+      "text": "Configure",
+      "emoji": true
+    },
+    "clear_on_close": false,
+    "notify_on_close": false,
+    "close": {
+      "type": "plain_text",
+      "text": "Cancel",
+      "emoji": true
+    },
+    "submit": {
+      "type": "plain_text",
+      "text": "Save",
+      "emoji": true
+    },
+    "root_view_id": "V03BSED55UZ",
+    "app_id": "A01TG9GPJQ3",
+    "external_id": "",
+    "app_installed_team_id": "T013108BYLS",
+    "bot_id": "B01U63BS0EL"
+  },
+  "actions": [
+    {
+      "type": "multi_users_select",
+      "action_id": "VxT3T",
+      "block_id": "ji\u003d",
+      "selected_users": [
+        "U01316DKDT5",
+        "U02M9M339R9"
+      ],
+      "initial_users": [
+        "U01316DKDT5"
+      ],
+      "action_ts": "1649871075.267482"
+    }
+  ]
+}

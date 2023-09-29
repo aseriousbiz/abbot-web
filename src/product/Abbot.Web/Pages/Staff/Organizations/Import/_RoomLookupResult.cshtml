@@ -1,0 +1,12 @@
+@model LookupResult<Room>
+
+<span>@Model.Name</span>
+@if (Model.Entity is { } room) {
+    <span class="ml-2">(@room.PlatformRoomId)</span>
+}
+@if (Model.Error is { Length: > 0 }) {
+    <div class="mt-2 text-red-500 font-semibold">(@Model.Error)</div>
+}
+@if (Model.Status is { Length: > 0 }) {
+    <div class="mt-2 text-gray-500">(@Model.Status)</div>
+}

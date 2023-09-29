@@ -1,0 +1,80 @@
+@model IndexModel.ConversationInfoViewModel
+
+<h2 class="text-3xl font-semibold">Conversation Detail</h2>
+
+<p>Id: <code>@Model.Conversation.Id</code></p>
+<p>Title: @Model.Conversation.Title</p>
+<p>State: @Model.Conversation.State (last changed @Model.Conversation.LastStateChangeOn.Humanize())</p>
+<p>Posted in <a asp-page="../Room" asp-route-orgId="@Model.Conversation.Organization.PlatformId" asp-route-id="@Model.Conversation.Room.PlatformRoomId">#@Model.Conversation.Room.Name</a> (<code>@Model.Conversation.Room.PlatformRoomId</code>)</p>
+<p>
+    Started by <a asp-page="../Member" asp-route-orgId="@Model.Conversation.StartedBy.Organization.PlatformId" asp-route-id="@Model.Conversation.StartedBy.User.PlatformUserId">@Model.Conversation.StartedBy.DisplayName</a> (<code>@Model.Conversation.StartedBy.User.PlatformUserId</code>)
+    @if (Model.Conversation.StartedBy.OrganizationId != Model.Conversation.OrganizationId) {
+        <span>a foreign user in</span>
+    } else if (Model.Conversation.StartedBy.IsGuest) {
+        <span>a guest in</span>
+    } else {
+        <span>a home user in</span>
+    }
+    <a asp-page="../Index" asp-route-orgId="@Model.Conversation.StartedBy.Organization.PlatformId">@Model.Conversation.StartedBy.Organization.Name</a> (<code>@Model.Conversation.StartedBy.Organization.PlatformId</code>)
+</p>
+<p>First Message: <code>@Model.Conversation.GetFirstMessageUrl()</code></p>
+@if (Model.Conversation.Hub is not null) {
+    <p>Linked to Hub: <a asp-page="../Hubs/View" asp-route-orgId="@Model.Conversation.Organization.PlatformId" asp-route-id="@Model.Conversation.Hub.Room.PlatformRoomId">@Model.Conversation.Hub.Name</a></p>
+}
+
+<h3 class="mt-5 text-2xl font-semibold">Links</h3>
+<div class="hard-box mt-5">
+    @if (Model.Conversation.Links.Any()) {
+        <table class="w-full">
+            <thead>
+            <tr>
+                <th class="text-left border-b p-3">LinkType</th>
+                <th class="text-left border-b p-3">ExternalId</th>
+                <th class="text-left border-b p-3">Settings</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var link in Model.Conversation.Links) {
+                <tr>
+                    <td class="align-middle p-3">@link.LinkType</td>
+
+                    <td class="align-middle p-3">
+                        @if (link.LinkType is ConversationLinkType.ZendeskTicket) {
+                            <a asp-page="../ApiExplorer"
+                               asp-route-id="@Model.Conversation.Organization.PlatformId"
+                               asp-fragment="Input.Url=@link.ExternalId&Input.Api=Zendesk">
+                                <code>@link.ExternalId</code>
+                            </a>
+                        } else {
+                            <code>@link.ExternalId</code>
+                        }
+                    </td>
+                    <td>
+                        <code>@(link.Settings ?? "Null")</code>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    } else {
+        <blankslate>
+            <div class="flex flex-col items-center gap-2">
+                <i class="fa fa-empty-set text-3xl"></i>
+                <span class="text-gray-500">No links found!</span>
+            </div>
+        </blankslate>
+    }
+</div>
+
+<h3 class="mt-5 text-2xl font-semibold">Settings</h3>
+<div class="hard-box mt-5">
+    <partial name="Staff/_SettingsList" model="Model.Settings"
+        view-data="@(ViewData /* must be not null before view-data-*; works fine to reuse */)"
+        view-data-AllowDeleteSetting="false"
+    />
+</div>
+
+<h3 class="mt-5 text-2xl font-semibold">Timeline</h3>
+<div class="hard-box mt-5">
+    <partial name="Conversations/Timeline/_ConversationLog" model="Model.Conversation" />
+</div>

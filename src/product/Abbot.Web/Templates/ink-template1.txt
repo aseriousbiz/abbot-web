@@ -1,0 +1,30 @@
+﻿// Change the Script below with the logic for your skill!
+
+Hello there! Glad to be of service!
+-> start
+
+=== start ===
+<> May I help you with a
++ [question?] -> question
++ [non-critical issue] -> issue
++ [critical issue] -> crit_issue
+
+=== question ===
+Find time on our calendar to discuss calendly link.
+-> END
+
+=== crit_issue ===
+Please visit vendor link. -> END
+
+=== issue ===
+Ok, what type of issue is it?
++ [Type 1] -> issue1
++ [Type 2] -> issue2
+
+=== issue1 ===
+Open an issue here for type 1
+-> END
+
+=== issue2 ===
+Open an issue here for type 2
+-> END

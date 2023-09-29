@@ -1,0 +1,104 @@
+﻿{
+  target: {
+    Room: {
+      Name: Test Room 4,
+      PlatformRoomId: C0004,
+      ManagedConversationsEnabled: true,
+      DateManagedConversationsEnabledUtc: 1999-01-02 03:04:05 Utc,
+      Persistent: true,
+      Shared: true,
+      RoomType: PublicChannel,
+      Deleted: false,
+      Archived: false,
+      BotIsMember: true,
+      Modified: 1999-01-02 03:04:05.001 Utc,
+      LastMessageActivityUtc: 1999-01-02 03:04:05 Utc,
+      OrganizationId: 1,
+      Id: 1,
+      Created: 1999-01-02 03:04:05 Utc
+    },
+    TimeToRespond: {},
+    SentMessages: [
+      {
+        $type: RichActivity,
+        EphemeralUser: Uhome,
+        Blocks: [
+          {
+            $type: Section,
+            Text: {
+              $type: MrkdwnText,
+              Verbatim: false,
+              Text: Thanks for the invitation! If you'd like me to keep track of customer conversations you'll need to upgrade to a Business plan. You can do that here: <https://app.ab.bot/settings/organization/billing>.,
+              Type: mrkdwn
+            },
+            Type: section
+          },
+          {
+            $type: Actions,
+            Elements: {
+              $type: IActionElement[],
+              $values: [
+                {
+                  $type: ButtonElement,
+                  Text: {
+                    Emoji: true,
+                    Text: Take me to Ab.bot,
+                    Type: plain_text
+                  },
+                  Url: https://app.ab.bot/,
+                  Type: button
+                }
+              ]
+            },
+            BlockId: i:RoomMembershipPayloadHandler,
+            Type: actions
+          }
+        ],
+        Type: message,
+        Text: Thanks for the invitation! If you'd like me to keep track of customer conversations you'll need to upgrade to a Business plan. You can do that here: https://app.ab.bot/settings/organization/billing.
+      }
+    ],
+    AnalyticsClient: {
+      Tracked: {
+        (2, Conversation Management Enabled): {
+          feature: Conversations,
+          organization: 1,
+          organization_name: Test Organization,
+          plan: Free,
+          platform_id: Thome,
+          room: C0004
+        },
+        (3, Abbot invited to room): {
+          feature: Slack,
+          inviter_can_manage: true,
+          organization: 1,
+          organization_name: Test Organization,
+          plan: Free,
+          plan_supports_conversation_tracking: false,
+          platform_id: Thome,
+          room: 1,
+          room_is_shared: True
+        }
+      }
+    },
+    AuditEvents: {
+      $type: List<AuditEventBase>,
+      $values: [
+        {
+          $type: AdminAuditEvent,
+          Discriminator: AdminAuditEvent,
+          Identifier: Guid_1,
+          ActorId: 2,
+          Description: Enabled conversation tracking for Test Room 4 (`C0004`).,
+          Details: Enabled conversation tracking for Test Room 4 (`C0004`).,
+          StaffOnly: false,
+          IsTopLevel: true,
+          HasDetails: false,
+          OrganizationId: 1,
+          Id: 1,
+          Created: 1999-01-02 03:04:05.001 Utc
+        }
+      ]
+    }
+  }
+}

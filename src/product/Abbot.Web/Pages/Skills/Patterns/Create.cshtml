@@ -1,0 +1,37 @@
+@page "/skills/{skill}/patterns/create"
+@model Serious.Abbot.Pages.Skills.Patterns.CreatePageModel
+@{
+    ViewContext.SetPageInfo("Patterns", "Pattern Create", "Create a pattern");
+}
+<partial name="_PatternBuilder" model="Model.TestInput" />
+
+<div class="mx-auto my-2">
+    <section class="border border-gray-200 mx-1 mt-2 sm:mt-0">
+        <header class="px-2 m-2 bg-blue-50">
+            <h1 class="text-sm">
+                Create pattern for
+                <span class="font-bold">
+                    @Model.SkillName
+                </span>
+            </h1>
+        </header>
+
+        <section class="m-4">
+            <div asp-validation-summary="ModelOnly"></div>
+            <form method="post"
+                  data-controller="modal-listener"
+                  data-modal-listener-modal-value="pattern-builder">
+                <input type="hidden" asp-for="Input.Skill" value="@Model.SkillName" />
+
+                <editor for="Input" />
+
+                <div class="flex">
+                    <div class="ml-auto">
+                        <skillbacklink class="btn"/>
+                        <button class="btn btn-primary ml-2">Create Pattern</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </section>
+</div>

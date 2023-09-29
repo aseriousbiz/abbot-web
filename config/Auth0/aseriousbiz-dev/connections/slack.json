@@ -1,0 +1,19 @@
+{
+  "id": "con_Vg7kzY5CbQ6HkxmY",
+  "options": {
+    "scope": "identity.basic, identity.email, identity.avatar, identity.team",
+    "scripts": {
+      "fetchUserProfile": "/*\nThis is \"Fetch User Profile Script\" we use in Auth0 under:\n\nTenant: aseriousbiz -> Connections -> Social -> `abbot-slack`\n */\n\nfunction(accessToken, ctx, cb) {\n    request.get({\n        url: 'https://slack.com/api/users.identity',\n        qs: {\n            token: accessToken\n        }\n    }, function(err, resp, body) {\n        if (err) return cb(err);\n        if (resp.statusCode !== 200) return cb(new Error(body));\n\n        const slackResponse = JSON.parse(body);\n        if (!slackResponse.ok) return cb(new Error(body));\n\n        const profile = slackResponse.user;\n        profile.platform_user_id = slackResponse.user.id;\n        profile.slack_id = slackResponse.user.id;\n        profile.team = slackResponse.team;\n        profile.picture = slackResponse.user.image_32;\n        cb(null, profile);\n    });\n}"
+    },
+    "tokenURL": "https://slack.com/api/oauth.access",
+    "client_id": "1103008406706.1108577904386",
+    "authorizationURL": "https://slack.com/oauth/authorize"
+  },
+  "strategy": "oauth2",
+  "name": "slack",
+  "is_domain_connection": false,
+  "enabled_clients": [
+    "Abbot - Dev",
+    "auth0-deploy-cli-extension"
+  ]
+}

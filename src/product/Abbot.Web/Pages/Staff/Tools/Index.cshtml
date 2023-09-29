@@ -1,0 +1,72 @@
+@page
+@model Serious.Abbot.Pages.Staff.ToolsPage
+
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Tools");
+}
+
+<partial name="Staff/_Header"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+<partial name="_Header"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">Decrypt</h2>
+        <p>
+            Use this to decrypt sensitive data stored in log messages.
+        </p>
+
+        <div class="grid grid-cols-2 mt-3">
+            <form method="post" asp-page-handler="Decrypt">
+                <label class="text-xl font-semibold" for="ciphertext">Text to Decrypt</label>
+                <div class="control">
+                    <textarea name="ciphertext" class="form-input" cols="80" rows="10"></textarea>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        Click to decrypt content
+                    </button>
+                    <div class="invisible" data-controller="indicator">
+                        <i class="fa fa-spinner"></i>
+                        Loading…
+                    </div>
+                </div>
+            </form>
+
+            <div>
+                <h3 class="text-xl font-semibold">Decrypted</h3>
+                <pre class="max-h-56 overflow-auto" id="@Model.DecryptResults">@(Model.Unencrypted ?? "<none>")</pre>
+            </div>
+        </div>
+    </round-box>
+
+    <environment exclude="Production">
+        <round-box>
+            <h2 class="text-3xl font-semibold">Test Users</h2>
+            <form asp-page-handler="CreateTestUsers" method="post">
+                <p>This will create some test Agents in the current org. It's safe to run again and again.</p>
+                <button type="submit" class="btn btn-primary"> Create a bunch of test agents</button>
+            </form>
+        </round-box>
+    </environment>
+
+    <round-box>
+        <h2 class="text-3xl font-semibold">Danger Zone</h2>
+        @{
+            foreach (var host in AllowedHosts.All) {
+                <h3 class="mt-5 block text-2xl font-semibold">@host</h3>
+                <div class="mt-2 flex gap-2">
+                    <a class="btn btn-danger" href="https://@(host)/staff/staff/boom">💥 GET 500</a>
+                    <form action="https://@(host)/staff/staff/boom" method="post" data-turbo="false">
+                        <button class="btn btn-danger">💥 POST 500</button>
+                    </form>
+                    <a class="btn" href="https://@(host)/staff/staff/404">🙈 GET 404</a>
+                </div>
+            }
+        }
+        <h3 class="mt-5 block text-2xl font-semibold">JavaScript</h3>
+        <div class="mt-2 flex gap-2">
+            <button class="btn btn-danger" onclick="(function testError() { throw new Error('Boom') })()">💥 Throw</button>
+        </div>
+    </round-box>
+</page-body>

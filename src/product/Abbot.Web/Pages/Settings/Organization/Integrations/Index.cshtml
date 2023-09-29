@@ -1,0 +1,110 @@
+@page
+@using Serious.Abbot.Integrations.MergeDev
+@model Serious.Abbot.Pages.Settings.Organization.Integrations.IndexPage
+
+@{
+    ViewContext.SetPageInfo("Integrations", "Integrations Home", "Integrations");
+}
+
+<partial name="../_Header" model="Model.Viewer"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <ul class="divide-y">
+            <li class="py-4 flex items-center" feature="@FeatureFlags.SlackApp">
+                <img src="/img/logo-slack.svg" class="w-6 h-6 m-4">
+                <div class="flex flex-col flex-grow">
+                    <p class="font-semibold">
+                        Custom Slack App
+                        @if (Model.Enabled(IntegrationType.SlackApp)) {
+                            <pill color="Green">Enabled</pill>
+                        } else {
+                            <pill>Disabled</pill>
+                        }
+                    </p>
+                    <span>Create a custom Slack App to customize your bot.</span>
+                </div>
+                <a asp-page="SlackApp/Index" class="btn">Configure</a>
+            </li>
+            <li class="py-4 flex items-center">
+                <img src="/img/zendesk.svg" class="w-6 h-6 m-4">
+                <div class="flex flex-col flex-grow">
+                    <p class="font-semibold">
+                        Zendesk
+                        @if (Model.Enabled(IntegrationType.Zendesk)) {
+                            <pill color="Green">Enabled</pill>
+                        } else {
+                            <pill>Disabled</pill>
+                        }
+                    </p>
+                    <span>Create and track Zendesk tickets in shared Slack channels.</span>
+                </div>
+                <a asp-page="Zendesk/Index" class="btn">Configure</a>
+            </li>
+            <li class="py-4 flex items-center">
+                <img src="/img/hubspot.svg" class="w-6 h-6 m-4">
+                <div class="flex flex-col flex-grow">
+                    <p class="font-semibold">
+                        HubSpot
+                        @if (Model.Enabled(IntegrationType.HubSpot)) {
+                            <pill color="Green">Enabled</pill>
+                        } else {
+                            <pill>Disabled</pill>
+                        }
+                    </p>
+                    <span>Create and track HubSpot tickets in shared Slack channels.</span>
+                </div>
+                <a asp-page="HubSpot/Index" class="btn">Configure</a>
+            </li>
+            <li class="py-4 flex items-center" feature="@FeatureFlags.GitHub">
+                <img src="/img/GitHub-Mark-32px.png" class="w-6 h-6 m-4">
+                <div class="flex flex-col flex-grow">
+                    <p class="font-semibold">
+                        GitHub
+                        @if (Model.Enabled(IntegrationType.GitHub)) {
+                            <pill color="Green">Enabled</pill>
+                        } else {
+                            <pill>Disabled</pill>
+                        }
+                    </p>
+                    <span>Create and track GitHub issues in shared Slack channels.</span>
+                </div>
+                <a asp-page="GitHub/Index" class="btn">Configure</a>
+            </li>
+            @foreach(var (ticketingIntegration, ticketingSettings) in Model.GetIntegrations<TicketingSettings>())
+            {
+                <li class="py-4 flex items-center">
+                    <span class="w-6 h-6 m-4">🎫</span>
+                    <div class="flex flex-col flex-grow">
+                        <p class="font-semibold">
+                            Create Ticket in @(ticketingSettings.IntegrationName)
+                            <pill color="Yellow">Preview</pill>
+                            @if (ticketingIntegration.Enabled) {
+                                <pill color="Green">Enabled</pill>
+                            } else {
+                                <pill>Disabled</pill>
+                            }
+                        </p>
+                        <span>Create tickets in  @(ticketingSettings.AccountDetails?.Integration ?? "another ticketing service").</span>
+                    </div>
+                    <a asp-page="Ticketing/Index" asp-route-id="@ticketingIntegration.Id" class="btn">Configure</a>
+                </li>
+            }
+            <li class="py-4 flex items-center" feature="@FeatureFlags.MergeTicketing">
+                <span class="w-6 h-6 m-4">🎫</span>
+                <div class="flex flex-col flex-grow">
+                    <p class="font-semibold">
+                        Create Ticket
+                        <pill color="Yellow">Preview</pill>
+                    </p>
+                    <span>Create tickets in another ticketing service.</span>
+                </div>
+                <a asp-page="Ticketing/Create" class="btn">Create</a>
+            </li>
+            <li class="py-4 border-t border-gray-200 text-center">
+                Looking for a specific integration? <a href="mailto:support@ab.bot">Let us know!</a>
+            </li>
+        </ul>
+    </round-box>
+</page-body>

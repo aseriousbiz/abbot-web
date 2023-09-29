@@ -1,0 +1,78 @@
+@model RepairPage.ImportResponseModel
+
+@if (Model is { Messages.Count: > 0, SubjectOrganization: not null }) {
+    <div>
+        @if (Model.CreatedConversation is {} createdConversation) {
+            <h2 class="font-semibold mt-2 text-lg">Created conversation @createdConversation.Id</h2>
+            <div class="flex flex-row">
+                <partial name="_ImportConversationInfo" model="@createdConversation" />
+                <partial name="_LastVerifiedMessageId" />
+            </div>
+        } else {
+            <h2 class="font-semibold mt-2 text-lg">Conversation Preview</h2>
+            if (Model.ExistingConversation is {} existingConversation) {
+                <div class="mt-2">
+                    <strong class="text-green-600">Existing conversation (Id: @existingConversation.Id) found!</strong>
+                    <div class="flex flex-row">
+                        <partial name="_ImportConversationInfo" model="@existingConversation" />
+                        <partial name="_LastVerifiedMessageId" />
+                    </div>
+                </div>
+            } else if (Model.MessageDeleted) {
+                <div class="mt-2">
+                    <strong class="text-red-700">No conversation found because the root message was deleted.</strong>
+                    <div class="flex flex-row">
+                        <partial name="_LastVerifiedMessageId" />
+                    </div>
+                </div>
+            } else {
+                <div class="mt-2">
+                    <strong class="text-red-700">No conversation found.</strong> Here's what we'll create on import.
+                    <div class="flex flex-row">
+                        <partial name="_LastVerifiedMessageId" />
+                    </div>
+                </div>
+            }
+        }
+        <ol class="relative border-l-2 border-gray-200 mr-4 left-3.5 mt-1">
+            @{
+                DateTime? previous = null;
+            }
+            @foreach (var message in Model.Messages) {
+                var from = message.From;
+                <timeline-entry icon="comment" actor="from" viewer-organization="Model.SubjectOrganization">
+                    @if (from.Organization.Id != Model.SubjectOrganization.Id) {
+                        <span>
+                            Foreign User <code><a asp-page="Member" class="align-middle" asp-route-orgId="@from.Organization.PlatformId" asp-route-id="@from.User.PlatformUserId">@from.User.PlatformUserId</a></code> (from <code>@message.From.Organization.PlatformId</code>)
+                        </span>
+                    } else {
+                        <span>
+                            @if (from.IsGuest) {
+                                <text>Guest</text>
+                            } else {
+                                <text>Home</text>
+                            }
+                            User <a asp-page="Member" class="align-middle" asp-route-orgId="@from.Organization.PlatformId" asp-route-id="@from.User.PlatformUserId">@message.From.DisplayName</a> (<code>@from.User.PlatformUserId</code>)
+                        </span>
+                    }
+                    posted
+
+                    @if (previous is null) {
+                        <span data-tooltip="@message.UtcTimestamp">@message.UtcTimestamp.Humanize()</span>
+                    } else {
+                        <span data-tooltip="@message.UtcTimestamp">@((message.UtcTimestamp - previous.Value).Humanize()) later</span>
+                    }
+                    <code>@message.MessageId</code>
+                    @if (message.Deleted) {
+                        <em class="text-red-700"m>This message was deleted</em>
+                    }
+                </timeline-entry>
+                previous = message.UtcTimestamp;
+            }
+        </ol>
+    </div>
+}
+else if (Model is { ErrorMessage.Length: >0 })
+{
+    <span class="text-red-500">@Model.ErrorMessage</span>
+}

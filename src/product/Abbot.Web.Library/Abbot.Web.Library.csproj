@@ -1,0 +1,89 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+        <RootNamespace>Serious.Abbot</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AI.Dev.OpenAI.GPT" />
+        <PackageReference Include="Analytics" />
+        <PackageReference Include="Azure.AI.OpenAI" />
+        <PackageReference Include="Azure.AI.TextAnalytics" />
+        <PackageReference Include="Azure.Identity" />
+        <PackageReference Include="Azure.Messaging.ServiceBus" />
+        <PackageReference Include="Azure.Security.KeyVault.Keys" />
+        <PackageReference Include="Azure.Security.KeyVault.Secrets" />
+        <PackageReference Include="Auth0.AuthenticationApi" />
+        <PackageReference Include="Auth0.ManagementApi" />
+        <PackageReference Include="Azure.Storage.Blobs" />
+        <PackageReference Include="Azure.Storage.Files.Shares" />
+        <PackageReference Include="CronExpressionDescriptor" />
+        <PackageReference Include="Cronos" />
+        <PackageReference Include="DiffPlex" />
+        <PackageReference Include="Fizzler.Systems.HtmlAgilityPack" />
+        <PackageReference Include="Handlebars.Net" />
+        <PackageReference Include="Handlebars.Net.Extension.Json" />
+        <PackageReference Include="Hangfire.Core" />
+        <PackageReference Include="Humanizer.Core" />
+        <PackageReference Include="MassTransit" />
+        <PackageReference Include="MassTransit.SignalR" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+        <PackageReference Include="Microsoft.AspNet.WebApi.Client" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
+        <PackageReference Include="Microsoft.Azure.KeyVault.Core" />
+        <PackageReference Include="Microsoft.Bot.Builder.Azure" />
+        <PackageReference Include="Microsoft.Bot.Builder.Azure.Blobs" />
+        <PackageReference Include="Microsoft.Bot.Builder.Dialogs" />
+        <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" />
+        <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.FeatureManagement" />
+        <PackageReference Include="Newtonsoft.Json" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" />
+        <PackageReference Include="Npgsql.NetTopologySuite" />
+        <PackageReference Include="OpenAI" />
+        <PackageReference Include="Polly" />
+        <PackageReference Include="Refit" />
+        <PackageReference Include="Refit.HttpClientFactory" />
+        <PackageReference Include="Refit.Newtonsoft.Json" />
+        <PackageReference Include="SendGrid" />
+        <PackageReference Include="Serious.Ink.Compiler" />
+        <PackageReference Include="Stripe.net" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Abbot.Common\Abbot.Common.csproj" />
+        <ProjectReference Include="..\..\libraries\Serious.Library\Serious.Library.csproj" />
+        <ProjectReference Include="..\Abbot.ScriptReferences\Abbot.ScriptReferences.csproj" />
+        <ProjectReference Include="..\Serious.Razor\Serious.Razor.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="AnalyzerReleases.Shipped.md" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="..\..\..\config\Slack\manifest.json" Link="Integrations\SlackApp\manifest.json" />
+      <EmbeddedResource Include="EmbeddedResources\**\*.json" />
+      <None Remove="Playbooks\Preinstalled\renewal-scheduling.json" />
+      <EmbeddedResource Include="Playbooks\Preinstalled\customer-activity-check-in.json" />
+      <None Remove="Playbooks\Preinstalled\trial-management.json" />
+      <EmbeddedResource Include="Playbooks\Preinstalled\trial-management.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+            <_Parameter1>Abbot.Web.Library.Tests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Playbooks\Preinstalled\" />
+    </ItemGroup>
+
+</Project>

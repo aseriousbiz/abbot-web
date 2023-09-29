@@ -1,0 +1,90 @@
+﻿{
+  Conversation: {
+    RoomId: 1,
+    FirstMessageId: 1111.0005,
+    ThreadIds: [
+      1111.0005
+    ],
+    Title: Test Conversation 5,
+    IsImported: false,
+    LastMessagePostedOn: 1999-01-02 03:04:05 Utc,
+    LastStateChangeOn: 1999-01-02 03:04:05 Utc,
+    State: Hidden,
+    StartedById: 3,
+    Properties: {},
+    OrganizationId: 1,
+    Id: 1,
+    Created: 1999-01-02 03:04:05 Utc
+  },
+  OpenModals: {
+    $type: Dictionary<string, ViewUpdatePayload>,
+    the-trigger-id: {
+      Title: {
+        Emoji: true,
+        Text: Manage Conversation,
+        Type: plain_text
+      },
+      Close: {
+        Emoji: true,
+        Text: Close,
+        Type: plain_text
+      },
+      Blocks: [
+        {
+          $type: Section,
+          Text: {
+            $type: PlainText,
+            Emoji: true,
+            Text: ℹ️ Conversation Tracking,
+            Type: plain_text
+          },
+          Type: section
+        },
+        {
+          $type: Context,
+          Elements: {
+            $type: IContextBlockElement[],
+            $values: [
+              {
+                $type: MrkdwnText,
+                Verbatim: false,
+                Text: Conversation tracking is not enabled for this room.,
+                Type: mrkdwn
+              }
+            ]
+          },
+          Type: context
+        },
+        {
+          $type: Section,
+          Text: {
+            $type: PlainText,
+            Emoji: true,
+            Text: 🎫 Create a HubSpot ticket for this conversation,
+            Type: plain_text
+          },
+          Accessory: {
+            $type: ButtonElement,
+            Text: {
+              Emoji: true,
+              Text: Create Ticket,
+              Type: plain_text
+            },
+            Value: 1,
+            ActionId: i:CreateHubSpotTicketFormModal:1,
+            Type: button
+          },
+          BlockId: i:CreateHubSpotTicketFormModal:1,
+          Type: section
+        }
+      ],
+      PrivateMetadata: C0004|1111.0005|,
+      CallbackId: i:ManageConversationHandler,
+      ClearOnClose: false,
+      NotifyOnClose: false,
+      SubmitDisabled: false,
+      Type: modal
+    }
+  },
+  AnalyticsClient: {}
+}

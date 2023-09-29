@@ -1,0 +1,51 @@
+﻿{
+  OpenModals: {
+    $type: Dictionary<string, ViewUpdatePayload>,
+    the-trigger-id: {
+      Title: {
+        Emoji: true,
+        Text: Manage Conversation,
+        Type: plain_text
+      },
+      Close: {
+        Emoji: true,
+        Text: Close,
+        Type: plain_text
+      },
+      Blocks: [
+        {
+          $type: Section,
+          Text: {
+            $type: PlainText,
+            Emoji: true,
+            Text: ℹ️ Conversation Tracking,
+            Type: plain_text
+          },
+          Type: section
+        },
+        {
+          $type: Context,
+          Elements: {
+            $type: IContextBlockElement[],
+            $values: [
+              {
+                $type: MrkdwnText,
+                Verbatim: false,
+                Text: Invite `@test-abbot` to track conversations.,
+                Type: mrkdwn
+              }
+            ]
+          },
+          Type: context
+        }
+      ],
+      PrivateMetadata: C0004|1111.0005|,
+      CallbackId: i:ManageConversationHandler,
+      ClearOnClose: false,
+      NotifyOnClose: false,
+      SubmitDisabled: false,
+      Type: modal
+    }
+  },
+  AnalyticsClient: {}
+}

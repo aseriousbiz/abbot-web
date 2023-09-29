@@ -1,0 +1,58 @@
+@model IResponseTimesSettingsContainer
+
+@{
+    var readOnly = !Model.Organization.HasPlanFeature(PlanFeature.ConversationTracking)
+        || !User.IsAdministrator();
+    var disabled = readOnly ? "disabled" : null;
+}
+
+
+<div data-controller="show-hide">
+    <div class="flex items-start gap-x-2 px-3 py-2 shrink-0">
+        <input class="mt-2"
+               id="use-default-response-times"
+               type="radio"
+               data-action="show-hide#update"
+               asp-for="ResponseTimeSettings.UseCustomResponseTimes"
+               disabled="@disabled"
+               value="@false" />
+
+        <div>
+            <label class="font-semibold py-1 inline-block" for="use-default-response-times">Organization defaults</label>
+            <p class="text-gray-500 whitespace-nowrap">
+                This is set in your <a asp-page="Index" asp-fragment="default-response-times">organization’s room settings</a>.
+            </p>
+            <p>
+                <span class="text-gray-500">Target:</span>
+                @(Model.Organization.DefaultTimeToRespond.Warning?.Humanize() ?? "None")
+                <span class="text-gray-500">&bull;</span>
+                <span class="text-gray-500">Deadline:</span>
+                @(Model.Organization.DefaultTimeToRespond.Deadline?.Humanize() ?? "None")
+            </p>
+        </div>
+    </div>
+
+    <div class="flex items-start gap-x-2 px-3 py-2 shrink-0 mr-8">
+        <input class="mt-2 custom-response-radio"
+               id="use-custom-response-times"
+               type="radio"
+               asp-for="ResponseTimeSettings.UseCustomResponseTimes"
+               value="@true"
+               disabled="@disabled"
+               data-show-hide-target="toggler"
+               data-action="show-hide#update"
+               data-visible-when-true="response-time-settings" />
+        <div class="custom-response-content">
+            <label class="font-semibold py-1 inline-block" for="use-custom-response-times">Custom response times</label>
+            <p class="text-gray-500">
+                Set deadlines specific to these rooms.
+            </p>
+
+            <div id="response-time-settings"
+                 class="@(!Model.ResponseTimeSettings.UseCustomResponseTimes ? "hidden" : null) custom-response-details"
+                 data-show-hide-target="subject">
+                <editor for="ResponseTimeSettings" />
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,57 @@
+@page "/skills/{skill}/subscriptions/create"
+@using Serious.Abbot.Signals;
+@model Serious.Abbot.Pages.Skills.Subscriptions.CreatePageModel
+@{
+    ViewContext.SetPageInfo("Signals", "Signal Subscription Create", "Create signal subscription");
+}
+<div class="mx-auto my-2">
+    <section class="border border-gray-200 mx-1 mt-2 sm:mt-0">
+        <header class="px-2 m-2 bg-blue-50">
+            <h1 class="text-sm">
+                Create Signal Subscription
+                <span class="font-bold">
+                    @Model.SkillName
+                </span>
+            </h1>
+        </header>
+
+        <section class="m-4">
+            <div asp-validation-summary="ModelOnly"></div>
+
+            <form method="post">
+                <input type="hidden" asp-for="Input.Skill" value="@Model.SkillName" />
+
+                <editor for="Input" />
+
+                <div class="mt-4 text-right">
+                    <skillbacklink class="btn" />
+                    <button class="ml-1 btn btn-primary">Subscribe to Signal</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="m-4">
+            <h2 class="font-semibold text-2xl">System Signals</h2>
+            <dl class="mt-4 sm:grid grid-cols-[max-content_1fr] gap-2">
+                @foreach(var signal in SystemSignal.All)
+                {
+                    <staff-only or="@(!signal.StaffOnly)">
+                        <dt><copy-box size-to-value="true" value="@signal.Name" clipboard-classes="has-tooltip-left" /></dt>
+                        <dd class="mb-2 px-3 py-2">
+                            @if (signal.StaffOnly) {
+                                <staff-icon class="mr-1 has-tooltip-right" />
+                            }
+                            @if (signal.FromAI) {
+                                <span class="has-tooltip-right mr-1"
+                                      data-tooltip="Abbot suggests this signal based on the content of the conversation">
+                                    <i class="fa fa-message-bot"></i>
+                                </span>
+                            }
+                            @signal.Description
+                        </dd>
+                    </staff-only>
+                }
+            </dl>
+        </section>
+    </section>
+</div>

@@ -1,0 +1,72 @@
+@page
+@model Serious.Abbot.Pages.Settings.Organization.Tags.IndexPage
+@using Serious.Abbot.Repositories;
+
+@{
+    ViewContext.SetPageInfo("Settings", "Conversation Tags");
+}
+
+<partial name="../_Header" model="Model.Viewer"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <header class="flex items-center">
+            <h2 class="text-xl font-semibold">Conversation Tags</h2>
+            <div class="ml-auto">
+                <a asp-page="Conversations/Create" class="btn btn-primary">Create tag</a>
+            </div>
+        </header>
+
+        <ul class="border border-gray-300 rounded-lg bg-white divide-y mt-2 drop-shadow-sm">
+            @foreach (var tag in Model.ConversationTags) {
+                <li class="p-4">
+                    <div class="md:grid md:grid-flow-col md:auto-cols-fr md:gap-2 items-center">
+                        <div class="flex flex-col items-center col-span-2 md:mx-2 md:items-start">
+                            <h1 class="font-semibold whitespace-nowrap"><pill size="Medium">@tag.Name</pill></h1>
+                            <span class="mt-1 text-xs text-gray-600">Created <timeago datetime="@tag.Created" /> by @tag.Creator.DisplayName</span>
+                        </div>
+                        <div class="flex flex-col items-center mt-2 md:mt-0 md:items-start md:ml-4 md:col-span-2 lg:col-span-3">
+                            <div>Conversations with this tag:</div>
+                            <div class="text-sm">
+                                @if (tag.Conversations.Any()) {
+                                    <div class="flex gap-x-2 mt-1">
+                                        @{
+                                            var countsByState = tag.Conversations
+                                                .Select(ct => ct.Conversation.ToStateFilter())
+                                                .WhereNotNull()
+                                                .GroupBy(s => s)
+                                                .OrderBy(g => g.Key);
+                                        }
+                                        @foreach(var stateGroup in countsByState) {
+                                            var color = stateGroup.Key switch
+                                            {
+                                                ConversationStateFilter.NeedsResponse => PillColor.Yellow,
+                                                ConversationStateFilter.Responded => PillColor.Green,
+                                                ConversationStateFilter.Closed => PillColor.Slate,
+                                                _ => PillColor.Gray,
+                                            };
+
+                                            <a asp-page="/Index" asp-route-tag="@tag.Name" asp-route-state="@stateGroup.Key">
+                                                <pill color="@color" size="Small">
+                                                    @stateGroup.Key.GetDisplayName()
+                                                    <span class="tabnav-badge">@stateGroup.Count().ToClampedString(99)</span>
+                                                </pill>
+                                            </a>
+                                        }
+                                    </div>
+                                } else {
+                                    <span class="italic text-gray-600">None</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="ml-auto flex flex-col items-center mt-2 md:mt-0">
+                            <a asp-page="Conversations/Delete" asp-route-id="@tag.Id" class="btn btn-danger btn-sm rounded-md">Delete</a>
+                        </div>
+                    </div>
+                </li>
+            }
+        </ul>
+        <partial name="_Paginator" model="@Model.ConversationTags" />
+    </round-box>
+</page-body>

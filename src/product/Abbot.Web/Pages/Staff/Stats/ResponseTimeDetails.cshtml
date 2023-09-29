@@ -1,0 +1,202 @@
+@page
+@model Serious.Abbot.Pages.Staff.Stats.ResponseTimeDetailsPage
+
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Stats", "Response Time Details");
+}
+
+<partial name="_Header"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <h1 class="text-2xl font-semibold">Response Time Details</h1>
+    @if (Model.DefaultWarningResponseTimeStats is { } defaultWarningStats && Model.DefaultDeadlineResponseTimeStats is { } defaultDeadlineStats) {
+        <section class="flex flex-col gap-5 p-5 mb-5">
+            <div class="flex items-center">
+                <div class="flex flex-col flex-grow items-center">
+                    <p class="text-2xl font-semibold">
+                        Default Warning Response Times
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>
+                        Average:
+                    </p>
+                    <p class="text-2xl font-semibold">
+                        @TimeSpan.FromSeconds(defaultWarningStats.Average).Humanize()
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>Median:</p>
+                    <p class="text-2xl font-semibold">
+                        @TimeSpan.FromSeconds(defaultWarningStats.Median).Humanize()
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>Standard Deviation:</p>
+                    <p class="text-2xl font-semibold">
+                        @TimeSpan.FromSeconds(defaultWarningStats.StandardDeviation).Humanize()
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>Min:</p>
+                    <p class="text-2xl font-semibold">
+                        @TimeSpan.FromSeconds(defaultWarningStats.Min).Humanize()
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>Max:</p>
+                    <p class="text-2xl font-semibold">
+                        @TimeSpan.FromSeconds(defaultWarningStats.Max).Humanize()
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>Count:</p>
+                    <p class="text-2xl font-semibold">
+                        @defaultWarningStats.Count
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center">
+                <div class="flex flex-col flex-grow items-center">
+                    <p class="text-2xl font-semibold">
+                        Default Deadline Response Times
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>
+                        Average:
+                    </p>
+                    <p class="text-2xl font-semibold">
+                        @TimeSpan.FromSeconds(defaultDeadlineStats.Average).Humanize()
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>Median:</p>
+                    <p class="text-2xl font-semibold">
+                        @TimeSpan.FromSeconds(defaultDeadlineStats.Median).Humanize()
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>Standard Deviation:</p>
+                    <p class="text-2xl font-semibold">
+                        @TimeSpan.FromSeconds(defaultDeadlineStats.StandardDeviation).Humanize()
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>Min:</p>
+                    <p class="text-2xl font-semibold">
+                        @TimeSpan.FromSeconds(defaultDeadlineStats.Min).Humanize()
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>Max:</p>
+                    <p class="text-2xl font-semibold">
+                        @TimeSpan.FromSeconds(defaultDeadlineStats.Max).Humanize()
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>Count:</p>
+                    <p class="text-2xl font-semibold">
+                        @defaultDeadlineStats.Count
+                    </p>
+                </div>
+            </div>
+        </section>
+    }
+
+    @if (Model.WarningResponseTimeStats is { } warningStats && Model.DeadlineResponseTimeStats is { } deadlineStats) {
+        <section class="flex flex-col gap-5 p-5 mb-5">
+            <div class="flex items-center">
+                <div class="flex flex-col flex-grow items-center">
+                    <p class="text-2xl font-semibold">
+                        Warning Response Times
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>
+                        Average:
+                    </p>
+                    <p class="text-2xl font-semibold">
+                        @TimeSpan.FromSeconds(warningStats.Average).Humanize()
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>Median:</p>
+                    <p class="text-2xl font-semibold">
+                        @TimeSpan.FromSeconds(warningStats.Median).Humanize()
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>Standard Deviation:</p>
+                    <p class="text-2xl font-semibold">
+                        @TimeSpan.FromSeconds(warningStats.StandardDeviation).Humanize()
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>Min:</p>
+                    <p class="text-2xl font-semibold">
+                        @TimeSpan.FromSeconds(warningStats.Min).Humanize()
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>Max:</p>
+                    <p class="text-2xl font-semibold">
+                        @TimeSpan.FromSeconds(warningStats.Max).Humanize()
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>Count:</p>
+                    <p class="text-2xl font-semibold">
+                        @warningStats.Count
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center">
+                <div class="flex flex-col flex-grow items-center">
+                    <p class="text-2xl font-semibold">
+                        Deadline Response Times
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>
+                        Average:
+                    </p>
+                    <p class="text-2xl font-semibold">
+                        @TimeSpan.FromSeconds(deadlineStats.Average).Humanize()
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>Median:</p>
+                    <p class="text-2xl font-semibold">
+                        @TimeSpan.FromSeconds(deadlineStats.Median).Humanize()
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>Standard Deviation:</p>
+                    <p class="text-2xl font-semibold">
+                        @TimeSpan.FromSeconds(deadlineStats.StandardDeviation).Humanize()
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>Min:</p>
+                    <p class="text-2xl font-semibold">
+                        @TimeSpan.FromSeconds(deadlineStats.Min).Humanize()
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>Max:</p>
+                    <p class="text-2xl font-semibold">
+                        @TimeSpan.FromSeconds(deadlineStats.Max).Humanize()
+                    </p>
+                </div>
+                <div class="flex flex-col flex-grow items-center">
+                    <p>Count:</p>
+                    <p class="text-2xl font-semibold">
+                        @deadlineStats.Count
+                    </p>
+                </div>
+            </div>
+        </section>
+    }
+</page-body>

@@ -1,0 +1,138 @@
+@page "{handler?}"
+@model Serious.Abbot.Pages.Onboarding.InstallPageModel
+@{
+    Layout = "Shared/Layouts/_Layout";
+    ViewContext.SetPageInfo("Home", "Get Started with Abbot");
+}
+
+<section class="m-8">
+    <header class="my-6">
+        <h1 class="text-6xl font-black text-indigo-600 uppercase text-center">
+            Almost there!
+        </h1>
+    </header>
+
+    <div class="border border-slate-300 rounded-3xl p-8 bg-white gap-6 my-8 mx-auto shadow-sm">
+        <div class="flex items-center flex-wrap">
+            <div class="flex flex-col gap-4 p-4 flex-1 min-w-[400px]">
+                <header class="mb-4">
+                    <h2 class="font-semibold text-2xl">Connect Abbot to Slack</h2>
+                    <p>
+                        By connecting Abbot to your workspace, you'll be able to take advantage of all the features Abbot
+                        has to offer.
+                    </p>
+                </header>
+
+                <div class="flex flex-wrap items-center gap-4 shrink-0">
+                    <img src="/img/onboarding-playbooks.svg" alt="Icons representing Playbooks" width="75px">
+
+                    <div class="flex-1">
+                        <h3 class="font-semibold">Playbooks</h3>
+                        <p class="text-sm text-slate-700">
+                            Playbooks automate your customer Playbooks in chat, transforming your customer success strategy
+                            from reactive to proactive.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-4 shrink-0">
+                    <img src="/img/onboarding-charts.svg" alt="Icons representing Insights" width="75px">
+
+                    <div class="flex-1">
+                        <h3 class="font-semibold">Insights</h3>
+                        <p class="text-sm text-slate-700">
+                            Understand what your customers are talking about at a glance and report on your team's
+                            responsiveness, so you'll always know that your customers are getting the help they need.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-4 shrink-0">
+                    <img src="/img/onboarding-chats.svg" alt="Icons representing Conversation Management" width="75px">
+
+                    <div class="flex-1">
+                        <h3 class="font-semibold">Conversation management</h3>
+                        <p class="text-sm text-slate-700">
+                            Monitor conversations in your support channels and makes sure that your customers
+                            receive timely responses.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-1 flex flex-col rounded-xl bg-slate-100 py-4 px-8">
+                <form method="post" asp-page="/Onboarding/Install" class="flex flex-col gap-6 mt-4">
+                    <div class="flex flex-col gap-6" data-controller="onboarding">
+                        <fieldset>
+                            <legend class="font-semibold block mb-1">
+                                Who do you plan on using Abbot with?
+                            </legend>
+
+                            <div class="flex flex-col gap-1">
+                                <label class="flex gap-2 font-semibold px-3 py-2 items-center text-black btn border-slate-300 group">
+                                    <input type="radio" asp-for="IntendedCustomerType" data-onboarding-target="onboardingChoice" data-action="click->onboarding#updateName" value="@IntendedCustomerType.ExternalCustomers" />
+                                    <span class="flex flex-col text-left">
+                                        External customers
+
+                                        <span class="block font-normal text-slate-500 group-hover:text-blue-500">
+                                            Best for Customer Success and Customer Support teams.
+                                        </span>
+                                    </span>
+                                </label>
+
+                                <label class="flex gap-2 font-semibold px-3 py-2 items-center text-black btn border-slate-300 group">
+                                    <input type="radio" asp-for="IntendedCustomerType" data-onboarding-target="onboardingChoice" data-action="click->onboarding#updateName" value="@IntendedCustomerType.InternalUsers" />
+                                    <span class="flex flex-col text-left">
+                                        Internal users
+
+                                        <span class="block font-normal text-slate-500 group-hover:text-blue-500">
+                                            Best for IT requests and incident management.
+                                        </span>
+                                    </span>
+                                </label>
+                            </div>
+                            <span asp-validation-for="IntendedCustomerType"></span>
+                        </fieldset>
+
+                        <div>
+                            <div class="mb-1">
+                                <h2 class="font-semibold block">Create a Slack channel for posting notifications to</h2>
+                                <p class="text-sm text-slate-500">
+                                    After Abbot is connected to Slack, we will create this channel and message you from there
+                                </p>
+                            </div>
+
+                            <div class="flex flex-col">
+                                <div class="flex items-center gap-2">
+                                    <label asp-for="DefaultHubRoomName" class="font-medium block mb-1 text-slate-700 text-sm shrink-0"></label>
+                                    <input type="text" asp-for="DefaultHubRoomName" id="hub-room-name" data-onboarding-target="hubName" class="form-input w-full bg-white" placeholder="example-room" value="" />
+                                </div>
+                                <span asp-validation-for="DefaultHubRoomName"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary rounded-lg inline-flex items-center gap-2 px-3 py-2" data-turbo="false">
+                            <i class="fa-brands fa-slack"></i>
+                            Connect Abbot to your workspace
+                        </button>
+                    </div>
+                </form>
+
+                <form method="post" asp-page-handler="Skip" class="text-center text-sm">
+                    <button type="submit" class="my-2 text-indigo-600 inline-flex items-center gap-1" data-turbo="false">
+                        Skip for now
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+
+                @if (Model.Organization is { TrialEligible: true, PlanType: PlanType.Free }) {
+                    <p class="text-xs text-slate-500 text-center mb-2">
+                        A @(TrialPlan.TrialLengthDays)-day trial will start once Abbot is connected to your workspace
+                    </p>
+                }
+            </div>
+        </div>
+    </div>
+</section>

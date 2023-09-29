@@ -1,0 +1,66 @@
+@model RespondersContainer
+@{
+    var roleName = Model.RoomRole switch {
+        RoomRole.FirstResponder => "first responders",
+        RoomRole.EscalationResponder => "escalation responders",
+        _ => throw new UnreachableException()
+    };
+}
+
+@* This data-checkboxes-target applies to the outer checkboxes controller, not the one below *@
+<details class="dropdown relative" data-checkboxes-target="action">
+    <summary class="btn btn-small">
+        Set @roleName
+    </summary>
+
+    <div role="menu" class="dropdown-menu rounded border border-gray-300 bg-white absolute drop-shadow-md text-sm w-60 z-10">
+        <div class="flex flex-col shrink-0" data-controller="checkboxes" data-checkboxes-exclusive-value="true">
+            <header class="p-2 font-medium whitespace-nowrap border-b">
+                Set @roleName
+            </header>
+
+            <div>
+                @if (!Model.Members.Any()) {
+                    <label class="flex items-center border-b border-gray-200 gap-x-2 px-3 py-2">
+                        <input type="radio" data-checkboxes-target="toggle"  />
+                        <span class="font-medium whitespace-nowrap">Clear @roleName</span>
+                    </label>
+                }
+                else {
+                    <div class="border-b border-gray-200 whitespace-nowrap px-3 py-2">
+                        <label class="flex items-center gap-x-2">
+                            <input type="radio" data-checkboxes-target="toggle" />
+                            <span class="font-medium">Use defaults</span>
+                        </label>
+                        <p class="text-xs text-gray-500 ml-5">
+                            @if (Model.Members.Count is 1) {
+                                @Model.Members[0].DisplayName
+                            } else if (Model.Members.Count is 2) {
+                                @Model.Members[0].DisplayName
+                                <text> and </text>
+                                @Model.Members[1].DisplayName
+                            } else if (Model.Members.Count > 2) {
+                                @string.Join(", ", Model.Members.Take(2).Select(m => m.DisplayName))
+                                <span data-tooltip="@string.Join(", ", Model.Members.Skip(2).Select(m => m.DisplayName))">+ @(Model.Members.Count - 2) more</span>
+                            }
+                        </p>
+                    </div>
+                }
+            </div>
+
+            <div class="max-h-56 overflow-y-scroll">
+                @foreach (var agent in Model.Agents) {
+                    <label class="flex items-center gap-x-2 px-3 py-2">
+                        <input type="checkbox" data-checkboxes-target="item" name="ResponderIds" value="@agent.User.PlatformUserId" />
+                        <img src="@agent.User.Avatar" class="w-6 rounded-full" alt="" />
+                        <span class="font-medium">@agent.DisplayName</span>
+                    </label>
+                }
+            </div>
+
+            <div class="p-2 pr-4 font-medium whitespace-nowrap border-t">
+                <button class="btn btn-primary" asp-page-handler="SaveResponders" name="RoomRole" value="@Model.RoomRole">Save @roleName</button>
+            </div>
+        </div>
+    </div>
+</details>

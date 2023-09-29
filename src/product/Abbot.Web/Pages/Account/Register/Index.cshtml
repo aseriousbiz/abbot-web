@@ -1,0 +1,36 @@
+@page
+@model Serious.Abbot.Pages.Account.Register.IndexPage
+@{
+    var (name, title) = Model.RequiresUserRegistration
+        ? ("Access Request", "Request Access")
+        : ("Already Registered", "Already Registered");
+    ViewContext.SetPageInfo("Account", name, title);
+}
+
+<page-body>
+    <div class="border border-gray-300 p-4 rounded-lg bg-white max-w-md sm:m-8 mx-auto shadow-md">
+        @if (Model.RequiresUserRegistration) {
+            <form method="post" class="p-2">
+                <div class="far fa-user-lock text-2xl mb-1" style="color: #4F46E5;" aria-hidden="true">
+                </div>
+
+                <h1 class="text-lg font-semibold leading-tight">
+                    Your organization requires administrator approval before you can access this site.
+                </h1>
+
+                <p class="my-2">Click the button below to request access.</p>
+
+                <input type="submit" value="Request access" class="btn btn-primary mt-2"/>
+            </form>
+        } else {
+            <div class="p-2">
+                <div class="far fa-circle-check text-3xl mb-1 text-green-500" aria-hidden="true">
+                </div>
+
+                <p class="mt-2">
+                    You are already registered on this site. Click on the navigation above to check it out.
+                </p>
+            </div>
+        }
+    </div>
+</page-body>

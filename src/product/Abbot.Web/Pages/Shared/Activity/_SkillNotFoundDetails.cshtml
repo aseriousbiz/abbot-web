@@ -1,0 +1,76 @@
+@model Serious.Abbot.Pages.Activity.DetailsModel
+
+@{
+  var auditEvent = Model.AuditEvent as SkillNotFoundEvent
+        ?? throw new InvalidOperationException($"AuditEvent is not a {nameof(SkillNotFoundEvent)}.");
+  var displayRoom = auditEvent.Room is { Length:> 0 } && auditEvent.Room[0] != '#'
+    ? $"#{auditEvent.Room}"
+    : auditEvent.Room;
+}
+<div class="p-4">
+  <header>
+    <h1 class="mb-2">Summary</h1>
+  </header>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div>
+      <partial name="Shared/Activity/_OccurrenceDetails" model="auditEvent"/>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Type</h2>
+      <p>
+        Skill Not Found
+      </p>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Actor</h2>
+      <div>
+        <partial name="Shared/Activity/_UserDetail" model="@auditEvent.Actor"/>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Source</h2>
+      <p>
+        @auditEvent.ResponseSource
+      </p>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Command</h2>
+      <div>
+        @if (auditEvent.Command is { Length: > 0})
+        {
+          <text>@auditEvent.Command</text>
+        }
+        else
+        {
+          <span class="text-gray-500">No arguments specified</span>
+        }
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Channel</h2>
+      <div>
+        @if (displayRoom is { Length: > 0 })
+        {
+          <text>@displayRoom</text>
+        }
+        else
+        {
+          <span class="text-gray-500">Unknown</span>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="px-4 pb-4">
+  <h4 class="my-2 font-bold text-sm">Response</h4>
+  <div class="font-mono p-4 bg-gray-100 text-sm rounded">
+    @auditEvent.Response
+  </div>  
+</div>

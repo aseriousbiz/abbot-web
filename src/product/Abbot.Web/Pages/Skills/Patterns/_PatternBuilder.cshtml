@@ -1,0 +1,93 @@
+@using Serious.Abbot.Controllers.InternalApi
+@model Serious.Abbot.Pages.Skills.Patterns.PatternTestInputModel
+
+<div class="modal relative bg-gray-900 bg-opacity-75"
+     data-controller="modal"
+     id="pattern-builder">
+    <form method="post"
+          asp-controller="Patterns"
+          asp-area="InternalApi"
+          asp-action="Test"
+          class="border">
+        @* I don't know why, but this only works if there's two class attributes in this order here. Wil figure it out later. -haacked *@
+        <div class="bg-white" class="modal">
+            <header class="bg-blue-500 text-white px-2 flex items-center">
+                <h1 id="dialogTitle">Pattern Tester</h1>
+                <button class="bg-white text-blue-500 hover:text-gray-900 flex p-1 my-1 ml-auto w-6 justify-center"
+                        data-action="modal#dismiss"
+                        aria-label="close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </header>
+
+            <section class="p-4">
+                <p class="my-2" id="dialogDescription">
+                    Type in a message and click "Run Test" to see which patterns would match the message.
+                </p>
+
+                <div class="field">
+                    <label class="form-label" asp-for="Pattern"></label>
+                    <span asp-validation-for="Pattern"></span>
+                    <input class="form-input w-full modal-value"
+                           asp-for="Pattern"
+                           data-bind-key="pattern"
+                           data-modal-target="value" />
+                </div>
+
+                <div class="field mb-2 mt-2 flex">
+                    <div class="w-1/2 mr-1">
+                        <label class="form-label -mb-0.5" asp-for="PatternType"></label>
+                        <div class="relative flex items-center text-blue-500 hover:text-gray-700">
+                            <select asp-for="PatternType"
+                                    class="appearance-none btn font-bold pr-8"
+                                    asp-items="Html.GetEnumSelectList<PatternType>()"
+                                    data-modal-target="value"
+                                    data-bind-key="pattern-type">
+                                <option>Select pattern type…</option>
+                            </select>
+                            <i class="fa-solid fa-caret-down -ml-6 pointer-events-none"></i>
+                        </div>
+                    </div>
+
+                    <div class="w-1/2 mr-1">
+                        <br />
+                        <label class="font-bold">
+                            <input asp-for="CaseSensitive"
+                                   data-modal-target="value"
+                                   data-bind-key="case-sensitive"/>
+                            Case Sensitive
+                        </label>
+                    </div>
+
+                </div>
+
+                <div>
+                    <div>
+                        <label class="form-label -mb-1" asp-for="Message"></label>
+                        <description asp-for="Message"></description>
+                    </div>
+
+                    <div class="flex item-center">
+                        <input class="form-input w-full" asp-for="Message"/>
+                        <button type="submit" class="btn ml-2">Test</button>
+                    </div>
+
+                    <p asp-validation-for="Message"></p>
+                </div>
+
+                <div id="@PatternsController.PatternTestResultsId">
+                </div>
+
+                <div class="mt-8 flex">
+                    <div class="ml-auto flex item-center">
+                        <button class="btn"
+                                aria-label="close"
+                                data-action="modal#dismiss">Cancel</button>
+                        <button class="btn btn-primary ml-2 modal-success-button"
+                                data-action="modal#submit">Use Pattern</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </form>
+</div>

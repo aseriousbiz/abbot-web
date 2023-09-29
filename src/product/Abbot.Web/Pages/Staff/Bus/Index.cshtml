@@ -1,0 +1,59 @@
+@page
+@using MassTransit
+@model Serious.Abbot.Pages.Staff.Bus.IndexModel
+@inject IEndpointNameFormatter EndpointNameFormatter
+
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Event Bus Topology");
+}
+
+<partial name="Staff/_Header"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+<partial name="_Header"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold"><i class="fa fa-bus"></i> Event Bus Topology</h2>
+        <h3 class="text-2xl font-semibold">Sagas</h3>
+        <ul class="mt-2 flex flex-col gap-4">
+            @foreach (var saga in Model.Sagas) {
+                <li class="rounded border p-2 flex flex-col gap-2">
+                    <p class="flex gap-2">
+                        <i class="fa-duotone fa-chart-network"></i>
+                        <code>@saga.EndpointName</code>
+                    </p>
+                    <p class="flex gap-2">
+                        <i class="fa-solid fa-code"></i>
+                        <code>@saga.TypeName</code>
+                    </p>
+                    @if (saga.StateMachineType is not null) {
+                        <p class="flex gap-2">
+                            <i class="fa-solid fa-code"></i>
+                            <code>@saga.StateMachineType</code>
+                        </p>
+                    }
+                    <div class="self-stretch" data-controller="graphviz">
+                        <script type="text/graphviz" data-graphviz-target="source">
+                            @Html.Raw(saga.StateMachineGraph)
+                        </script>
+                    </div>
+                </li>
+            }
+        </ul>
+        <h3 class="text-2xl font-semibold">Consumers</h3>
+        <ul class="mt-2 flex flex-col gap-4">
+            @foreach (var consumer in Model.Consumers) {
+                <li class="rounded border p-2 flex flex-col gap-2">
+                    <p class="flex gap-2">
+                        <i class="fa-duotone fa-mailbox"></i>
+                        <code>@consumer.EndpointName</code>
+                    </p>
+                    <p class="flex gap-2">
+                        <i class="fa-solid fa-code"></i>
+                        <code>@consumer.TypeName</code>
+                    </p>
+                </li>
+            }
+        </ul>
+    </round-box>
+</page-body>

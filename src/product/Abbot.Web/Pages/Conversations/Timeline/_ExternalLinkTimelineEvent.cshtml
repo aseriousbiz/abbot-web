@@ -1,0 +1,49 @@
+@using Serious.Abbot.Integrations.HubSpot;
+@using Serious.Abbot.Integrations.Zendesk
+@using Serious.Abbot.Integrations.GitHub
+@model ExternalLinkEvent
+
+@switch (Model.Link.LinkType)
+{
+    case ConversationLinkType.ZendeskTicket:
+        var zdLink = ZendeskTicketLink.Parse(Model.Link.ExternalId).Require();
+        <timeline-entry icon="link" actor="Model.Member" viewer-organization="Model.Conversation.Organization">
+            <div>
+                <p class="text-indigo-500 font-semibold text-sm">
+                    Ticket linked
+                    <span class="text-gray-500 font-normal" data-tooltip="@Model.Created" title="@Model.Created">
+                        @Model.Created.Humanize()
+                    </span>
+                </p>
+
+                <p class="font-semibold">
+                    @@@Model.Member.DisplayName
+                    linked a <a target="_blank" href="@zdLink.WebUrl">Zendesk ticket</a>.
+                </p>
+            </div>
+        </timeline-entry>
+        break;
+    case ConversationLinkType.HubSpotTicket:
+        var hsLink = HubSpotTicketLink.FromConversationLink(Model.Link).Require();
+        <timeline-entry icon="link" actor="Model.Member" viewer-organization="Model.Conversation.Organization">
+                <p class="text-indigo-500 font-semibold text-sm">
+                    Ticket linked
+                    <span class="text-gray-500 font-normal" data-tooltip="@Model.Created" title="@Model.Created">
+                        @Model.Created.Humanize()
+                    </span>
+                </p>
+
+                <p class="font-semibold">
+                    @@@Model.Member.DisplayName
+                    linked a <a target="_blank" href="@hsLink.WebUrl">HubSpot ticket</a>.
+                </p>
+        </timeline-entry>
+        break;
+    case ConversationLinkType.GitHubIssue:
+        var ghLink = GitHubIssueLink.Parse(Model.Link.ExternalId).Require();
+        <timeline-entry icon="link" actor="Model.Member" viewer-organization="Model.Conversation.Organization">
+            <span class="font-semibold">@@@Model.Member.DisplayName</span>
+            <span>linked a <a target="_blank" href="@ghLink.WebUrl">GitHub issue</a>.</span>
+        </timeline-entry>
+        break;
+}

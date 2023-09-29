@@ -1,0 +1,37 @@
+@model IFilterModel
+@{
+    var menuBgColor = Model is CompositeFilterModel
+        ? "bg-gray-200"
+        : "bg-white";
+}
+
+<details class="dropdown relative inline bg-gray-50 hidden md:flex items-center nowrap h-full">
+    <summary class="cursor-pointer text-sm">
+        @if (Model.FilterValue is not null) {
+              if (Model.ShowValueInLabel) {
+                  <div>
+                      <span>@Model.Label:</span>
+                      <span>@Model.FilterValue.Label</span>
+                      <i class="fa-regular fa-chevron-down"></i>
+                  </div>
+              } else {
+                  <span>@Model.Label:</span>
+                  <i class="fa-solid fa-chevron-down"></i>
+                  <span data-tooltip="Filtering on: @Model.FilterValue.Label">
+                    <i class="fa-regular fa-filter text-gray-500 ml-1"></i>
+                  </span>
+              }
+        } else {
+            <div class="-ml-2 hover:bg-slate-200 px-2 rounded-full inline-block select-none relative">
+                @Model.Label
+                <i class="fa-solid fa-angle-down relative top-px text-xs"></i>
+            </div>
+        }
+    </summary>
+
+    <div role="menu" class="dropdown-menu rounded border border-gray-300 @menuBgColor absolute drop-shadow-md text-sm w-60 z-10">
+        <div class="flex flex-col shrink-0">
+            @RenderBody()
+        </div>
+    </div>
+</details>

@@ -1,0 +1,60 @@
+@model CompositeFilterModel
+@{
+    Layout = "Filters/_FilterLayout";
+
+    #nullable enable
+    var customerFilterModel = Model.FirstFilter;
+    var segmentFilterModel = Model.SecondFilter;
+
+    var customerField = customerFilterModel.Field;
+    var segmentField = segmentFilterModel.Field;
+
+    // These are mutually exclusive filters.
+    var segmentFilter = segmentFilterModel.Current.Without(customerField);
+
+    var currentSegmentFilter = segmentFilter[segmentField]?.Value;
+
+    var (customerAriaSelected, customerHidden, segmentAriaSelected, segmentHidden) = currentSegmentFilter is not null
+        ? ("false", "hidden", "true", (string?)null)
+        : ("true", null, "false", "hidden");
+}
+
+<tab-container data-selected-tab="customers">
+    <div role="tablist" class="flex flex-auto whitespace-nowrap border-b border-gray-300">
+        <button type="button"
+                class="w-full inline-block p-2 text-sm hover:bg-gray-200 aria-selected:bg-white aria-selected:border-b-0 -mb-1"
+                role="tab"
+                aria-selected="@customerAriaSelected">@customerFilterModel.Label</button>
+        <button type="button"
+                class="w-full inline-block p-2 text-sm hover:bg-gray-200 aria-selected:bg-white aria-selected:border-b-0 -mb-1"
+                role="tab"
+                aria-selected="@segmentAriaSelected"
+                tabindex="-1">@segmentFilterModel.Label</button>
+    </div>
+    <div role="tabpanel" data-tab="customers" class="bg-white" @customerHidden>
+        <ul class="max-h-56 overflow-y-scroll">
+            @if (customerFilterModel.Options.Any()) {
+                foreach (var option in customerFilterModel.Options) {
+                    <partial name="Shared/Filters/_FilterOption" model="option" />
+                }
+            } else {
+                <li class="m-0 border-y-1 border-gray-50">
+                    <span>Your org does not have any <a asp-page="/Customers/Index">customers</a> configured.</span>
+                </li>
+            }
+        </ul>
+    </div>
+    <div role="tabpanel" data-tab="segments" class="bg-white" @segmentHidden>
+        <ul class="max-h-56 overflow-y-scroll">
+            @if (segmentFilterModel.Options.Any()) {
+                foreach (var option in segmentFilterModel.Options) {
+                    <partial name="Shared/Filters/_FilterOption" model="option" />
+                }
+            } else {
+                <li class="m-0 border-y-1 border-gray-50">
+                    <span>Your org does not have any <a asp-page="/Customers/Index">segments</a> configured.</span>
+                </li>
+            }
+        </ul>
+    </div>
+</tab-container>

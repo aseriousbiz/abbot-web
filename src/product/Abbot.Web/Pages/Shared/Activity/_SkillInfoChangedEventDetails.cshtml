@@ -1,0 +1,89 @@
+@model Serious.Abbot.Pages.Activity.DetailsModel
+@{
+    var auditEvent = Model.AuditEvent as SkillInfoChangedAuditEvent
+        ?? throw new InvalidOperationException($"AuditEvent is not a {nameof(SkillInfoChangedAuditEvent)}.");
+}
+
+<div class="p-4">
+    <header>
+        <h1 class="mb-2">Summary</h1>
+    </header>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div>
+            <partial name="Shared/Activity/_OccurrenceDetails" model="auditEvent"/>
+        </div>
+
+        <div>
+            <h2 class="font-bold text-sm mb-1">Type</h2>
+            <div>
+                Skill Info Change
+            </div>
+        </div>
+
+        <div>
+            <h2 class="font-bold text-sm mb-1">Actor</h2>
+            <div>
+                <partial name="Shared/Activity/_UserDetail" model="@auditEvent.Actor"/>
+            </div>
+        </div>
+
+        <div>
+            <h2 class="font-bold text-sm mb-1">Skill</h2>
+            <div>
+                <partial name="Shared/Activity/_SkillDetails"/>
+            </div>
+        </div>
+
+        <div>
+            <h2 class="font-bold text-sm mb-1">Change Type</h2>
+            <div>
+                @auditEvent.ChangeType
+            </div>
+        </div>
+
+        <div>
+            <h2 class="font-bold text-sm mb-1">Description</h2>
+            <div>
+                <markdown>
+                    @auditEvent.Description
+                </markdown>
+            </div>
+        </div>
+        
+        @if (auditEvent.ChangeType is "Changed")
+        {
+            <div>
+                <h2 class="font-bold text-sm mb-1">Properties Changed</h2>
+                <div>
+                    <span class="font-mono">@auditEvent.ChangeDescription</span>
+                </div>
+            </div>
+            
+            @if (auditEvent.NewDescription is not null)
+            {
+                <div>
+                    <h2 class="font-bold text-sm mb-1">New Description</h2>
+                    <div class="p-3 bg-gray-100 rounded">
+                        <markdown>
+                            @auditEvent.NewDescription
+                        </markdown>
+                    </div>
+                </div>
+            }
+            
+            @if (auditEvent.NewUsage is not null)
+            {
+                <div>
+                    <h2 class="font-bold text-sm mb-1">New Usage</h2>
+                    <div class="p-3 bg-gray-100 rounded">
+                        <markdown>
+                            @auditEvent.NewUsage
+                        </markdown>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+    

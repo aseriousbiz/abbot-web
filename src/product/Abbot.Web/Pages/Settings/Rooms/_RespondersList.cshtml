@@ -1,0 +1,78 @@
+@model RespondersContainer
+@{
+    var readOnly = !Model.Organization.HasPlanFeature(PlanFeature.ConversationTracking);
+    var listDomId = $"existing{Model.RoomRole}";
+    var listDomIdSelector = $"#{listDomId}";
+}
+
+<ul id="@listDomId" class="my-2 flex flex-col p-4 gap-4 rounded border border-gray-200 shadow-sm">
+    @if (Model.Members.Any()) {
+        foreach (var member in Model.Members) {
+            var workingHoursInLocalTz = member.GetWorkingHoursInViewerTimeZone(Model.CurrentMember.TimeZoneId);
+            <li class="flex items-center gap-2" data-member-id="@member.Id">
+                <img class="w-6 h-6 border border-gray-300 rounded-full" src="@member.User.Avatar" alt=""/>
+                <div class="grow">
+                    <p class="font-semibold">
+                        @member.DisplayName
+                    </p>
+
+                    <p class="text-sm">
+                        Working Hours:
+
+                        @if (workingHoursInLocalTz is not null)
+                        {
+                                @* Unfortunately data- attributes don't get the Razor magic behavior of "if it's null, don't emit the attribute" *@
+                            if (member.TimeZoneId is { Length: > 0 } && Model.CurrentMember.TimeZoneId != member.TimeZoneId)
+                            {
+                                var tooltip = $"{member.GetWorkingHoursOrDefault().Humanize()} in {member.TimeZoneId}";
+                                <span data-tooltip="@tooltip">@workingHoursInLocalTz.Humanize()</span>
+                            }
+                            else
+                            {
+                                <span>@workingHoursInLocalTz.Humanize()</span>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-gray-500">Not set</span>
+                        }
+                    </p>
+                </div>
+                <form class="justify-self-stretch" asp-page-handler="Unassign">
+                    <input type="hidden" name="roomRole" value="@Model.RoomRole"/>
+                    <input type="hidden" id="memberId" name="memberId" value="@member.Id"/>
+                    <button data-confirm="Are you sure you no longer want @member.DisplayName to be a @Model.RoleMemberDescription?"
+                            type="submit"
+                            class="btn btn-sm @(readOnly ? "btn-disabled" : "btn-danger") w-full"
+                            disabled="@readOnly"
+                            asp-authz-policy="@AuthorizationPolicies.CanManageConversations">Remove</button>
+                </form>
+            </li>
+        }
+    } else {
+        <li class="p-2 text-gray-500 rounded text-center text-sm">None</li>
+    }
+</ul>
+
+<form class="my-2" asp-page-handler="Assign" asp-authz-policy="@AuthorizationPolicies.CanManageConversations" data-controller="autocomplete-responders">
+    <input type="hidden" name="roomRole" value="@Model.RoomRole" />
+    <div class="flex gap-2 items-center">
+        <label class="text-sm font-medium whitespace-nowrap">Add an agent</label>
+        <div class="relative">
+            <input id="member"
+                   name="member"
+                   readonly="@readOnly"
+                   placeholder="Search for an agent"
+                   data-members="@listDomIdSelector"
+                   data-autocomplete-responders-target="input"
+                   class="form-input w-64 text-sm" />
+        </div>
+    </div>
+    @if (Model.Organization.AutoApproveUsers) {
+        <p class="mt-2 text-gray-500 text-sm">Only users who have logged into this site are listed.</p>
+    } else {
+        <p class="mt-2 text-gray-500 text-sm">Only members of the Agent role who have logged into this site are listed. Be sure to
+            check the <a asp-page="/Settings/Organization/Users/Pending">Wait List</a> for users waiting on access.</p>
+    }
+</form>
+

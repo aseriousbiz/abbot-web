@@ -1,0 +1,31 @@
+@model Member
+@{
+    var user = Model.User;
+}
+
+<li id="@InviteIndexPage.InviteeDomId.WithSuffix("user").WithSuffix(user.PlatformUserId)"
+    data-user-invitation-target="item"
+    class="p-4 sm:flex items-center">
+    <div>
+        @user.Email
+        <span class="text-gray-500">@user.DisplayName (@user.PlatformUserId)</span>
+        <div class="text-sm text-gray-500">
+            @if (!Model.Active) {
+                <p>This user has been archived. Inviting the user will unarchive the user.</p>
+            } else if (user.NameIdentifier is not null) {
+                <p>This user has logged into the site before.</p>
+            } else if (Model.InvitationDate is not null) {
+                <p>This user already has an invitation.</p>
+            }
+        </div>
+    </div>
+
+    <button
+        type="submit"
+        name="RemoveUser"
+        form="remove-form"
+        value="@user.PlatformUserId"
+        class="btn btn-danger ml-auto"
+        asp-page-handler="Remove">Remove</button>
+    <input type="hidden" name="InviteeIds" value="@user.PlatformUserId"/>
+</li>

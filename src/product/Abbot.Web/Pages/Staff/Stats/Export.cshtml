@@ -1,0 +1,12 @@
+@page
+@model Serious.Abbot.Pages.Staff.Stats.ExportPageModel
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Metrics Export");
+}
+<form method="post" data-turbo="false">
+    <p>
+        Export anonymized metric data.
+    </p>
+
+    <button class="btn btn-primary">Click to export</button>
+</form>

@@ -1,0 +1,11 @@
+dl.rows {
+  dt {
+    font-weight: bold;
+    color: hsl(204, 71%, 39%);
+  }
+  dd {
+    margin: 0;
+    padding: 0 0 0.5em 0;
+  } 
+}
+

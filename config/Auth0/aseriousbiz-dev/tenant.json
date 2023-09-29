@@ -1,0 +1,18 @@
+{
+  "enabled_locales": [
+    "en"
+  ],
+  "flags": {
+    "new_universal_login_experience_enabled": true,
+    "universal_login": true,
+    "disable_clickjack_protection_headers": false,
+    "unpaginated_requests": true
+  },
+  "picture_url": "https://ab.bot/img/logo-abbot-login-58x58.png",
+  "universal_login": {
+    "colors": {
+      "page_background": "#000000",
+      "primary": "#4E93D9"
+    }
+  }
+}

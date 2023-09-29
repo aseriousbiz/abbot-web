@@ -1,0 +1,24 @@
+@page
+@model Serious.Abbot.Pages.Settings.Organization.Integrations.HubSpot.ConfigureModel
+
+@{
+    ViewContext.SetPageInfo("Integrations", "HubSpot", "HubSpot Configuration");
+}
+
+<partial name="../_Header" model="Model.Viewer"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <div class="font-semibold">
+            <a asp-page="../Index">Integrations</a> / <a asp-page="Index">HubSpot</a>
+        </div>
+
+        <section class="mt-5">
+            <h2 class="text-3xl">HubSpot Integration</h2>
+            <p>Configure the Pipeline to use when creating new Tickets.</p>
+
+            <partial name="_PipelineSelectionForm" model="Model" />
+        </section>
+    </round-box>
+</page-body>

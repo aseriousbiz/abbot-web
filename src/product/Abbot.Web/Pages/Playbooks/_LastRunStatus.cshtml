@@ -1,0 +1,24 @@
+@using Serious.AspNetCore.TagHelpers
+@model PlaybookViewModel
+
+<div class="flex items-center text-sm gap-x-1 mt-1">
+    @if (Model.LastRunGroup is not null) {
+        @if (Model.LastRunGroup.LatestRun is {} latestRun) {
+            @if (latestRun.CompletedAt is not null) {
+                <p class="text-slate-500">
+                    Last run finished <span><timeago datetime="latestRun.CompletedAt"/></span>.
+                </p>
+            } else {
+                <p class="text-slate-500">
+                    Last run started
+                    <span><timeago datetime="latestRun.StartedAt ?? latestRun.Created"/></span>.
+                </p>
+            }
+        }
+        <partial name="Runs/_PlaybookRunGroupStatus" model="Model.LastRunGroup" />
+    } else {
+        <p class="text-slate-500">
+            Never run.
+        </p>
+    }
+</div>

@@ -1,0 +1,118 @@
+﻿@page
+@model Serious.Abbot.Pages.Settings.Organization.Integrations.SlackApp.RoomsModel
+
+@{
+    ViewContext.SetPageInfo("Integrations", "Custom Slack Manage Rooms");
+}
+
+<partial name="../_Header" model="Model.Viewer" />
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage" />
+
+<page-body>
+    <round-box>
+        <div class="font-semibold">
+            <a asp-page="../Index">Integrations</a> /
+            <a asp-page="Index">Custom Slack App</a> /
+            Manage Rooms
+        </div>
+        <p>
+            Abbot can invite your custom bot to channels it’s already a member of.
+        </p>
+        @if (Model.Rooms?.Any() == true
+            && Model.CustomBotName is { Length: > 0 } botName) {
+            <div class="mt-1">
+                Or you can invite it directly:
+                <copy-box container-classes="inline" size-to-value="true" value="/invite @@@botName" />
+            </div>
+
+            <form method="post" data-controller="checkboxes">
+                <div class="border-b border-gray-200">
+                    <div class="flex items-center">
+                        <div class="pr-1 mr-1 my-2.5 sm:border-r border-gray-300">
+                            <input type="checkbox"
+                                   class="m-2"
+                                   name="parent-checkbox"
+                                   aria-label="Select all rooms"
+                                   data-checkboxes-target="toggle"
+                                   disabled="@(Model.Rooms?.Any() != true)" />
+                        </div>
+
+                        <div class="flex gap-x-2 gap-y-2 flex-wrap p-2" role="menubar">
+                            <button class="btn btn-small" data-checkboxes-target="action">
+                                Invite <code>@@@botName</code>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                @if (Model.Rooms?.Any() == true)
+                {
+                    <ol class="divide-y border-gray-200" id="tracking-list">
+                        @foreach (var (room, isMember) in Model.Rooms)
+                        {
+                            <li class="p-2">
+                                <div class="flex items-center">
+                                    <input class="my-2.5 mr-3"
+                                   type="checkbox"
+                                   id="room_@room."
+                                   name="@nameof(Model.RoomIds)"
+                                   data-checkboxes-target="@(isMember != true ? "item" : null)"
+                                   value="@room.Id"
+                                   disabled="@(isMember == true)"
+                                   checked="@(isMember == true)" />
+
+                                    <div class="items-center font-medium">
+                                        <label for="room_@room.Id" data-tooltip="@room.Id">@room.Name</label>
+                                    </div>
+                                    <div class="ml-auto">
+                                        @switch(isMember) {
+                                            case null:
+                                                <i class="fa fa-question text-gray-500"></i>
+                                                break;
+                                            case false:
+                                                <i class="fa fa-xmark text-red-500"></i>
+                                                break;
+                                            case true:
+                                                <i class="fa fa-check text-green-500"></i>
+                                                break;
+                                        }
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ol>
+                }
+                else
+                {
+                    <div class="border border-gray-100 rounded overflow-hidden">
+                        <blankslate>
+                            <div class="text-black font-semibold">
+                                @if (Model.Rooms is null) {
+                                    <text>Could not load room membership. Please try again.</text>
+                                }
+                                else {
+                                    <text>Abbot isn’t a member of any rooms.</text>
+                                }
+                            </div>
+                        </blankslate>
+                    </div>
+                }
+            </form>
+        }
+        else {
+            <div class="border border-gray-100 rounded overflow-hidden">
+                <blankslate>
+                    <div class="text-black font-semibold">
+                        @if (Model.Rooms is null) {
+                            <p>Could not load room membership.</p>
+                            <p>Please ensure Abbot and @(Model.CustomAppName ?? "your Custom App") are installed and try again.</p>
+                        }
+                        else {
+                            <p>Abbot isn’t a member of any rooms.</p>
+                        }
+                    </div>
+                </blankslate>
+            </div>
+        }
+    </round-box>
+</page-body>

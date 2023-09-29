@@ -1,0 +1,303 @@
+{
+  "type": "block_suggestion",
+  "user": {
+    "id": "U012LKJFG0P",
+    "username": "haacked",
+    "name": "haacked",
+    "team_id": "T013108BYLS"
+  },
+  "container": {
+    "type": "view",
+    "view_id": "V03RPVCFDL3"
+  },
+  "api_app_id": "A01TG9GPJQ3",
+  "token": "AUBq0lzDhvfWfOieKqkC1l7D",
+  "action_id": "FirstResponders_ActionId",
+  "block_id": "FirstResponders_BlockId",
+  "value": "@p",
+  "team": {
+    "id": "T013108BYLS",
+    "domain": "aseriousbiz"
+  },
+  "is_enterprise_install": false,
+  "view": {
+    "id": "V03RPVCFDL3",
+    "team_id": "T013108BYLS",
+    "type": "modal",
+    "blocks": [
+      {
+        "type": "section",
+        "block_id": "w\u003dc",
+        "text": {
+          "type": "mrkdwn",
+          "text": ":white_check_mark: Abbot will track any conversations started by guests and external Slack members in this room.",
+          "verbatim": false
+        }
+      },
+      {
+        "type": "divider",
+        "block_id": "yXX9X"
+      },
+      {
+        "type": "section",
+        "block_id": "XoS30",
+        "text": {
+          "type": "mrkdwn",
+          "text": ":bell: Who should receive notifications for these conversations to ensure a response is sent?",
+          "verbatim": false
+        }
+      },
+      {
+        "type": "input",
+        "block_id": "FirstResponders",
+        "label": {
+          "type": "plain_text",
+          "text": "First Responders",
+          "emoji": true
+        },
+        "optional": false,
+        "dispatch_action": false,
+        "element": {
+          "type": "multi_external_select",
+          "action_id": "FirstResponders",
+          "placeholder": {
+            "type": "plain_text",
+            "text": "Select first responders",
+            "emoji": true
+          },
+          "min_query_length": 3
+        }
+      },
+      {
+        "type": "divider",
+        "block_id": "E3VB"
+      },
+      {
+        "type": "section",
+        "block_id": "Bs3q1",
+        "text": {
+          "type": "plain_text",
+          "text": "\n\n:alarm_clock: Abbot will notify first responders of conversations if they are not responded to before the target and deadline response time settings.",
+          "emoji": true
+        }
+      },
+      {
+        "type": "input",
+        "block_id": "TargetResponseTime",
+        "label": {
+          "type": "plain_text",
+          "text": "Target Response Time",
+          "emoji": true
+        },
+        "optional": true,
+        "dispatch_action": false,
+        "element": {
+          "type": "static_select",
+          "action_id": "TargetResponseTime",
+          "initial_option": {
+            "text": {
+              "type": "plain_text",
+              "text": "15 minutes",
+              "emoji": true
+            },
+            "value": "00:15:00"
+          },
+          "options": [
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "15 minutes",
+                "emoji": true
+              },
+              "value": "00:15:00"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "30 minutes",
+                "emoji": true
+              },
+              "value": "00:30:00"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "1 hour",
+                "emoji": true
+              },
+              "value": "01:00:00"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "2 hours",
+                "emoji": true
+              },
+              "value": "02:00:00"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "4 hours",
+                "emoji": true
+              },
+              "value": "04:00:00"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "8 hours",
+                "emoji": true
+              },
+              "value": "08:00:00"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "1 day",
+                "emoji": true
+              },
+              "value": "1.00:00:00"
+            }
+          ]
+        }
+      },
+      {
+        "type": "input",
+        "block_id": "DeadlineResponseTime",
+        "label": {
+          "type": "plain_text",
+          "text": "Deadline Response Time",
+          "emoji": true
+        },
+        "optional": true,
+        "dispatch_action": false,
+        "element": {
+          "type": "static_select",
+          "action_id": "DeadlineResponseTime",
+          "initial_option": {
+            "text": {
+              "type": "plain_text",
+              "text": "4 hours",
+              "emoji": true
+            },
+            "value": "04:00:00"
+          },
+          "options": [
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "15 minutes",
+                "emoji": true
+              },
+              "value": "00:15:00"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "30 minutes",
+                "emoji": true
+              },
+              "value": "00:30:00"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "1 hour",
+                "emoji": true
+              },
+              "value": "01:00:00"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "2 hours",
+                "emoji": true
+              },
+              "value": "02:00:00"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "4 hours",
+                "emoji": true
+              },
+              "value": "04:00:00"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "8 hours",
+                "emoji": true
+              },
+              "value": "08:00:00"
+            },
+            {
+              "text": {
+                "type": "plain_text",
+                "text": "1 day",
+                "emoji": true
+              },
+              "value": "1.00:00:00"
+            }
+          ]
+        }
+      }
+    ],
+    "private_metadata": "C01A3DGTSP9|https://hooks.slack.com/actions/T013108BYLS/3867466613862/qMeAousWrK6NDIhIJabkQhaL",
+    "callback_id": "i:RoomMembershipPayloadHandler",
+    "state": {
+      "values": {
+        "TargetResponseTime": {
+          "TargetResponseTime": {
+            "type": "static_select",
+            "selected_option": {
+              "text": {
+                "type": "plain_text",
+                "text": "15 minutes",
+                "emoji": true
+              },
+              "value": "00:15:00"
+            }
+          }
+        },
+        "DeadlineResponseTime": {
+          "DeadlineResponseTime": {
+            "type": "static_select",
+            "selected_option": {
+              "text": {
+                "type": "plain_text",
+                "text": "4 hours",
+                "emoji": true
+              },
+              "value": "04:00:00"
+            }
+          }
+        }
+      }
+    },
+    "hash": "1659237477.UWAwR8BA",
+    "title": {
+      "type": "plain_text",
+      "text": "Conversation Tracking",
+      "emoji": true
+    },
+    "clear_on_close": false,
+    "notify_on_close": true,
+    "close": {
+      "type": "plain_text",
+      "text": "Set this up later",
+      "emoji": true
+    },
+    "submit": {
+      "type": "plain_text",
+      "text": "Save settings",
+      "emoji": true
+    },
+    "root_view_id": "V03RPVCFDL3",
+    "app_id": "A01TG9GPJQ3",
+    "external_id": "",
+    "app_installed_team_id": "T013108BYLS",
+    "bot_id": "B01U63BS0EL"
+  }
+}

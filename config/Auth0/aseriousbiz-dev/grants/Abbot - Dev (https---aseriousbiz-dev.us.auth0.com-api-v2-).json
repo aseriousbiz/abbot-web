@@ -1,0 +1,20 @@
+{
+  "id": "cgr_8LJZmS10QqdJSNiB",
+  "client_id": "Abbot - Dev",
+  "audience": "https://aseriousbiz-dev.us.auth0.com/api/v2/",
+  "scope": [
+    "read:users",
+    "update:users",
+    "delete:users",
+    "create:users",
+    "read:users_app_metadata",
+    "update:users_app_metadata",
+    "delete:users_app_metadata",
+    "create:users_app_metadata",
+    "read:user_idp_tokens",
+    "read:roles",
+    "create:roles",
+    "delete:roles",
+    "update:roles"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "con_BOWqSnQD82HARC9A",
+  "options": {
+    "email": true,
+    "scope": [
+      "email",
+      "profile"
+    ],
+    "domain": "aseriousbusiness.com",
+    "profile": true,
+    "icon_url": "https://ab.bot/img/abbot-avatar.png",
+    "client_id": "103794818224-rkt96r3top0gftrneb483qsgcpbugbcl.apps.googleusercontent.com",
+    "ext_groups": false,
+    "ext_is_admin": false,
+    "tenant_domain": "aseriousbusiness.com",
+    "ext_agreed_terms": false,
+    "ext_is_suspended": false,
+    "admin_access_token": "ya29.a0AfH6SMDaeEoqCds1mxnGcNSH73_dhR9WbeKYBmlOrlPMpGOyI7jIfOMWCXstgq435o8HMzhfZa3F8IK3u638BQfIK-iOYd_ztAk27yN65jGPSVC8IpCmdRywSGx2600T6RHBvB7y5UUkGwxZ-VHxUB-mj5kpS-18vn9Fxo2JS8s",
+    "admin_refresh_token": "1//04a0wAgUfB1QICgYIARAAGAQSNwF-L9Ird3-u8QLElI7pIzyzWMqN-dm43Pk2BTK06fFPVJttouoG1lzJez-SkLoPAtiYwl6CqlU",
+    "handle_login_from_social": true,
+    "admin_access_token_expiresin": "2020-12-13T20:37:07.127Z"
+  },
+  "strategy": "google-apps",
+  "name": "aseriousbiz",
+  "is_domain_connection": false,
+  "display_name": "A Serious Business",
+  "enabled_clients": [
+    "auth0-deploy-cli-extension",
+    "Discord-DirectLine-Dev"
+  ]
+}

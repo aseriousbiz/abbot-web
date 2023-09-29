@@ -1,0 +1,20 @@
+@page "{id}"
+@model Serious.Abbot.Pages.Staff.PackagesPageModel
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Package Installs List");
+}
+
+
+<back-link asp-page="/Packages/Index">Back to Packages</back-link>
+
+<page-header>
+    Package Installs for <code>@Model.Package.Skill.Name</code>
+</page-header>
+
+<round-box>
+    <ul class="list-disc list-inside">
+        @foreach (var org in Model.Organizations) {
+            <li><a asp-page="/Staff/Organizations/Status" asp-route-id="@org.PlatformId">@org.Name (@org.PlatformType.Humanize())</a></li>
+        }
+    </ul>
+</round-box>

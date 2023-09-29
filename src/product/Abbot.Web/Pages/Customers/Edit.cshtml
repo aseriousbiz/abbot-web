@@ -1,0 +1,113 @@
+@page "{id:int}"
+@model Serious.Abbot.Pages.Customers.EditPage
+
+@{
+    ViewContext.SetPageInfo("Customer", "Edit Customer");
+}
+
+<page-header>
+    <div class="flex items-center mb-4">
+        <a asp-page="Index">Customers</a><span class="mx-1">/</span>
+        <a asp-page="View" asp-route-id="@Model.Input.Id">@Model.Input.Name</a><span class="mx-1">/</span>
+        Edit
+    </div>
+</page-header>
+
+<page-body>
+    <form method="post">
+        <div class="my-4">
+            <label asp-for="Input.Name" class="form-label">
+                Name
+            </label>
+            <input asp-for="Input.Name" class="form-input w-64"/>
+            <span asp-validation-for="Input.Name"></span>
+            @if (Model.SeriousOrganization is not null) {
+                <div class="text-sm mt-1">
+                    <span data-tooltip="You can see this because you're in staff mode">
+                        <i class="fa fa-id-badge"></i>
+                    </span>
+                    <a asp-page="/Staff/Organizations/Status" asp-route-id="@Model.SeriousOrganization.PlatformId">View in staff tools</a>
+                </div>
+            }
+        </div>
+        <div class="rounded-lg border border-gray-300 overflow-hidden bg-white shadow-sm my-4">
+            <header class="bg-gray-50 p-4 border-b border-gray-300">
+                <h2 class="font-semibold">Segments</h2>
+
+                <p class="text-gray-500 text-sm">
+                    Customer segments allow grouping customers for filtering, reporting, and automation.
+                </p>
+            </header>
+
+            <ul class="px-4 py-2">
+                @foreach (var segment in Model.AllCustomerSegments) {
+                    <li class="my-2">
+                        <label class="flex items-center gap-x-2">
+                            <input type="checkbox" name="Input.SegmentIds" value="@segment.Id" checked="@Model.CustomerSegmentIds.Contains(segment.Id)"/>
+                            <pill size="Small">@segment.Name</pill>
+                        </label>
+                    </li>
+                }
+                <li class="my-2">
+                    <label class="flex items-center gap-x-2">
+                        <a asp-page="Segments/Index">Manage Segments</a>
+                    </label>
+                </li>
+
+            </ul>
+        </div>
+
+        <div class="rounded-lg border border-gray-300 overflow-hidden bg-white shadow-sm my-4">
+            <header class="bg-gray-50 p-4 border-b border-gray-300">
+                <h2 class="font-semibold">Slack channels</h2>
+
+                <p class="text-gray-500 text-sm">
+                    Select the channels that are associated with this customer
+                </p>
+            </header>
+
+            <ul class="px-4 py-2">
+                @foreach (var room in Model.AllRooms) {
+                    <li class="my-2">
+                        <label class="flex items-center gap-x-2 text-sm">
+                            <input type="checkbox" name="Input.PlatformRoomIds" value="@room.PlatformRoomId" checked="@Model.CustomerRoomIds.Contains(room.PlatformRoomId)"/>@room.Name
+                        </label>
+                    </li>
+                }
+
+            </ul>
+        </div>
+
+        <input type="hidden" asp-for="Input.Id"/>
+        <button type="submit" class="btn btn-primary">Update customer</button>
+
+        <a asp-page="Index" class="btn">Cancel</a>
+    </form>
+    @if (Model.SeriousOrganization is not null) {
+        <form asp-page-handler="UpdateInternalCustomer" asp-route-id="@ViewContext.RouteData.Values["id"]" method="post">
+            <button type="submit" class="btn">
+                <span data-tooltip="You can see this because you're in staff mode">
+                    <i class="fa fa-id-badge"></i>
+                </span>
+                Resync Customer metadata from Organization
+            </button>
+        </form>
+    }
+
+    <round-box>
+        <h2 class="text-xl font-semibold">Customer Metadata</h2>
+        <div id="@Model.MetadataStatusMessage"></div>
+
+        <div id="@Model.EntityMetadataId">
+            <partial name="Shared/Metadata/_EntityMetadataEditor"/>
+        </div>
+        <p>
+            New Metadata Fields for this organization can be added in the
+            <a asp-page="Index"
+               asp-all-route-data="ViewContext.GetCurrentRouteValues()"
+               asp-route-id="">
+                customer list page
+            </a>
+        </p>
+    </round-box>
+</page-body>

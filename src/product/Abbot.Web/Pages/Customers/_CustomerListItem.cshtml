@@ -1,0 +1,82 @@
+@model CustomerModel
+@{
+    var customer = Model;
+}
+
+<div class="border-t border-slate-200 table-cell px-4 py-3 font-medium">
+    <a asp-page="View" asp-route-id="@Model.Id">
+        @Model.Name
+    </a>
+</div>
+
+<div class="border-t border-slate-200 table-cell px-4 py-3">
+    <div class="flex flex-wrap gap-x-2 items-center">
+        @if (customer.Segments.Any()) {
+            <ul class="flex flex-wrap gap-x-1 gap-y-1 items-center">
+                @foreach (var segment in customer.Segments) {
+                    <li class="rounded-full text-xs bg-slate-100 font-medium inline-block px-2 py-0.5">
+                        @segment.Name
+                    </li>
+                }
+            </ul>
+        } else {
+            <p class="text-slate-500 text-sm">No segments</p>
+        }
+
+        <partial name="Shared/ActionDropDowns/_SegmentsDropDown" model="customer"/>
+    </div>
+</div>
+
+<div class="border-t border-slate-200 table-cell px-4 py-3">
+    <div class="flex items-center flex-wrap gap-x-2">
+        @if (customer.Rooms.Any()) {
+            <ul class="flex items-center flex-wrap gap-x-1 font-medium">
+                @foreach (var room in customer.Rooms) {
+                    <li class="rounded-full text-xs bg-slate-100 px-2 py-0.5">
+                        <a asp-page="/Settings/Rooms/Room" asp-route-roomId="@room.PlatformRoomId">#@room.Name</a>
+                    </li>
+                }
+            </ul>
+        } else {
+            <p class="text-slate-500 text-sm">No rooms associated</p>
+        }
+
+        <partial name="Shared/ActionDropDowns/_RoomsDropDown" model="customer"/>
+    </div>
+</div>
+
+<div class="border-t border-slate-200 table-cell px-4 py-3">
+    <div class="flex items-center flex-wrap gap-x-2 text-gray-600 text-sm">
+        @if (customer.LastMessageActivityUtc.HasValue) {
+            <timeago datetime="customer.LastMessageActivityUtc.Value" />
+        } else {
+            <span class="text-gray-400 italic">No recent activity.</span>
+        }
+    </div>
+</div>
+
+<div class="border-t border-slate-200 table-cell px-4 py-3">
+    <div class="flex gap-x-2 justify-end">
+        <staff-only>
+        @{
+            var orgIdMetadata = customer.Customer.Metadata.FirstOrDefault(m => m.MetadataField.Name == "OrganizationPlatformId");
+            if (orgIdMetadata is { Value: not null })
+            {
+                <a asp-page="/Staff/Organizations/Status" asp-route-id="@orgIdMetadata.Value" class="btn btn-sm">
+                    <span data-tooltip="View organization in staff tools">
+                        <i class="fa fa-id-badge"></i>
+                    </span>
+                </a>
+            }
+        }
+        </staff-only>
+
+        <a asp-page="Edit" asp-route-id="@customer.Id" class="btn btn-sm">
+            <i class="fa-regular fa-pencil"></i>
+        </a>
+
+        <a asp-page="Delete" asp-route-id="@customer.Id" class="btn btn-sm btn-danger">
+            <i class="fa-regular fa-trash"></i>
+        </a>
+    </div>
+</div>

@@ -1,0 +1,79 @@
+{
+  "type": "interactive_message",
+  "actions": [
+    {
+      "name": "choices",
+      "type": "button",
+      "value": "pick green"
+    }
+  ],
+  "callback_id": "s:5",
+  "team": {
+    "id": "T013108BYLS",
+    "domain": "aseriousbiz"
+  },
+  "channel": {
+    "id": "C01A3DGTSP9",
+    "name": "haacked-playground"
+  },
+  "user": {
+    "id": "U012LKJFG0P",
+    "name": "haacked"
+  },
+  "action_ts": "1641666166.411887",
+  "message_ts": "1641665238.009700",
+  "attachment_id": "2",
+  "token": "TOKEN123",
+  "is_app_unfurl": false,
+  "is_enterprise_install": false,
+  "original_message": {
+    "type": "message",
+    "subtype": "bot_message",
+    "text": "Please choose a color.",
+    "ts": "1641665238.009700",
+    "username": "abbot-haacked-dev",
+    "icons": {
+      "image_48": "https://example.com/icon.png"
+    },
+    "bot_id": "B01U63BS0EL",
+    "app_id": "A01TG9GPJQ3",
+    "attachments": [
+      {
+        "image_url": "https://app.ab.bot/img/abbot-full-wave.png",
+        "image_width": 827,
+        "image_height": 1000,
+        "image_bytes": 121092,
+        "id": 1,
+        "color": "660000",
+        "fallback": "The big choice",
+        "title": "The big choice"
+      },
+      {
+        "id": 2,
+        "color": "660000",
+        "fallback": "[no preview available]",
+        "callback_id": "s:5",
+        "actions": [
+          {
+            "id": "1",
+            "name": "choices",
+            "text": "Red",
+            "type": "button",
+            "value": "pick red",
+            "style": "primary"
+          },
+          {
+            "id": "2",
+            "name": "choices",
+            "text": "Green",
+            "type": "button",
+            "value": "pick green",
+            "style": "default"
+          }
+        ]
+      }
+    ]
+  },
+  "response_url": "https://hooks.slack.com/actions/T013108BYLS/BLABLA/BLABLA",
+  "trigger_id": "FANCY.TRIGGER.ID"
+}

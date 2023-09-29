@@ -1,0 +1,9 @@
+# Forbid installing nodejs from debian's built-in feed
+Package: nodejs
+Pin: origin deb.debian.org
+Pin-Priority: -1
+
+# Prioritize installing nodejs from deb.nodesource.com
+Package: nodejs
+Pin: origin deb.nodesource.com
+Pin-Priority: 1001

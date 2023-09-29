@@ -1,0 +1,142 @@
+@page
+@model Serious.Abbot.Pages.Announcements.IndexPage
+
+@{
+    var pageName = Model.ShowArchive ? "Sent Announcements" : "Announcements";
+    ViewContext.SetPageInfo("Announcements", pageName);
+}
+
+<page-header>
+    Announcements
+</page-header>
+
+<page-body>
+    @if (!Model.ShowArchive) {
+        <section class="my-4 rounded-xl bg-white border border-gray-300 overflow-hidden">
+            <header class="p-4 border-b">
+                <h2 class="font-semibold">Upcoming announcements</h2>
+            </header>
+
+            @if (Model.UpcomingAnnouncements is { Count: > 0 } upcomingAnnouncements) {
+                <ul class="rounded-lg bg-white divide-y divide-gray-200">
+                    @foreach (var announcement in upcomingAnnouncements) {
+                        <li class="p-4">
+                            <div>
+                                @if (announcement.State is AnnouncementState.InProgress) {
+                                    <pill color="Yellow" size="Small" class="mb-1">Posting in progress...</pill>
+                                }
+                                @if (announcement.ErrorCount > 0) {
+                                    <a asp-page="View" asp-route-id="@announcement.Id" class="mb-1">
+                                        <pill color="Red" size="Small">
+                                            Error posting to
+                                            @announcement.ErrorCount.ToQuantity("room")
+                                        </pill>
+                                    </a>
+                                }
+
+                            </div>
+
+                            <div class="flex items-start my-1">
+                                <div class="flex-shrink-0 mr-2">
+                                    <avatar member="@announcement.Author"/>
+                                </div>
+
+                                <div>
+                                    <header class="text-gray-500 text-sm">
+                                        <h1>
+                                            <span class="font-semibold text-black">@@@announcement.Author?.DisplayName</span>
+                                            <partial name="_ScheduleStatus" model="(announcement.Announcement, Model.Viewer)"/>
+                                            <partial name="_TargetsList" model="@announcement.Announcement"/>
+                                        </h1>
+                                    </header>
+
+                                    <a asp-page="View" asp-route-id="@announcement.Id">
+                                        @if (announcement.RenderedMessage is { } renderedMessage) {
+                                            <span class="font-semibold">
+                                                <message-renderer message="renderedMessage" truncate-length="255"/>
+                                            </span>
+                                        }
+                                        else {
+                                            <em class="font-semibold">Could not retrieve the message text at the moment.</em>
+                                            <span>To retrieve the Announcement message, Abbot must be in <code># @announcement.SourceRoom.Name</code>.</span>
+                                        }
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
+                    }
+
+                    @if (upcomingAnnouncements.TotalCount > upcomingAnnouncements.Count) {
+                        <li class="p-4">
+                            <partial name="Shared/_Paginator" model="Model.RecentlySentAnnouncements"/>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+    }
+
+    <section class="my-4 rounded-xl bg-white border border-gray-300 overflow-hidden">
+        <header class="p-4 border-b sm:flex items-center">
+            @if (Model.ShowArchive) {
+                <h2 class="font-semibold">All sent announcements</h2>
+                <a asp-page="Index" class="text-sm ml-auto text-blue-600 font-medium">Back</a>
+            }
+            else {
+                <h2 class="font-semibold">Recently sent announcements</h2>
+                <a href="?archived=true" class="text-sm ml-auto text-blue-600 font-medium">View all sent announcements</a>
+            }
+        </header>
+
+        @if (Model.RecentlySentAnnouncements is { Count: > 0 } recentlySentAnnouncements) {
+            <ul class="rounded-lg bg-white divide-y divide-gray-200">
+                @foreach (var announcement in recentlySentAnnouncements) {
+                    <li class="p-4 flex items-start">
+                        <div class="flex-shrink-0 mr-2">
+                            <avatar member="@announcement.Author"/>
+                        </div>
+
+                        <div>
+                            <header class="text-gray-500 text-sm">
+                                <h1>
+                                    <span class="font-semibold text-black">@@@announcement.Author?.DisplayName</span>
+                                    <partial name="_ScheduleStatus" model="(announcement.Announcement, Model.Viewer)"/>
+                                    <partial name="_TargetsList" model="@announcement.Announcement"/>
+                                </h1>
+                            </header>
+
+                            <a asp-page="View" asp-route-id="@announcement.Id">
+                                @if (announcement.RenderedMessage is {} renderedMessage) {
+                                    <span class="font-semibold">
+                                        <message-renderer message="renderedMessage" truncate-length="255"/>
+                                    </span>
+                                }
+                                else {
+                                    <em class="font-semibold">Could not retrieve the message text at the moment.</em>
+                                    <span>To retrieve the Announcement message, Abbot must be in <code># @announcement.SourceRoom.Name</code>.</span>
+                                }
+                            </a>
+                        </div>
+                    </li>
+                }
+
+                @if (recentlySentAnnouncements.TotalCount > recentlySentAnnouncements.Count) {
+                    <li class="p-4">
+                        <partial name="Shared/_Paginator" model="Model.RecentlySentAnnouncements"/>
+                    </li>
+                }
+            </ul>
+        }
+        else {
+            <blankslate>
+                <div class="text-center text-xl h-6 text-gray-500 mb-2">
+                    <i class="fa-regular fa-comment-slash"></i>
+                </div>
+
+                <h2 class="text-center text-lg text-gray-700">
+                    No Announcements yet!
+                </h2>
+            </blankslate>
+        }
+    </section>
+</page-body>

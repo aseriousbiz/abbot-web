@@ -1,0 +1,129 @@
+@model Serious.Abbot.Pages.Activity.DetailsModel
+
+@{
+  var auditEvent = Model.AuditEvent as ScheduledTriggerRunEvent
+        ?? throw new InvalidOperationException($"AuditEvent is not a {nameof(ScheduledTriggerRunEvent)}.");
+  bool success = auditEvent.ErrorMessage is null or {Length: 0};
+  var displayRoom = auditEvent.Room is { Length:> 0 } && auditEvent.Room[0] != '#'
+    ? $"#{auditEvent.Room}"
+    : auditEvent.Room;
+}
+
+<div class="p-4">
+  <header>
+    <h1 class="mb-2 text-gray-500">Summary</h1>
+  </header>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div>
+      <partial name="Shared/Activity/_OccurrenceDetails" model="auditEvent"/>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Type</h2>
+      <div>
+        Scheduled Trigger Run
+        
+        <p class="text-gray-500 text-sm">
+          @if (success) {
+            <span class="text-green-500">success</span>
+          } else {
+            <span class="text-red-500">failed</span>
+          }
+        </p>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Actor</h2>
+      <div>
+        <partial name="Shared/Activity/_UserDetail" model="@auditEvent.Actor" />
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Skill</h2>
+      <div>
+        <partial name="Shared/Activity/_SkillDetails" />
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Arguments</h2>
+      <div>
+        @auditEvent.Arguments
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Channel</h2>
+      <div>
+        @if (displayRoom is { Length: > 0 }) {
+          <text>@displayRoom</text>          
+        } else {
+          <span class="text-gray-500">Unknown</span>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="p-4 border-t">
+  <header>
+    <h1 class="mb-2 text-gray-500">Additional Details</h1>
+  </header>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div>
+      <h2 class="font-bold text-sm mb-1">Trigger creator</h2>
+      <div>
+        @if (Model.Trigger is not null) {
+          <partial name="Shared/Activity/_UserDetail" model="@Model.Trigger.Creator" />
+        }
+      </div>
+    </div>
+    
+    <div>
+      <h2 class="font-bold text-sm mb-1">Language</h2>
+      <div>
+        @auditEvent.Language.Humanize()
+      </div>
+    </div>
+    
+    <div>
+      <h2 class="font-bold text-sm mb-1">Secrets</h2>
+      <div>
+        @if (auditEvent.Secrets is {Length: > 0}) {
+          @auditEvent.Secrets
+        } else {
+          <span class="text-grey-500">None</span>
+        }
+      </div>
+    </div>
+    
+    <div>
+      <h2 class="font-bold text-sm mb-1">Description</h2>
+      <div>
+        <markdown>
+          @auditEvent.Description
+        </markdown>
+      </div>
+    </div>
+    
+    <div>
+      <partial name="Shared/Activity/_SignalChain" model="Model.SignalChain"/>
+    </div>
+  </div>
+</div>
+
+<div class="p-4 border-t">
+  <partial name="Shared/Activity/_SkillCodeDetail" />
+  
+  @if (auditEvent.ErrorMessage is { Length: > 0 })
+  {
+    <div class="border rounded border-red-300 mt-4 p-4">
+      <h5 class="text-white bg-red-500 mb-2 px-2 py-1">Error when run</h5>
+      <pre>@auditEvent.ErrorMessage</pre>
+    </div>
+  }
+</div>

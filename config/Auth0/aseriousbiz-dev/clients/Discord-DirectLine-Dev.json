@@ -1,0 +1,48 @@
+{
+  "is_token_endpoint_ip_header_trusted": false,
+  "name": "Discord-DirectLine-Dev",
+  "is_first_party": true,
+  "oidc_conformant": true,
+  "sso_disabled": false,
+  "cross_origin_auth": false,
+  "refresh_token": {
+    "rotation_type": "non-rotating",
+    "expiration_type": "non-expiring"
+  },
+  "allowed_clients": [],
+  "callbacks": [
+    "https://discord-directline-haack-dev.azurewebsites.net/callback",
+    "https://localhost:5001/callback"
+  ],
+  "initiate_login_uri": "https://discord-directline-haack-dev.azurewebsites.net/login",
+  "logo_uri": "https://ab.bot/img/abbot-avatar.png",
+  "native_social_login": {
+    "apple": {
+      "enabled": false
+    },
+    "facebook": {
+      "enabled": false
+    }
+  },
+  "allowed_logout_urls": [
+    "https://discord-directline-haack-dev.azurewebsites.net/",
+    "https://localhost:5001/"
+  ],
+  "client_id": "jLm91wc70jsqp4UQ30WYpnbIZr7qjpAK",
+  "client_secret": "bhJrKPATRFiEyKQumeRZjuqdmGHFUFxeNR0uPGeDB3fR8KL1aHjcEnNglciBrGM2",
+  "jwt_configuration": {
+    "alg": "RS256",
+    "lifetime_in_seconds": 36000,
+    "secret_encoded": false
+  },
+  "client_aliases": [],
+  "token_endpoint_auth_method": "client_secret_post",
+  "app_type": "regular_web",
+  "grant_types": [
+    "authorization_code",
+    "implicit",
+    "refresh_token",
+    "client_credentials"
+  ],
+  "custom_login_page_on": true
+}

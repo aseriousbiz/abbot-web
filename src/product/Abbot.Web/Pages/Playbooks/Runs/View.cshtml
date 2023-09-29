@@ -1,0 +1,67 @@
+@page "/playbooks/{slug}/runs/{runId}"
+@using Serious.Abbot.Playbooks
+@using Serious.Abbot.Pages.Shared.Components.PlaybookRunDetails
+@model Serious.Abbot.Pages.Playbooks.Runs.ViewModel
+
+@{
+    var title = $"Run of {Model.Run.Playbook.Name} v{Model.Run.Version}";
+    ViewContext.SetPageInfo("Playbook", "Playbook Run", title);
+}
+
+<page-header class="mx-4 my-3">
+    <header class="mb-4 flex place-items-center">
+        <div class="grow">
+            <div class="font-medium text-sm">
+                <a asp-page="../Index"
+                   preserve-staff>
+                    Playbooks
+                </a>
+                /
+                <a asp-page="../View"
+                   asp-all-route-data="ViewContext.GetCurrentRouteValues()"
+                   asp-route-slug="@Model.Run.Playbook.Slug">
+                    @Model.Run.Playbook.Name
+                </a>
+                /
+                <a asp-page="Index" asp-route-slug="@Model.Run.Playbook.Slug" preserve-staff>
+                    Runs
+                </a>
+                @if (Model.Run.Group is not null && Model.Run.Properties.DispatchContext is { Type: not DispatchType.Once }) {
+                    <text>/</text>
+                    <a asp-page="Group" asp-route-slug="@Model.Run.Playbook.Slug" asp-route-groupId="@Model.Run.Group.CorrelationId" preserve-staff>
+                        Run Group
+                    </a>
+                }
+            </div>
+
+            <h1 class="font-semibold" id="playbook-name">
+                Run of
+                '<a asp-page="../View" asp-route-slug="@Model.Run.Playbook.Slug" preserve-staff>@Model.Run.Playbook.Name</a>'
+                (v@(Model.Run.Version))
+                <partial name="_RunDispatchContext" model="Model.Run" />
+            </h1>
+
+            <p class="text-slate-500 text-sm font-normal">
+                <timeago tooltip-position="Bottom" datetime="@Model.Run.Created"/>
+            </p>
+        </div>
+        @if (Model.Run.State != "Final") {
+            <form asp-page-handler="Cancel" class="text-base font-normal flex items-center gap-x-2">
+                @if (Model.InStaffTools) {
+                    <input class="form-input" name="staffReason" placeholder="Cancellation Reason"/>
+                }
+                <button class="btn btn-danger" data-confirm="Are you sure you want to cancel this run?">
+                    <i class="fa fa-circle-xmark"></i>
+                    Cancel
+                </button>
+            </form>
+        }
+    </header>
+</page-header>
+
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body class="h-full">
+    <vc:playbook-run-details run="@Model.Run"/>
+</page-body>

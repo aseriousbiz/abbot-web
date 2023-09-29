@@ -1,0 +1,478 @@
+﻿{
+  target: {
+    PostedMessages: {
+      $type: List<MessageRequest>,
+      $values: [
+        {
+          Channel: Umention1,
+          Timestamp: 0000000001.000000,
+          Blocks: {
+            $type: List<ILayoutBlock>,
+            $values: [
+              {
+                $type: Section,
+                Text: {
+                  $type: MrkdwnText,
+                  Verbatim: false,
+                  Text: I *H*: M,
+                  Type: mrkdwn
+                },
+                Type: section
+              },
+              {
+                $type: Context,
+                Elements: {
+                  $type: IContextBlockElement[],
+                  $values: [
+                    {
+                      $type: MrkdwnText,
+                      Verbatim: false,
+                      Text: *Assigned to this conversation*: <@Umention1> <@Umention2>,
+                      Type: mrkdwn
+                    }
+                  ]
+                },
+                Type: context
+              }
+            ]
+          },
+          ReplyBroadcast: false,
+          Text: I H: M
+        },
+        {
+          Channel: Umention2,
+          Timestamp: 0000000002.000000,
+          Blocks: {
+            $type: List<ILayoutBlock>,
+            $values: [
+              {
+                $type: Section,
+                Text: {
+                  $type: MrkdwnText,
+                  Verbatim: false,
+                  Text: I *H*: M,
+                  Type: mrkdwn
+                },
+                Type: section
+              },
+              {
+                $type: Context,
+                Elements: {
+                  $type: IContextBlockElement[],
+                  $values: [
+                    {
+                      $type: MrkdwnText,
+                      Verbatim: false,
+                      Text: *Assigned to this conversation*: <@Umention1> <@Umention2>,
+                      Type: mrkdwn
+                    }
+                  ]
+                },
+                Type: context
+              }
+            ]
+          },
+          ReplyBroadcast: false,
+          Text: I H: M
+        },
+        {
+          Channel: Umention1,
+          Timestamp: 0000000003.000000,
+          Blocks: {
+            $type: List<ILayoutBlock>,
+            $values: [
+              {
+                $type: Section,
+                Text: {
+                  $type: MrkdwnText,
+                  Verbatim: false,
+                  Text: I *H*: M,
+                  Type: mrkdwn
+                },
+                Type: section
+              },
+              {
+                $type: Context,
+                Elements: {
+                  $type: IContextBlockElement[],
+                  $values: [
+                    {
+                      $type: MrkdwnText,
+                      Verbatim: false,
+                      Text: *First responders*: <@Umention1> <@Umention3>,
+                      Type: mrkdwn
+                    }
+                  ]
+                },
+                Type: context
+              }
+            ]
+          },
+          ReplyBroadcast: false,
+          Text: I H: M
+        },
+        {
+          Channel: Umention3,
+          Timestamp: 0000000004.000000,
+          Blocks: {
+            $type: List<ILayoutBlock>,
+            $values: [
+              {
+                $type: Section,
+                Text: {
+                  $type: MrkdwnText,
+                  Verbatim: false,
+                  Text: I *H*: M,
+                  Type: mrkdwn
+                },
+                Type: section
+              },
+              {
+                $type: Context,
+                Elements: {
+                  $type: IContextBlockElement[],
+                  $values: [
+                    {
+                      $type: MrkdwnText,
+                      Verbatim: false,
+                      Text: *First responders*: <@Umention1> <@Umention3>,
+                      Type: mrkdwn
+                    }
+                  ]
+                },
+                Type: context
+              }
+            ]
+          },
+          ReplyBroadcast: false,
+          Text: I H: M
+        }
+      ]
+    }
+  },
+  logs: {
+    $type: List<LogEvent>,
+    $values: [
+      {
+        CategoryName: Serious.Abbot.Eventing.ConversationNotificationsConsumer,
+        LogLevel: Information,
+        EventId: {
+          Id: 1,
+          Name: PublishedNotification
+        },
+        Message: Published TicketCreated IndividualDM Notification to Assignee: 0000000001.000000,
+        State: {
+          $type: LoggerMessage.LogValues<NotificationType, string,
+          $values: [
+            {
+              NotificationType: TicketCreated
+            },
+            {
+              NotificationDelivery: IndividualDM
+            },
+            {
+              RecipientType: Assignee
+            },
+            {
+              SlackTimestamp: 0000000001.000000
+            },
+            {
+              {OriginalFormat}: Published {NotificationType} {NotificationDelivery} Notification to {RecipientType}: {SlackTimestamp}
+            }
+          ]
+        },
+        Scopes: {
+          $type: List<object>,
+          $values: [
+            {
+              $type: LoggerMessage.LogValues<int, string,
+              $values: [
+                {
+                  OrganizationId: 1
+                },
+                {
+                  OrganizationPlatformId: Thome
+                },
+                {
+                  OrganizationSlug: testorg
+                },
+                {
+                  {OriginalFormat}: Organization: {OrganizationId}, {OrganizationPlatformId}, {OrganizationSlug}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<int, string>,
+              $values: [
+                {
+                  RoomId: 1
+                },
+                {
+                  RoomPlatformId: Croom
+                },
+                {
+                  {OriginalFormat}: Room: {RoomId}, {RoomPlatformId}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<int, ConversationState,
+              $values: [
+                {
+                  ConversationId: 1
+                },
+                {
+                  ConversationState: New
+                },
+                {},
+                {
+                  {OriginalFormat}: Conversation: {ConversationId}, {ConversationState}, {HubThreadId}
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        CategoryName: Serious.Abbot.Eventing.ConversationNotificationsConsumer,
+        LogLevel: Information,
+        EventId: {
+          Id: 1,
+          Name: PublishedNotification
+        },
+        Message: Published TicketCreated IndividualDM Notification to Assignee: 0000000002.000000,
+        State: {
+          $type: LoggerMessage.LogValues<NotificationType, string,
+          $values: [
+            {
+              NotificationType: TicketCreated
+            },
+            {
+              NotificationDelivery: IndividualDM
+            },
+            {
+              RecipientType: Assignee
+            },
+            {
+              SlackTimestamp: 0000000002.000000
+            },
+            {
+              {OriginalFormat}: Published {NotificationType} {NotificationDelivery} Notification to {RecipientType}: {SlackTimestamp}
+            }
+          ]
+        },
+        Scopes: {
+          $type: List<object>,
+          $values: [
+            {
+              $type: LoggerMessage.LogValues<int, string,
+              $values: [
+                {
+                  OrganizationId: 1
+                },
+                {
+                  OrganizationPlatformId: Thome
+                },
+                {
+                  OrganizationSlug: testorg
+                },
+                {
+                  {OriginalFormat}: Organization: {OrganizationId}, {OrganizationPlatformId}, {OrganizationSlug}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<int, string>,
+              $values: [
+                {
+                  RoomId: 1
+                },
+                {
+                  RoomPlatformId: Croom
+                },
+                {
+                  {OriginalFormat}: Room: {RoomId}, {RoomPlatformId}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<int, ConversationState,
+              $values: [
+                {
+                  ConversationId: 1
+                },
+                {
+                  ConversationState: New
+                },
+                {},
+                {
+                  {OriginalFormat}: Conversation: {ConversationId}, {ConversationState}, {HubThreadId}
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        CategoryName: Serious.Abbot.Eventing.ConversationNotificationsConsumer,
+        LogLevel: Information,
+        EventId: {
+          Id: 1,
+          Name: PublishedNotification
+        },
+        Message: Published TicketCreated IndividualDM Notification to FirstResponder: 0000000003.000000,
+        State: {
+          $type: LoggerMessage.LogValues<NotificationType, string,
+          $values: [
+            {
+              NotificationType: TicketCreated
+            },
+            {
+              NotificationDelivery: IndividualDM
+            },
+            {
+              RecipientType: FirstResponder
+            },
+            {
+              SlackTimestamp: 0000000003.000000
+            },
+            {
+              {OriginalFormat}: Published {NotificationType} {NotificationDelivery} Notification to {RecipientType}: {SlackTimestamp}
+            }
+          ]
+        },
+        Scopes: {
+          $type: List<object>,
+          $values: [
+            {
+              $type: LoggerMessage.LogValues<int, string,
+              $values: [
+                {
+                  OrganizationId: 1
+                },
+                {
+                  OrganizationPlatformId: Thome
+                },
+                {
+                  OrganizationSlug: testorg
+                },
+                {
+                  {OriginalFormat}: Organization: {OrganizationId}, {OrganizationPlatformId}, {OrganizationSlug}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<int, string>,
+              $values: [
+                {
+                  RoomId: 1
+                },
+                {
+                  RoomPlatformId: Croom
+                },
+                {
+                  {OriginalFormat}: Room: {RoomId}, {RoomPlatformId}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<int, ConversationState,
+              $values: [
+                {
+                  ConversationId: 1
+                },
+                {
+                  ConversationState: New
+                },
+                {},
+                {
+                  {OriginalFormat}: Conversation: {ConversationId}, {ConversationState}, {HubThreadId}
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        CategoryName: Serious.Abbot.Eventing.ConversationNotificationsConsumer,
+        LogLevel: Information,
+        EventId: {
+          Id: 1,
+          Name: PublishedNotification
+        },
+        Message: Published TicketCreated IndividualDM Notification to FirstResponder: 0000000004.000000,
+        State: {
+          $type: LoggerMessage.LogValues<NotificationType, string,
+          $values: [
+            {
+              NotificationType: TicketCreated
+            },
+            {
+              NotificationDelivery: IndividualDM
+            },
+            {
+              RecipientType: FirstResponder
+            },
+            {
+              SlackTimestamp: 0000000004.000000
+            },
+            {
+              {OriginalFormat}: Published {NotificationType} {NotificationDelivery} Notification to {RecipientType}: {SlackTimestamp}
+            }
+          ]
+        },
+        Scopes: {
+          $type: List<object>,
+          $values: [
+            {
+              $type: LoggerMessage.LogValues<int, string,
+              $values: [
+                {
+                  OrganizationId: 1
+                },
+                {
+                  OrganizationPlatformId: Thome
+                },
+                {
+                  OrganizationSlug: testorg
+                },
+                {
+                  {OriginalFormat}: Organization: {OrganizationId}, {OrganizationPlatformId}, {OrganizationSlug}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<int, string>,
+              $values: [
+                {
+                  RoomId: 1
+                },
+                {
+                  RoomPlatformId: Croom
+                },
+                {
+                  {OriginalFormat}: Room: {RoomId}, {RoomPlatformId}
+                }
+              ]
+            },
+            {
+              $type: LoggerMessage.LogValues<int, ConversationState,
+              $values: [
+                {
+                  ConversationId: 1
+                },
+                {
+                  ConversationState: New
+                },
+                {},
+                {
+                  {OriginalFormat}: Conversation: {ConversationId}, {ConversationState}, {HubThreadId}
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

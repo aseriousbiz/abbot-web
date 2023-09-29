@@ -1,0 +1,20 @@
+{
+  "type": "event_callback",
+  "token": "TOKEN123",
+  "team_id": "T12345678",
+  "api_app_id": "A12345678",
+  "event": {
+    "type": "channel_rename",
+    "channel": {
+      "id": "C02MEN6N1EW",
+      "is_channel": true,
+      "is_mpim": false,
+      "name": "anurse-playground-2",
+      "name_normalized": "anurse-playground-2",
+      "created": 1637017467
+    },
+    "event_ts": "1646691563.221800"
+  },
+  "event_id": "Ev12345678",
+  "event_time": 12345678
+}

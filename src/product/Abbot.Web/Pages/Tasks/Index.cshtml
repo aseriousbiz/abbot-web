@@ -1,0 +1,250 @@
+@page
+@model IndexPageModel
+@{
+    ViewContext.SetPageInfo("Tasks", "Task List");
+    var groupedTasks = Model.Tasks.GroupBy(t => t.Customer ?? t.Conversation?.Room.Customer);
+    var groupedSuggestions = Model.SuggestedTasks.GroupBy(t => t.Room.Customer);
+    var filterApplied = Model.Filter.Any();
+}
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+<partial name="Shared/_ReadOnlyHeader" />
+
+<page-header>
+    Tasks
+    <span class="preview-pill text-lg">
+        Preview
+    </span>
+</page-header>
+
+<page-body data-controller="save-url" data-save-url-key-value="tasks" class="mt-4">
+    <div>
+        <span class="font-semibold">Preview Notes:</span>
+        <ul class="text-sm list-disc ml-6">
+            <li>Closing a task does not close the corresponding conversation.</li>
+            <li>There are no notifications or deadlines for tasks at the moment.</li>
+            <li>Suggested tasks are only shown from conversations that are currently waiting on an Agent to respond.</li>
+            <li>Message us in Slack or <a href="mailto:@WebConstants.SupportEmail">email us</a> with feedback!</li>
+        </ul>
+    </div>
+
+    <div class="border border-gray-300 rounded-lg bg-white">
+        <header class="p-4 flex">
+            <div class="flex-col">
+                <h2 class="font-semibold">Active tasks</h2>
+                <p class="text-sm text-gray-500">
+                    Active tasks are tracked independently from conversations, but may be linked to the conversation it was created from.
+                </p>
+            </div>
+            <div class="flex-col ml-auto border-gray-800">
+                <a class="btn btn-primary btn-sm align-bottom mt-5" asp-page="Create" asp-route-q="@Model.Filter">
+                    <i class="fa-solid fa-plus"></i>
+                    Create Task
+                </a>
+            </div>
+        </header>
+
+        <form method="post" data-controller="checkboxes">
+            @* Hidden inputs used to preserve the filter and track state when submitting the form *@
+            <input type="hidden" asp-for="Filter"/>
+            <input type="hidden" asp-for="Tab"/>
+            <input type="hidden" asp-for="PageNumber" name="p"/>
+            <div class="border-t border-gray-300 bg-gray-50 px-4 py-1 flex items-center gap-x-2">
+                <div class="flex items-center gap-x-2">
+                    <input class="m-1"
+                           type="checkbox"
+                           id="parent-checkbox"
+                           name="parent-checkbox"
+                           aria-label="Select all tasks"
+                           data-checkboxes-target="toggle"/>
+                </div>
+
+                <div class="flex items-center grow px-2 gap-x-2"
+                     role="menubar" asp-authz-policy="@AuthorizationPolicies.CanManageConversations">
+                    <partial name="_AssigneesDropDown" model="Model.AssigneeContainer" />
+                    <partial name="_StatusDropDown" model="TaskItemStatus.None" />
+                    
+                    <button class="btn btn-sm btn-danger" asp-page-handler="CloseTasks" data-checkboxes-target="action">
+                        Close
+                    </button>
+                    @if (filterApplied) {
+                        <div class="ml-4 text-gray-600">
+                            <a asp-page="Index" class="text-sm text-gray-600 italic"><i class="fa-duotone fa-circle-xmark"></i> Clear Filters</a>
+                        </div>
+                    }
+                </div>
+                
+                <div class="ml-auto flex">
+                    <partial name="Shared/Filters/_CustomerFilter" model="Model.CustomerFilterModel" />
+                    <partial name="_StatusFilter" model="Model.StatusFilterModel" />
+                    <partial name="Shared/Filters/_FilterDropdown" model="Model.AssigneeFilterModel" />
+                </div>
+            </div>
+            
+            @if (!Model.Tasks.Any()) {
+                <blankslate>
+                    <div class="text-center text-xl h-6 text-gray-500 mb-2">
+                        <i class="fa-regular fa-list-check"></i>
+                    </div>
+
+                    <h2 class="text-center text-lg text-gray-700" style="min-height: 132px">
+                        @if (filterApplied) {
+                            <span>No tasks match the filters.</span>
+                            <p><a asp-page="Index" class="italic text-gray-600">Clear filters</a></p>
+                        } else {
+                            <span>No tasks yet.</span>
+                        }
+                    </h2>
+                </blankslate>
+            } else {
+                foreach (var customerGroup in groupedTasks) {
+                    var customer = customerGroup.Key;
+                    
+                    <article class="border-t border-gray-300">
+                        <h3 class="font-semibold mb-1 text-sm pt-3 px-5">
+                            @if (customer is not null) {
+                                <text>@customer.Name</text>
+                            } else {
+                                <text>Tasks with no associated customer</text>
+                            }
+                        </h3>
+                        
+                        <ul class="divide-y">
+                            @foreach (var task in customerGroup) {
+                                var taskItemModel = TaskItemModel.FromTask(task, Model);
+                               <li id="@taskItemModel.DomId" class="flex items-start gap-x-2 px-4 py-2">
+                                   <partial name="_TaskListItem" model="@taskItemModel" />
+                               </li> 
+                            }
+                        </ul>
+                    </article>
+                }
+            }
+            
+            <div class="p-4">
+                <partial name="Shared/_Paginator" model="Model.Tasks" />
+            </div>
+        </form>
+    </div>
+
+    <div class="border border-gray-300 rounded-lg bg-white">
+        @if (!Model.SuggestedTasks.Any()) {
+            <blankslate>
+                <div class="text-center text-xl h-6 text-gray-500 mb-2">
+                    <i class="fa-regular fa-list-check"></i>
+                </div>
+
+                <h2 class="text-center text-lg text-gray-700">
+                    No Suggested Tasks yet!
+                </h2>
+                <p>
+                    Tasks require that <a asp-page="/Settings/Organization/Index">AI Enhancements are enabled</a>.
+                    Tasks are extracted from conversations.
+                </p>
+            </blankslate>
+        } else {
+            <header class="p-4">
+                <h2 class="font-semibold">Suggested tasks</h2>
+                <p class="text-sm text-gray-500">
+                    Suggested Tasks are extracted from conversations when 
+                    <a asp-page="/Settings/Organization/Index">AI Enhancements are enabled</a>.
+                </p>
+            </header>
+            
+            <form method="post" data-controller="checkboxes">
+                @* Hidden inputs used to preserve the filter and track state when submitting the form *@
+                <input type="hidden" asp-for="Filter"/>
+                <input type="hidden" asp-for="Tab"/>
+                <input type="hidden" asp-for="PageNumber" name="p"/>
+
+                <div class="border-t border-gray-300 bg-gray-50 px-4 py-1 flex items-center gap-x-2"
+                     role="menubar"
+                     asp-authz-policy="@AuthorizationPolicies.CanManageConversations">
+                    <div class="flex items-center gap-x-2">
+                        <input type="checkbox"
+                               class="m-1"
+                               id="parent-suggested-checkbox"
+                               name="parent-suggested-checkbox"
+                               aria-label="Select all suggested tasks"
+                               data-checkboxes-target="toggle"/>
+                        <label for="parent-suggested-checkbox">Select all suggested tasks</label>
+                    </div>
+                    
+                    <div class="ml-auto">
+                        <button class="btn btn-small" asp-page-handler="CreateTasks" data-checkboxes-target="action">
+                            Create tasks
+                        </button>
+                    </div>
+                </div>
+                
+                @foreach (var suggestedGroup in groupedSuggestions) {
+                    var customer = suggestedGroup.Key;
+                    <article class="border-t border-gray-300">
+                        <h3 class="font-semibold mb-1 text-sm pt-3 px-5">
+                            @if (customer is not null) {
+                                <text>@customer.Name</text>
+                            } else {
+                                <text>Unassigned</text>
+                            }
+                        </h3>
+                        
+                        <ul class="divide-y">
+                           @foreach (var conversation in suggestedGroup) {
+                               <li class="flex items-start gap-x-2 px-4 py-2">
+                                    <input class="m-1"
+                                           id="@nameof(Model.ThreadIds)_@conversation.Id"
+                                           type="checkbox"
+                                           name="@nameof(Model.ThreadIds)"
+                                           aria-label="@conversation.Properties.Conclusion"
+                                           value="@conversation.FirstMessageId"
+                                           asp-authz-policy="@AuthorizationPolicies.CanManageConversations"
+                                           data-checkboxes-target="item"/>
+                                    
+                                    <div class="sm:flex grow gap-x-2">
+                                       <p class="font-medium block text-gray-700">
+                                           @conversation.Properties.Conclusion
+                                       </p>
+                                           
+                                       <div class="text-sm text-gray-500 flex gap-x-2">
+                                           <a  href="@conversation.GetFirstMessageUrl()"  class="text-gray-500 hover:text-indigo-600">
+                                               From a conversation started
+                                               <timeago datetime="@conversation.Created"/>
+                                               in
+                                               <span class="-ml-0.5">
+                                                   #@conversation.Room.Name
+                                               </span>
+                                           </a>
+                                           
+                                           @if (conversation.Assignees.Any()) {
+                                               <div class="inline-flex items-center text-black nowrap ml-1 -mt-0.5 -space-x-3 hover:space-x-0">
+                                                   @foreach (var assignee in conversation.Assignees) {
+                                                       <span class="transition-all">
+                                                           <partial name="_AssigneesDropDown" model="Model.AssigneeContainer" />
+                                                           <partial name="Shared/_SmallAvatar" model="assignee.User"/>
+                                                       </span>
+                                                   }
+                                               </div>
+                                           }
+                                       </div>
+                                    </div>
+                               </li> 
+                            }
+                        </ul>
+                    </article>
+                }
+           </form> 
+            <div class="p-4">
+                <partial name="Shared/_Paginator" model="Model.SuggestedTasks" />
+            </div>
+        }
+
+        @foreach (var customerGroup in groupedTasks) {
+            foreach (var task in customerGroup) {
+                <form method="post" id="@TaskItemModel.GetTaskFormId(task, "status")">
+                </form>
+                <form method="post" id="@TaskItemModel.GetTaskFormId(task, "assignee")">
+                </form>
+            }
+        }
+    </div>
+</page-body>

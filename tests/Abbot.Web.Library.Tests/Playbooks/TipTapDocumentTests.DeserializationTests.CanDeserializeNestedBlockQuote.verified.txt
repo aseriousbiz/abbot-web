@@ -1,0 +1,28 @@
+﻿{
+  Content: [
+    {
+      $type: TipTapBlockQuoteNode,
+      Content: [
+        {
+          $type: TipTapBlockQuoteNode,
+          Content: [
+            {
+              $type: TipTapParagraphNode,
+              Content: [
+                {
+                  $type: TipTapTextNode,
+                  Text: Paragraph 1,
+                  Type: text
+                }
+              ],
+              Type: paragraph
+            }
+          ],
+          Type: blockquote
+        }
+      ],
+      Type: blockquote
+    }
+  ],
+  Type: doc
+}

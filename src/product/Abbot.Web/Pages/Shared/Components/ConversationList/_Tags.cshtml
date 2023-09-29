@@ -1,0 +1,19 @@
+@model ConversationViewModel
+
+@if (Model.Tags is { Count: > 0 } tags) {
+    @foreach (var tag in tags) {
+        <a asp-all-route-data="ViewContext.GetCurrentRouteValues()"
+           asp-route-tag="@tag.Name">
+            @{
+                var (icon, iconColor) = tag.Generated
+                    ? ("fa-message-bot", PillColor.Gray)
+                    : ("fa-tag", PillColor.Indigo);
+            }
+
+            <pill size="Small" color="@iconColor" icon="@icon" tooltip="@tag.Description">
+                @tag.Name
+            </pill>
+        </a>
+    }
+}
+<partial name="Shared/ActionDropDowns/_TagsDropDown" model="Model" />

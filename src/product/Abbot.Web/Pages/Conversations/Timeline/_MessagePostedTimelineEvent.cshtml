@@ -1,0 +1,143 @@
+@using Serious.Abbot.Serialization
+@using Serious.Abbot.AI
+@using Serious.Abbot.Integrations.Zendesk
+@model MessagePostedEvent
+
+@{
+    var messageUrl = Model.MessageUrl ??
+        Model.Conversation.GetMessageUrl(Model.MessageId.Require());
+    var prev = ViewData["prev"] as MessagePostedEvent;
+    var messageMetadata = JsonSettings.FromJson<MessagePostedMetadata>(Model.Metadata);
+    var categories = messageMetadata?.Categories
+                     ?? Array.Empty<Category>();
+}
+
+<timeline-entry icon="comment" actor="Model.Member" viewer-organization="Model.Conversation.Organization">
+    <div>
+        <p class="text-indigo-500 font-semibold text-sm">
+            Message posted
+
+            <span class="text-gray-500 font-normal" data-tooltip="@Model.Created" title="@Model.Created">
+                @Model.Created.Humanize()
+            </span>
+            @if (prev is not null) {
+                var span = (Model.Created - prev.Created).Humanize();
+                var tooltip = $"{span} since the previous message was posted by @{prev.Member.DisplayName}";
+                <span class="text-gray-500 font-normal" data-tooltip="@tooltip" title="tooltip">
+                    <text>(+@span)</text>
+                </span>
+            }
+
+            @if (categories.Any()) {
+                <span class="ml-3 font-normal">
+                    <i class="fa-solid fa-robot"></i> <span>Tagged by AI: </span>
+                    @foreach (var category in categories) {
+                        <code>@category.ToString()</code>
+                    }
+                </span>
+            }
+        </p>
+
+        @switch (Model.ExternalSource?.ToLowerInvariant()) {
+            case "zendesk":
+                <p class="font-semibold">
+                    @if (Model.Member.IsAbbot()) {
+                        @* If Abbot is recorded as the author of the comment, it means we couldn't find a Slack user *@
+                        @* So let's show a note about the Zendesk author *@
+                        @if (Model.ExternalAuthor is {Length: >0} && ZendeskUserLink.Parse(Model.ExternalAuthorId) is {} authorLink) {
+                            <a target="_blank" href="@authorLink.WebUrl">@Model.ExternalAuthor</a>
+                        }
+
+                        else if (Model.ExternalAuthor is {Length: >0}) {
+                            <text>from @Model.ExternalAuthor</text>
+                        }
+
+                    } else {
+                        <text>@@@Model.Member.DisplayName</text>
+                    }
+                    <a href="@messageUrl" target="_blank">posted a message</a>
+                    @if (ZendeskTicketLink.Parse(Model.ExternalMessageId) is {} ticketLink) {
+                        <text>in the <a target="_blank" href="@ticketLink.WebUrl">linked Zendesk ticket</a></text>
+                    }
+                </p>
+                break;
+            default:
+                <p class="font-semibold">
+                    @@@Model.Member.DisplayName posted
+                    <a href="@messageUrl" target="_blank">a message</a>
+                </p>
+                break;
+        }
+
+        <environment include="Development">
+            @if (messageMetadata is { Text: { } messageText}) {
+                <blockquote class="ml-3 p-3 text-gray-500 bg-yellow-50 border-l-4 border-l-yellow-200">
+                    <span data-tooltip="You can see this in development only.">
+                        <i class="fa-regular fa-triangle-person-digging text-yellow-900 ml-1"></i>
+                    </span>
+                    <p class="mb-3">
+                        @messageText.Reveal()
+                    </p>
+                    <div class="text-sm"><strong>Sensitive values:</strong>
+                        @if (messageMetadata.SensitiveValues.Any()) {
+                            <ul>
+                                @foreach (var sensitiveValue in messageMetadata.SensitiveValues) {
+                                    <li>@sensitiveValue.Text of type @sensitiveValue.Category at position @sensitiveValue.Offset</li>
+                                }
+                            </ul>
+                        } else {
+                            <text>None</text>
+                        }
+                    </div>
+                </blockquote>
+            }
+        </environment>
+
+        <staff-only>
+            <p class="text-gray-500">with ts <code>@Model.MessageId</code></p>
+
+            @if (messageMetadata?.SummarizationResult is { } result) {
+                <div class="text-indigo-500 text-sm mt-4 p-2 bg-yellow-200">
+                    <strong>
+                        Conversation Summarized by
+                        <code>@result.Model</code> (via @result.Service) with temperature <code>@result.Temperature</code> using <code>@result.TokenUsage.TotalTokenCount</code> total tokens
+                    </strong>
+                    <span class="text-gray-500 font-normal" data-tooltip="@Model.Created" title="@Model.Created">
+                        @Model.Created.Humanize()
+                    </span>
+                    <span data-tooltip="You can see this metadata because you're staff" class="mr-2"><i class="fa-regular fa-id-badge text-yellow-900 ml-1"></i></span>
+                    <partial name="Conversations/Timeline/_AIResult" model="result"/>
+
+                    @if (result.Replacements is { } replacements) {
+                        <strong>Replacements:</strong>
+                        <div class="font-mono p-1 bg-yellow-50">
+                            <ul>
+                                @foreach (var replacement in replacements) {
+                                    <li>
+                                        @replacement.Key
+                                        @if (ApplicationEnvironment.IsDevelopment()) {
+                                            <span> = @replacement.Value</span>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (messageMetadata?.ConversationMatchAIResult is { } matchResult) {
+                <div class="text-indigo-500 text-sm mt-4 p-2 bg-yellow-200">
+                    <strong>Conversation Matched by <code>@matchResult.Model</code> (via @matchResult.Service) with temperature <code>@matchResult.Temperature</code> using <code>@matchResult.TokenUsage.TotalTokenCount</code> total tokens</strong>
+                    <span class="text-gray-500 font-normal" data-tooltip="@Model.Created" title="@Model.Created">
+                        @Model.Created.Humanize()
+                    </span>
+                    <span data-tooltip="You can see this metadata because you're staff" class="mr-2"><i class="fa-regular fa-id-badge text-yellow-900 ml-1"></i></span>
+                    <partial name="Conversations/Timeline/_AIResult" model="matchResult"/>
+                    <strong>Matched Conversation Id</strong>
+                    <code>@matchResult.CandidateConversationId</code>
+                </div>
+            }
+        </staff-only>
+    </div>
+</timeline-entry>

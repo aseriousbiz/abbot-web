@@ -1,0 +1,12 @@
+<plan features="ConversationTracking" negate="true">
+    @{
+        var tooltip = User.IsAdministrator()
+            ? "Conversation data is read-only until you upgrade your plan."
+            : "Conversation data is read-only until an Administrator upgrades your plan.";
+    }
+    <span class="inline-block bg-gray-200 px-2 rounded mx-1 font-normal" data-tooltip="@tooltip">
+        Read Only
+    </span>
+</plan>
+
+

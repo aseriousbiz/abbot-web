@@ -1,0 +1,20 @@
+@page
+
+@{
+    Layout = "Shared/Layouts/_Layout";
+    ViewContext.SetPageInfo("Policies", "Policies List", "Policies");
+}
+
+<page-header>
+    Abbot Policies
+</page-header>
+<page-body>
+    <round-box class="flex flex-col gap-2">
+        <ul class="list-disc list-inside">
+            <li><a asp-page="Terms/Index">Terms of Service</a></li>
+            <li><a asp-page="Terms/Corporate">Corporate Terms of Service</a></li>
+            <li><a asp-page="Privacy/Index">Privacy Policy</a></li>
+            <li><a asp-page="AcceptableUse">Acceptable Use Policy</a></li>
+        </ul>
+    </round-box>
+</page-body>

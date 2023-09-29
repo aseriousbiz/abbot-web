@@ -1,0 +1,162 @@
+@model Serious.Abbot.Pages.Skills.IndexPage
+
+
+@if (Model is {Skills: {Count: > 0}}) {
+    <div class="divide-y">
+        @foreach (var skill in Model.Skills) {
+            var skillRowBgColor = skill.Enabled ? "" : "bg-gray-50";
+            var skillNameEnabledColor = skill.Enabled ? "text-blue-500" : "text-gray-500";
+            var skillDescriptionColor = skill.Enabled ? "text-black" : "text-gray-500";
+
+            <div class="sm:flex p-2 items-center @skillRowBgColor">
+                <div class="flex">
+                    <div class="text-center mr-2 flex justify-center">
+                        <form method="post" data-controller="click-submit" class="checkbox-form inline-block">
+                            <input asp-for="Input.Name" value="@skill.Name" type="hidden"/>
+                            <label asp-for="Input.Enabled" class="sr-only">Skill enabled</label>
+                            <input class="mx-2"
+                                   asp-for="Input.Enabled"
+                                   type="checkbox"
+                                   checked="@skill.Enabled"
+                                   data-click-submit-target="submitter" />
+                        </form>
+                    </div>
+
+                    <div>
+                        <div class="mr-4 flex items-center">
+                            <a class="font-mono @skillNameEnabledColor hover:text-gray-700"
+                               asp-page="Edit"
+                               asp-route-skill="@skill.Name">
+                                @skill.Name
+                            </a>
+
+                            @if (!skill.Enabled) {
+                                <span class="text-gray-500 text-sm -ml-1">(Disabled)</span>
+                            }
+
+                            <div class="flex items-center ml-2 text-sm">
+                                @if (skill.Restricted)
+                                {
+                                    <i role="img" aria-label="Restricted skill" class="fa-solid fa-lock text-xs bg-yellow-100 text-yellow-900 inline-block p-1 rounded"></i>
+                                }
+
+                                @if (skill.Triggers.Any())
+                                {
+                                    <skilllink asp-page="Triggers/Index" class="mx-0.5 flex-shrink-0" asp-route-skill="@skill.Name">
+                                        <div class="bg-gray-100 text-gray-500 inline-block px-1 rounded" data-tooltip="Number of triggers">
+                                            <i class="fas fa-zap" role="img" aria-label="Number of triggers"></i>
+                                            @skill.Triggers.Count
+                                        </div>
+                                    </skilllink>
+                                }
+
+                                @if (skill.Patterns.Any())
+                                {
+                                    <skilllink asp-page="Patterns/Index" class="mx-0.5 flex-shrink-0" asp-route-skill="@skill.Name">
+                                        <div class="bg-gray-100 text-gray-500 inline-block px-1 rounded mx-0.5" data-tooltip="Number of patterns">
+                                            <i class="fa-regular fa-game-board" role="img" aria-label="Number of patterns"></i>
+                                            @skill.Patterns.Count
+                                        </div>
+                                    </skilllink>
+                                }
+
+                                @if (skill.SignalSubscriptions.Any())
+                                {
+                                    <skilllink asp-page="Subscriptions/Index" class="mx-0.5 flex-shrink-0" asp-route-skill="@skill.Name">
+                                        <div class="bg-gray-100 text-gray-500 inline-block px-1 rounded" data-tooltip="Subscriptions to Signals">
+                                            <i class="fa-solid fa-signal" role="img" aria-label="Number of subscriptions to signals"></i>
+                                            @skill.SignalSubscriptions.Count
+                                        </div>
+                                    </skilllink>
+                                }
+
+                                @if (skill.Secrets.Any()) {
+                                    <skilllink asp-page="Secrets/Index" class="flex-shrink-0 mx-0.5" asp-route-skill="@skill.Name">
+                                        <div class="bg-gray-100 text-gray-500 inline-block px-1 rounded" data-tooltip="Number of secrets">
+                                            <i role="img" aria-label="Number of secrets" class="fa-solid fa-key"></i>
+                                            @skill.Secrets.Count
+                                        </div>
+                                    </skilllink>
+                                }
+
+                                @if (skill.Exemplars.Any()) {
+                                    <skilllink asp-page="AI/Index" class="flex-shrink-0 mx-0.5" asp-route-skill="@skill.Name">
+                                        <div class="bg-gray-100 text-gray-500 inline-block px-1 rounded" data-tooltip="Number of AI argument parsing exemplars">
+                                            <i role="img" aria-label="Number of AI argument parsing exemplars" class="fa fa-robot"></i>
+                                            @skill.Exemplars.Count
+                                        </div>
+                                    </skilllink>
+                                }
+
+                                @if (skill.Package is not null) {
+                                    <a asp-page="/Packages/Details"
+                                       class="flex mx-0.5"
+                                       asp-route-name="@skill.Name"
+                                       asp-route-organization="@skill.Organization.Slug">
+
+                                        <div class="bg-gray-100 text-gray-500 inline-block px-1 rounded" data-tooltip="Current published package version">
+                                            <i role="img" aria-label="Package version" class="fa-regular fa-box"></i>
+                                            @skill.Package.GetLatestVersion().ToVersionString()
+                                        </div>
+                                    </a>
+                                }
+
+                                @if (skill.SourcePackageVersion?.Package is not null)
+                                {
+                                    var package = skill.SourcePackageVersion.Package;
+                                    <a asp-page="/Packages/Details"
+                                       asp-route-organization="@package.Organization.Slug"
+                                       asp-route-name="@package.Skill.Name" class="flex mx-0.5">
+
+                                        <div class="bg-gray-100 text-gray-500 inline-block px-1 rounded" data-tooltip="Source package">
+                                            <i class="fa-regular fa-box" role="img" aria-label="Source package name"></i>
+                                            @package.Skill.Name
+                                        </div>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(skill.Description))
+                        {
+                            <p class="@skillDescriptionColor">@skill.Description</p>
+                        }
+                    </div>
+                </div>
+
+
+                <div class="flex flex-grow sm:flex-row-reverse items-center py-2 sm:py-0 ml-10 sm:ml-4 flex-shrink-0">
+                    <ul class="flex text-sm -ml-1 sm:ml-2 mt-0.5 text-left sm:text-right sm:justify-start flex-auto flex-grow sm:flex-grow-0">
+                        <li class="mx-1">
+                            <a class="text-blue-500"
+                               asp-page="Activity/Index" asp-route-skill="@skill.Name">
+                                Activity
+                            </a>
+                        </li>
+                        <li class="mx-1">
+                            <a class="text-blue-500"
+                               asp-page="Edit" asp-route-skill="@skill.Name">
+                                Edit
+                            </a>
+                        </li>
+                        <li class="mx-1">
+                            <a class="text-blue-500 hover:text-red-500"
+                               asp-page="Delete" asp-route-skill="@skill.Name">
+                                Delete
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <blankslate>
+        <p>No skills match your filter. <a class="text-blue-500" href="?filter=">Clear filter</a></p>
+    </blankslate>
+}
+<div class="p-2 border border-t-gray-200">
+    <partial name="_Paginator" model="@Model.Skills"/>
+</div>

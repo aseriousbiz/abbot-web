@@ -1,0 +1,49 @@
+{
+  "token": "TOKEN_REDACTED",
+  "team_id": "T013108BYLS",
+  "api_app_id": "A0417L2V78V",
+  "event": {
+    "type": "message",
+    "text": "You have been removed from #haacked-dev-test-2 by \u003c@U012LKJFG0P\u003e",
+    "user": "USLACKBOT",
+    "ts": "1667944274.747079",
+    "blocks": [
+      {
+        "type": "rich_text",
+        "block_id": "UN\u003dR",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "text",
+                "text": "You have been removed from #haacked-dev-test-2 by "
+              },
+              {
+                "type": "user",
+                "user_id": "U012LKJFG0P"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "team": "T013108BYLS",
+    "channel": "D0420AJKTPS",
+    "event_ts": "1667944274.747079",
+    "channel_type": "im"
+  },
+  "type": "event_callback",
+  "event_id": "Ev04A2GBCS74",
+  "event_time": 1667944274,
+  "authorizations": [
+    {
+      "team_id": "T013108BYLS",
+      "user_id": "U041D3B6JJY",
+      "is_bot": true,
+      "is_enterprise_install": false
+    }
+  ],
+  "is_ext_shared_channel": false,
+  "event_context": "4-eyJldCI6Im1lc3NhZ2UiLCJ0aWQiOiJUMDEzMTA4QllMUyIsImFpZCI6IkEwNDE3TDJWNzhWIiwiY2lkIjoiRDA0MjBBSktUUFMifQ"
+}

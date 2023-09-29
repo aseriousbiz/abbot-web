@@ -1,0 +1,603 @@
+@page
+@using Serious.Abbot.Repositories
+@using static Serious.Abbot.Repositories.TrackStateFilter
+@model RoomsIndexPage
+@{
+    ViewContext.SetPageInfo("Settings", "Rooms Settings");
+
+    var readOnly = !Model.Organization.HasPlanFeature(PlanFeature.ConversationTracking)
+        || !User.CanManageConversations();
+
+    string ActiveClassIf(TrackStateFilter filter) =>
+        Model.Tab.HasFlag(filter) ? "tabnav-btn-active" : "";
+
+    // If there's an error in the response time settings, we need to show the form after the postback
+    // so the user can see the error.
+    var responseTimesMenuOpenAttribute = Model.HasResponseTimesModelError
+        ? "open"
+        : null;
+
+    var colspan = "col-span-7";
+}
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+<partial name="Shared/_ReadOnlyHeader" />
+
+<page-header>
+    Rooms
+</page-header>
+
+<page-body class="mt-4">
+    <div class="rounded border border-gray-300 bg-white">
+        <div class="border-b">
+            <form method="get">
+                @if (Model.Tab is not Tracked) {
+                    <input type="hidden" name="tab" value="@Model.Tab"/>
+                }
+                <div class="flex p-2 gap-x-2 items-baseline w-full">
+                    <input
+                        show-clear-button
+                        clear-button-container-class="flex-grow"
+                        class="form-input w-full"
+                        asp-for="Filter"
+                        name="q"
+                        placeholder="Search for a room by name or @Model.Organization.PlatformType.Humanize() ID"
+                        data-val="false"
+                        data-clear-input-target="input" />
+                    <button
+                        class="btn btn-primary"
+                        type="submit">
+                        Filter
+                    </button>
+                </div>
+            </form>
+
+        <nav class="px-2 md:flex">
+                <ul class="flex gap-x-1 items-center flex-grow nowrap">
+                    <li>
+                        <a class="tabnav-btn @ActiveClassIf(Tracked)"
+                           asp-route-filter="@Model.Filter">
+                            Tracking
+                            <partial name="_RoomCount" model="Model.RoomCounts.Tracked"/>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="tabnav-btn @ActiveClassIf(Untracked)"
+                           asp-route-tab="@Untracked"
+                           asp-route-filter="@Model.Filter">
+                            Untracked
+                            <partial name="_RoomCount" model="Model.RoomCounts.Untracked"/>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="tabnav-btn @ActiveClassIf(Hubs)"
+                           asp-route-tab="@Hubs"
+                           asp-route-filter="@Model.Filter">
+                            Hubs
+                            <partial name="_RoomCount" model="Model.RoomCounts.Hubs"/>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="tabnav-btn @ActiveClassIf(BotMissing)"
+                           asp-route-tab="@BotMissing"
+                           asp-route-filter="@Model.Filter">
+                            Bot Missing
+                            <partial name="_RoomCount" model="Model.RoomCounts.BotMissing"/>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="tabnav-btn @ActiveClassIf(Inactive)"
+                           asp-route-tab="@Inactive"
+                           asp-route-filter="@Model.Filter">
+                            Inactive
+                            <partial name="_RoomCount" model="Model.RoomCounts.Inactive"/>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="ml-auto my-1">
+                    <form asp-page-handler="SetPageSize">
+                        <input type="hidden" asp-for="Filter"/>
+                        <input type="hidden" asp-for="Tab"/>
+                        <input type="hidden" asp-for="PageNumber" name="p"/>
+                        <label class="text-sm font-medium" for="page-size">Items per page</label>
+                        <div class="form-select-wrapper">
+                            <select id="page-size"
+                                    class="form-select"
+                                    asp-for="PageSize"
+                                    asp-items="@Model.PageSizes"
+                                    data-action="form#submit">
+                            </select>
+                        </div>
+                    </form>
+                </div>
+            </nav>
+
+            <form method="post" data-controller="checkboxes">
+                @* Hidden inputs used to preserve the filter and track state when submitting the form *@
+                <input type="hidden" asp-for="Filter" />
+                <input type="hidden" asp-for="Tab" />
+                <input type="hidden" asp-for="PageNumber" name="p" />
+
+                <div class="border-b border-gray-200" asp-authz-policy="@AuthorizationPolicies.CanManageConversations">
+                    <div class="flex items-center">
+                        <div class="flex gap-x-2 gap-y-2 flex-wrap p-2 grow" role="menubar">
+                            @if (Model.Tab is TrackStateFilter.Tracked) {
+                                <partial name="_RespondersDropDown" model="Model.DefaultFirstResponders" />
+
+                                <partial name="_RespondersDropDown" model="Model.DefaultEscalationResponders" />
+
+                                <details class="dropdown" data-checkboxes-target="action" @responseTimesMenuOpenAttribute>
+                                    <summary class="btn btn-small">
+                                        Set response times
+                                    </summary>
+
+                                    <div role="menu" class="dropdown-menu rounded border border-gray-300 bg-white absolute drop-shadow-md text-sm w-fit">
+                                        <div class="flex flex-col shrink-0">
+                                            <header class="px-3 py-2 font-medium whitespace-nowrap border-b">
+                                                Set response times
+                                            </header>
+
+                                            <partial name="_ResponseTimesForm" />
+
+                                            <div class="p-2 pr-4 font-medium whitespace-nowrap border-t">
+                                                <button class="btn btn-primary" type="submit" asp-page-handler="SaveRoomsResponseTimes">Save response times</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </details>
+
+                                if ((Model.Rooms.Any() && Model.Filter["customer"]?.Value is "none") || Model.Rooms.All(r => r.Customer is null)) {
+                                    <div class="ml-auto">
+                                        <a asp-page="CreateCustomers">Create customers for unassigned rooms…</a>
+                                    </div>
+                                }
+                            }
+                            else if (Model.Tab is TrackStateFilter.Untracked) {
+                                <button class="btn btn-small" asp-page-handler="TrackConversations" data-checkboxes-target="action">
+                                    Track Conversations
+                                </button>
+                            } else if (Model.Tab is TrackStateFilter.BotMissing && Model.Organization.HasRequiredScope("channels:join")) {
+                                <button class="btn btn-small" asp-page-handler="AddAbbot" type="submit" data-checkboxes-target="action">Add @(Model.Organization.BotName ?? "Abbot") To Room</button>
+                                <div class="flex-grow"></div>
+                                <button
+                                    class="btn btn-small btn-primary"
+                                    asp-all-route-data="ViewContext.GetCurrentRouteValues()"
+                                    asp-page-handler="RefreshRooms"
+                                    type="submit">
+                                    Refresh from Slack
+                                    </button>
+                            } else {
+                                <text>
+                                    @* No operations yet. But might add invite abbot to room *@
+                                </text>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full">
+                    <div class="md:grid items-center" style="grid-template-columns: max-content repeat(5, auto) max-content">
+                        <div class="contents text-sm font-medium divide-x">
+                            <div class="bg-gray-50 px-4 py-2 flex items-center h-full">
+                                <input type="checkbox"
+                                       class="w-4 h-4"
+                                       id="parent-checkbox"
+                                       name="parent-checkbox"
+                                       aria-label="Select all rooms"
+                                       data-checkboxes-target="toggle"
+                                       disabled="@(!Model.Rooms.Any())" />
+                                <label class="ml-2 md:hidden" for="parent-checkbox">Select all rooms</label>
+                            </div>
+
+                            <p class="bg-gray-50 px-4 py-2 hidden md:flex items-center nowrap h-full">
+                                Room name
+                            </p>
+
+                            <div class="bg-gray-50 px-4 py-2 hidden md:flex items-center nowrap h-full">
+                                <partial name="Shared/Filters/_CustomerFilter" model="Model.CustomerFilterModel" />
+                            </div>
+
+                            <p class="bg-gray-50 px-4 py-2 hidden md:flex items-center nowrap h-full">
+                                Response time settings
+                            </p>
+
+                            <div class="bg-gray-50 px-4 py-2 hidden md:flex items-center nowrap h-full">
+                                <partial name="Shared/Filters/_FilterDropdown" model="Model.FirstResponderFilterModel" />
+                            </div>
+
+                            <div class="bg-gray-50 px-4 py-2 hidden md:flex items-center nowrap h-full">
+                                <partial name="Shared/Filters/_FilterDropdown" model="Model.EscalationResponderFilterModel" />
+                            </div>
+
+                            <div class="bg-gray-50 px-4 py-2 hidden md:block h-full"></div>
+                        </div>
+
+                        @if (Model.Rooms.Any()) {
+                            @foreach (var room in Model.Rooms) {
+                                var roomDisabledReason = room switch {
+                                    { Deleted: true } => $"The room has been deleted in {Model.Organization.PlatformType.Humanize()}",
+                                    { Archived: true } => $"The room has been archived in {Model.Organization.PlatformType.Humanize()}",
+                                    { BotIsMember: false } => $"Abbot is not a member of this room, invite them to restore functionality",
+                                    _ => null,
+                                };
+
+                                var roomStatus = room switch {
+                                    { Deleted: true } => "Deleted",
+                                    { Archived: true } => "Archived",
+                                    { BotIsMember: false } => "Abbot missing",
+                                    _ => null,
+                                };
+
+                                <div class="border-t md:contents">
+                                    <div class="pl-4 py-2 md:pr-4 inline-flex md:flex gap-y-1 items-center h-full md:border-t">
+                                        <input class="w-4 h-4"
+                                               type="checkbox"
+                                               asp-authz-policy="@AuthorizationPolicies.CanManageConversations"
+                                               id="room_@room.PlatformRoomId"
+                                               name="@nameof(Model.RoomIds)"
+                                               data-checkboxes-target="item"
+                                               value="@room.PlatformRoomId"
+                                               checked="@Model.RoomIds.Contains(room.PlatformRoomId)"/>
+                                    </div>
+
+                                    <div class="md:px-4 py-2 items-center nowrap h-full md:border-t">
+                                        <h1 class="font-medium ">
+                                            @if (roomDisabledReason is not null) {
+                                                <label for="room_@room.PlatformRoomId" class="text-gray-500" data-tooltip="@room.PlatformRoomId">@room.Name</label>
+                                                <span class="px-2 py-0.5 rounded-xl text-xs font-medium bg-yellow-100 text-yellow-800" data-tooltip="@roomDisabledReason">
+                                                    @roomStatus
+                                                </span>
+                                            } else {
+                                                <label for="room_@room.PlatformRoomId">@room.Name</label>
+                                            }
+
+                                        </h1>
+                                        <div class="text-xs text-gray-400 block italic">
+                                        @if (room.LastMessageActivityUtc is { } lastActivityDate) {
+                                            <span>Last activity </span><timeago datetime="lastActivityDate" />
+                                        } else {
+                                            <span>No recent activity</span>
+                                        }
+                                        </div>
+                                    </div>
+
+                                    <div class="pl-4 py-2 md:pr-4 inline-flex md:flex gap-y-1 items-center h-full md:border-t">
+                                        <form method="post">
+                                            <details class="dropdown relative">
+                                                <summary class="cursor-pointer">
+                                                    @if (room.Customer is not null) {
+                                                        <span>@room.Customer.Name</span>
+                                                    } else {
+                                                        <span class="italic text-gray-600">Unassigned</span>
+                                                    }
+                                                    <i class="fa-solid fa-caret-down"></i>
+                                                </summary>
+
+                                                <div role="menu" class="dropdown-menu rounded border border-gray-300 bg-white absolute drop-shadow-md text-sm w-60 z-10">
+                                                    <div class="flex flex-col shrink-0">
+                                                        <header class="p-2 font-medium whitespace-nowrap border-b">
+                                                            Set customer
+                                                        </header>
+
+                                                        <div class="max-h-56 overflow-y-scroll">
+                                                            <label class="flex items-center gap-x-2 px-3 py-2">
+                                                                @{ var noneChecked = room.CustomerId is null ? "checked" : null; }
+                                                                <input type="radio" asp-for="CustomerId" value="" checked="@noneChecked"/>
+                                                                <span class="font-medium italic text-gray-600">None</span>
+                                                            </label>
+                                                            @foreach (var customer in Model.AllCustomers) {
+                                                                var checkedValue = customer.Id == room.CustomerId ? "checked" : null;
+                                                                <label class="flex items-center gap-x-2 px-3 py-2">
+                                                                    <input type="radio" asp-for="CustomerId" value="@customer.Id" checked="@checkedValue"/>
+                                                                    <span class="font-medium">@customer.Name</span>
+                                                                </label>
+                                                            }
+                                                        </div>
+
+                                                        <div class="p-2 pr-4 font-medium whitespace-nowrap border-t">
+                                                            <input type="hidden" asp-for="PlatformRoomId" value="@room.PlatformRoomId"/>
+                                                            <button type="submit" asp-page-handler="AssignCustomer" class="btn btn-primary">Save customer</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </details>
+                                        </form>
+                                    </div>
+
+                                    @if (room.ManagedConversationsEnabled && room.IsActive()) {
+                                        <div class="text-sm px-4 md:py-2 flex items-center flex-nowrap h-6 md:h-full md:border-t">
+                                            <h2 class="text-gray-500 text-sm font-medium nowrap mr-2 md:hidden">
+                                                Response Deadlines
+                                            </h2>
+
+                                            <div class="text-xs ml-auto md:ml-0">
+                                                @if (room.HasCustomResponseTimes()) {
+                                                    <span class="inline-block bg-indigo-100 text-indigo-900 w-16 px-2.5 rounded mr-1 text-xs font-medium">
+                                                        Custom
+                                                    </span>
+                                                } else {
+                                                    <span class="inline-block bg-gray-100 w-16 px-2.5 rounded mr-1 text-xs font-medium"
+                                                          data-tooltip="This room uses the organization defaults for response times.">
+                                                        Default
+                                                    </span>
+                                                }
+                                            </div>
+
+                                            <dl class="inline-flex nowrap items-center">
+                                                <dt class="text-gray-500 mr-1">
+                                                    <abbr data-tooltip="Target" title="Target">T:</abbr>
+                                                </dt>
+                                                <dd class="mr-2">
+                                                    @if ((room.TimeToRespond.Warning ?? room.Organization.DefaultTimeToRespond.Warning) is {} target) {
+                                                        <span class="text-black">
+                                                            @target.Humanize()
+                                                        </span>
+                                                    } else {
+                                                        <span class="text-gray-500">None</span>
+                                                    }
+                                                </dd>
+
+                                                <dt class="text-gray-500 mr-1">
+                                                    <abbr data-tooltip="Deadline" title="Deadline">D:</abbr>
+                                                </dt>
+                                                <dd>
+                                                    @if ((room.TimeToRespond.Deadline ?? room.Organization.DefaultTimeToRespond.Deadline) is {} deadline) {
+                                                        @deadline.Humanize()
+                                                    } else {
+                                                        <span class="text-gray-500">None</span>
+                                                    }
+                                                </dd>
+                                            </dl>
+                                        </div>
+
+                                        <div class="text-sm px-4 md:py-2 flex flex-nowrap items-center h-6 md:h-full md:border-t">
+                                            <h2 class="text-gray-500 text-sm nowrap font-medium mr-2 md:hidden">
+                                                First responders
+                                            </h2>
+
+                                            @if (room.GetFirstResponders().Any()) {
+                                                <span class="inline-block bg-indigo-100 text-indigo-900 w-16 px-2.5 rounded mx-1 text-xs font-medium ml-auto md:ml-0">
+                                                    Custom
+                                                </span>
+                                            } else {
+                                                <span class="inline-block bg-gray-100 w-16 px-2 rounded mx-1 text-xs font-medium ml-auto md:ml-0 has-tooltip-arrow has-tooltip-multiline"
+                                                      data-tooltip="This room uses the organization's default first responders.">
+                                                    Default
+                                                </span>
+                                            }
+
+                                            @if (room.GetFirstResponders().Any()) {
+                                                <div class="inline-flex items-center text-black nowrap ml-1 -mt-0.5 -space-x-3 hover:space-x-0">
+                                                    @foreach (var firstResponder in room.GetFirstResponders()) {
+                                                        <span class="transition-all">
+                                                            <partial name="Shared/_SmallAvatar" model="firstResponder.User"/>
+                                                        </span>
+                                                    }
+                                                </div>
+                                            } else if (Model.DefaultFirstResponders.Members.Any()) {
+                                                <div class="inline-flex items-center text-black nowrap ml-1 -mt-0.5 -space-x-3 hover:space-x-0">
+                                                    @foreach (var firstResponder in Model.DefaultFirstResponders.Members) {
+                                                        <span class="transition-all">
+                                                            <partial name="Shared/_SmallAvatar" model="firstResponder.User"/>
+                                                        </span>
+                                                    }
+                                                </div>
+                                            } else {
+                                                <span class="ml-1">None</span>
+                                            }
+                                        </div>
+
+                                        <div class="text-sm px-4 md:py-2 flex items-center flex-nowrap h-6 md:h-full md:border-t">
+                                            <h2 class="text-gray-500 text-sm nowrap font-medium mr-2 md:hidden">
+                                                Escalation responders
+                                            </h2>
+
+                                            @if (room.GetEscalationResponders().Any()) {
+                                                <span class="inline-block bg-indigo-100 text-indigo-900 w-16 px-2.5 rounded mx-1 text-xs font-medium ml-auto md:ml-0">
+                                                    Custom
+                                                </span>
+                                            } else {
+                                                <span class="inline-block bg-gray-100 w-16 px-2.5 rounded mx-1 text-xs font-medium ml-auto md:ml-0 has-tooltip-arrow has-tooltip-multiline"
+                                                      data-tooltip="This room uses the organization's default escalation responders.">
+                                                    Default
+                                                </span>
+                                            }
+
+                                            @if (room.GetEscalationResponders().Any()) {
+                                                <div class="text-black nowrap ml-1 -mt-0.5 inline-flex items-center -space-x-4 hover:space-x-0">
+                                                    @foreach (var escalationResponder in room.GetEscalationResponders()) {
+                                                        <span class="transition-all">
+                                                            <partial name="Shared/_SmallAvatar" model="escalationResponder.User"/>
+                                                        </span>
+                                                    }
+                                                </div>
+                                            } else if (Model.DefaultEscalationResponders.Members.Any()) {
+                                                <div class="text-black nowrap ml-1 -mt-0.5 inline-flex items-center -space-x-4 hover:space-x-0">
+                                                    @foreach (var escalationResponder in Model.DefaultEscalationResponders.Members) {
+                                                        <span class="transition-all">
+                                                            <partial name="Shared/_SmallAvatar" model="escalationResponder.User"/>
+                                                        </span>
+                                                    }
+                                                </div>
+                                            } else {
+                                                <span class="ml-1">None</span>
+                                            }
+                                        </div>
+                                    } else {
+                                        <!--
+                                        A bunch of Non-Applicables since the room isn't being tracked for whatever reason
+                                        -->
+                                        <div class="text-sm px-4 md:py-2 flex flex-nowrap items-center h-6 md:h-full md:border-t">
+                                            <h2 class="text-gray-500 text-sm nowrap font-medium mr-2 md:hidden">
+                                                Response time settings
+                                            </h2>
+
+                                            <span class="ml-1 text-gray-500">N/A</span>
+                                        </div>
+
+                                        <div class="text-sm px-4 md:py-2 flex flex-nowrap items-center h-6 md:h-full md:border-t">
+                                            <h2 class="text-gray-500 text-sm nowrap font-medium mr-2 md:hidden">
+                                                First responders
+                                            </h2>
+
+                                            <span class="ml-1 text-gray-500">N/A</span>
+                                        </div>
+
+                                        <div class="text-sm px-4 md:py-2 flex flex-nowrap items-center h-6 md:h-full md:border-t">
+                                            <h2 class="text-gray-500 text-sm nowrap font-medium mr-2 md:hidden">
+                                                Escalation responders
+                                            </h2>
+
+                                            <span class="ml-1 text-gray-500">N/A</span>
+                                        </div>
+                                    }
+
+                                    <div class="px-4 py-2 flex items-center h-full md:border-t">
+                                        <a asp-page="/Settings/Rooms/Room"
+                                           asp-all-route-data="ViewContext.GetCurrentRouteValues()"
+                                           asp-route-roomId="@room.PlatformRoomId"
+                                           class="btn flex items-center md:inline-block gap-x-1">
+                                            <i class="fa-regular fa-gear"></i>
+                                            <span class="md:hidden">Settings</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+
+                            @if (Model.Rooms.TotalPages > 1) {
+                                <div class="mx-4 mt-8 @colspan">
+                                    <partial name="Shared/_Paginator" model="Model.Rooms"/>
+                                </div>
+                            }
+                        } else {
+                            <div class="@colspan overflow-hidden border-t">
+                                <blankslate>
+                                    @if (Model.Filter.Any()) {
+                                        <div class="text-gray-500">No rooms matched your search criteria or filters!</div>
+                                        <p><a asp-page="Index" class="italic text-gray-600">Clear filters</a></p>
+                                        if (Model.Tab is Tracked) {
+                                            <div>Missing a room you expect to see here? Make sure Abbot has been invited to the room and that managed conversations is enabled!</div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (Model.Tab is Tracked) {
+                                            <div class="text-black font-semibold">
+                                                Abbot isn’t currently tracking any rooms
+                                            </div>
+                                        } else if (Model.Tab is Untracked) {
+                                            <div class="text-black font-semibold">
+                                                Congrats! Looks like Abbot is tracking all the rooms it knows about.
+                                            </div>
+                                        } else if (Model.Tab is Hubs) {
+                                            <div class="text-black font-semibold">
+                                                Create a Hub in a room with the <code>hubs</code> Skill:
+                                            </div>
+                                            <copy-box container-classes="inline text-sm" size-to-value="true" value="@("@" + Model.Organization.BotName) hubs create" />
+                                        } else if (Model.Tab is Inactive) {
+                                            <div class="text-black font-semibold">
+                                                There are no deleted or archived rooms that Abbot knows about
+                                            </div>
+                                        }
+                                    }
+                                </blankslate>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="sm:flex mx-2 mb-8 text-sm items-baseline">
+        <p class="text-gray-500 mr-2">Add more rooms by inviting Abbot to the channel in Slack with this command:</p>
+        <div class="flex">
+            <copy-box size-to-value="true" value="/invite @@@(Model.Organization.BotName)" />
+        </div>
+    </div>
+
+    <round-box>
+        <header>
+            <h2 class="font-semibold text-xl mb-0">Default settings</h2>
+            <p>Automatically applied to rooms that Abbot tracks unless specified in the room’s settings.</p>
+        </header>
+
+        <section class="my-4">
+            <h3 class="font-semibold">Responder settings</h3>
+
+            <div class="flex flex-wrap flex-col sm:flex-row gap-6 p-2">
+                <div class="flex-1">
+                    <label class="font-semibold">First responders</label>
+                    <p class="text-gray-500 text-sm">
+                        The agents who will be notified when a conversation exceeds its <em class="font-semibold not-italic">target and deadline</em> response times.
+                    </p>
+                    <div id="@Model.DefaultFirstRespondersDomId">
+                        <partial name="_RespondersList" model="@Model.DefaultFirstResponders" />
+                    </div>
+                </div>
+
+                <div class="flex-1">
+                    <label class="font-semibold">Escalation responders</label>
+                    <p class="text-gray-500 text-sm">
+                        The agents who will also be notified when a conversation exceeds its <em class="font-semibold not-italic">deadline</em> response time.
+                    </p>
+                    <div id="@Model.DefaultEscalationRespondersDomId">
+                        <partial name="_RespondersList" model="@Model.DefaultEscalationResponders" />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <form class="my-4" asp-page-handler="UpdateDefaultResponseTimes" method="post">
+            <h3 class="font-semibold">Response time settings</h3>
+
+            <div class="p-2 mb-2">
+                <editor for="ResponseTimeSettings"/>
+            </div>
+
+            <button type="submit"
+                    class="btn @(readOnly ? "btn-disabled" : "btn-primary")"
+                    disabled="@readOnly"
+                    asp-authz-policy="@AuthorizationPolicies.CanManageConversations">Save changes</button>
+        </form>
+    </round-box>
+
+    <round-box asp-authz-policy="@AuthorizationPolicies.CanManageConversations">
+        <h2 class="bubble-box-title">Automated Messages</h2>
+        <form asp-page-handler="UpdateMessages" class="flex flex-col" method="post">
+            <div class="flex items-baseline gap-2">
+                <input type="checkbox" asp-for="UpdateMessagesInput.WelcomeNewUsers" disabled="@readOnly" data-enable="@Html.IdFor(m => m.UpdateMessagesInput.UserWelcomeMessage)">
+                <label class="checkbox font-semibold" asp-for="UpdateMessagesInput.WelcomeNewUsers">Welcome users when they join a room</label>
+            </div>
+            <span>When a customer joins a shared channel, Abbot will post a message that only they can see.</span>
+
+            @* We don't actually set 'disabled' on the text area because that would mean the original content wouldn't be posted *@
+            <textarea class="form-input mt-2 @(Model.UpdateMessagesInput.WelcomeNewUsers && !readOnly ? "" : "disabled")" readonly="@(readOnly || !Model.UpdateMessagesInput.WelcomeNewUsers)" style="width: 42rem" asp-for="UpdateMessagesInput.UserWelcomeMessage"></textarea>
+            <div class="flex items-baseline gap-2 mt-5">
+                <input type="checkbox" asp-for="UpdateMessagesInput.WelcomeNewConversations" disabled="@readOnly" data-enable="@Html.IdFor(m => m.UpdateMessagesInput.ConversationWelcomeMessage)">
+                <label class="checkbox font-semibold" asp-for="UpdateMessagesInput.WelcomeNewConversations">Reply to new conversations</label>
+            </div>
+            <span>When a customer posts in a Slack channel, Abbot can reply with a message.</span>
+
+            @* We don't actually set 'disabled' on the text area because that would mean the original content wouldn't be posted *@
+            <textarea class="form-input mt-2 @(Model.UpdateMessagesInput.WelcomeNewConversations && !readOnly ? "" : "disabled")" readonly="@(readOnly || !Model.UpdateMessagesInput.WelcomeNewUsers)" style="width: 42rem" asp-for="UpdateMessagesInput.ConversationWelcomeMessage"></textarea>
+            <button type="submit" class="mt-3 place-self-start btn @(readOnly ? "btn-disabled": "btn-primary")" disabled="@readOnly">Save changes</button>
+        </form>
+    </round-box>
+
+    <round-box>
+        <h2 class="text-xl font-semibold">Room Metadata Fields</h2>
+        <p>Manage custom metadata fields that can be applied to rooms in the Room Settings page.</p>
+
+        <div class="grid p-3 grid-cols-4 gap-2 border border-gray-200 rounded shadow-sm my-2 w-fit" id="@Model.MetadataFieldsId">
+            <partial name="Shared/Metadata/_MetadataFields" />
+        </div>
+    </round-box>
+</page-body>
+

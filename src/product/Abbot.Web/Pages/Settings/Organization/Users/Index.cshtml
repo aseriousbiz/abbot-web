@@ -1,0 +1,98 @@
+@page
+@model Serious.Abbot.Pages.Settings.Organization.Users.IndexPage
+
+@{
+    ViewContext.SetPageInfo("Settings", "Users");
+    var waitingCount = Model.WaitListCount;
+    var verb = waitingCount == 1 ? "is" : "are";
+}
+
+<partial name="../_Header" model="Model.Viewer"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <header class="flex items-center">
+            <h2 class="text-xl font-semibold">Users</h2>
+            <div class="ml-auto">
+                <a asp-page="Archived" class="btn">View archived users</a>
+                <a asp-page="Invite/Index" class="btn btn-primary">Invite users</a>
+            </div>
+        </header>
+
+        <div class="mt-2">
+            <p>
+                This organization has <strong>@Model.Members.TotalCount.ToQuantity("Active agent")</strong>.
+                Active agents can be assigned as First Responders.
+            </p>
+            @if (waitingCount > 0) {
+                <p class="bg-yellow-50 text-yellow-900 p-2 rounded border border-yellow-100 font-semibold">
+                    There @verb @waitingCount.ToQuantity("user", "users") in the <a asp-page="Pending">wait list.</a>
+                </p>
+            }
+
+            @if (Model.PaidActiveMembers > 0) {
+                <p class="text-gray-500">Under your <a asp-page="/Settings/Organization/Billing/Index">current plan</a>, you can have up to @Model.PaidActiveMembers.ToQuantity("agent").</p>
+            }
+        </div>
+        <ul class="border border-gray-300 rounded-lg bg-white divide-y mt-2 drop-shadow-sm">
+            @foreach (var member in Model.Members) {
+                <li class="p-4">
+                    <div class="sm:flex items-center">
+                        <div class="-mb-2">
+                            <partial name="Shared/_Avatar" model="@member.User"/>
+                        </div>
+
+                        <div class="sm:ml-2">
+                            <h1 class="font-semibold">
+                                @member.RealName
+
+                                @foreach (var userMemberRole in member.MemberRoles)
+                                {
+                                    <span class="rounded-full bg-gray-100 px-2 text-sm sm:inline-block font-medium text-gray-800">
+                                        @userMemberRole.Role.Name
+                                    </span>
+                                }
+                            </h1>
+                            <ul class="text-gray-500 sm:flex sm:list-disc list-outside text-sm">
+                                <li class="mr-4 overflow-hidden">
+                                    <span class="text-black">
+                                        @@@member.DisplayName
+                                    </span>
+
+                                    <span>
+                                        (@member.User.PlatformUserId)
+                                    </span>
+                                </li>
+
+                                <li class="sm:ml-1 mr-4">
+                                    @member.User.Email
+                                </li>
+
+                                <li class="sm:ml-1 mr-4">
+                                    Joined <timeago datetime="@member.Created"/>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="ml-auto">
+                            <a class="btn btn-sm mr-1 rounded-md" asp-page="Assign" asp-route-id="@member.User.PlatformUserId">Assign Roles</a>
+
+                            @if (member.Id != Model.Viewer.Id) {
+                                <a class="btn btn-danger btn-sm rounded-md"
+                                   asp-page="ArchiveUser"
+                                   asp-route-id="@member.User.PlatformUserId">Archive</a>
+
+                            } else {
+                                <button class="btn btn-danger btn-sm rounded-md disabled"
+                                   data-tooltip="You cannot archive yourself.">Archive</button>
+                            }
+                        </div>
+                    </div>
+                </li>
+            }
+        </ul>
+
+        <partial name="Shared/_Paginator" model="@Model.Members"/>
+    </round-box>
+</page-body>

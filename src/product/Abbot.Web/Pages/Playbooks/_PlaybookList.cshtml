@@ -1,0 +1,84 @@
+@model PlaybookListViewModel
+@{
+    var playbooks = Model.Playbooks;
+}
+
+<div class="p-2 bg-white rounded-2xl border border-gray-200">
+    @if (playbooks.Any()) {
+        <ul class="divide-y border-slate-200">
+            @foreach (var playbook in playbooks) {
+                <li class="p-4 flex items-center gap-x-4" id="@playbook.Slug">
+                    <div class="grow">
+                        <div class="flex items-center gap-x-1">
+                            <a class="font-medium @(playbook.Enabled ? null : "text-slate-400")"
+                               asp-page="View"
+                               preserve-staff
+                               asp-route-slug="@playbook.Slug">
+                                @playbook.Name
+                            </a>
+                        </div>
+
+                        <p>@playbook.Description</p>
+
+                        <div class="flex items-baseline gap-x-1">
+                            @if (!playbook.Enabled) {
+                                <div class="mt-1 -mb-0.5">
+                                    <pill tooltip="This Playbook is currently disabled and will not be triggered." size="Small" color="Gray">Disabled</pill>
+                                </div>
+                            }
+                            <partial name="Playbooks/_PlaybookStatus" model="playbook" />
+                        </div>
+                    </div>
+
+                    <div class="flex gap-x-1 flex justify-center items-center">
+                        <a asp-page="Versions/Index"
+                           preserve-staff
+                           asp-route-slug="@playbook.Slug"
+                           data-tooltip="View versions of this Playbook"
+                           aria-label="View runs of this Playbook"
+                           class="h-7 btn btn-sm flex gap-2 justify-center items-center has-tooltip-left has-tooltip-arrow">
+                            <i class="fa-regular fa-rectangle-history"></i>
+                            Versions
+                        </a>
+
+                        <a asp-page="Runs/Index"
+                           preserve-staff
+                           asp-route-slug="@playbook.Slug"
+                           data-tooltip="View runs of this Playbook"
+                           class="h-7 btn btn-sm flex gap-2 justify-center items-center has-tooltip-left has-tooltip-arrow"
+                           aria-label="View runs of this Playbook">
+                            <i class="fa-regular fa-clock-rotate-left"></i>
+                            Runs
+                        </a>
+
+                        @if (!ViewContext.InStaffTools()) {
+                            <a asp-page="Delete" asp-route-slug="@playbook.Slug"
+                               data-tooltip="Delete this Playbook"
+                               class="h-7 btn btn-sm btn-danger flex gap-2 justify-center items-center has-tooltip-left has-tooltip-arrow"
+                               aria-label="Delete this Playbook">
+                                <i class="fa-regular fa-trash"></i>
+                            </a>
+                        }
+                    </div>
+                </li>
+            }
+        </ul>
+    } else {
+        <div class="text-center p-8">
+            @if (!Model.FilterApplied) {
+                <h2 class="font-semibold text-xl">
+                    You have no Playbooks!
+                </h2>
+
+            } else {
+                <h2 class="font-semibold text-xl">
+                    No Playbooks match the filter.
+                </h2>
+            }
+            <p>
+                Playbooks help you automate your business practices in Slack.<br/>
+                Use Playbooks to schedule tasks, automate check-ins, and more.
+            </p>
+        </div>
+    }
+</div>

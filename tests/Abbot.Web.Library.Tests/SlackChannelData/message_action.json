@@ -1,0 +1,50 @@
+{
+  "type": "message_action",
+  "token": "REPLACED",
+  "action_ts": "1654805018.330793",
+  "team": {
+    "id": "T00012121",
+    "domain": "aseriousbiz"
+  },
+  "user": {
+    "id": "U00000042",
+    "username": "user-name",
+    "team_id": "T00012121",
+    "name": "user-name"
+  },
+  "channel": {
+    "id": "C00000001",
+    "name": "channel-name"
+  },
+  "is_enterprise_install": false,
+  "enterprise": null,
+  "callback_id": "g:conversation.triage",
+  "trigger_id": "3647630125538.1103008406706.ac12e3c73940e4152113924386131cd8",
+  "response_url": "https:\/\/hooks.slack.com\/app\/T013108BYLS\/3660284080129\/lk8wiZBVgeTXWi2Hd3ljrBKG",
+  "message_ts": "1654117846.289599",
+  "message": {
+    "client_msg_id": "6cc03361-94f2-4bae-84c6-388cc981f3d1",
+    "type": "message",
+    "text": "some text",
+    "user": "C00000001",
+    "ts": "1654117846.289599",
+    "team": "T00012121",
+    "blocks": [
+      {
+        "type": "rich_text",
+        "block_id": "WuI3S",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "text",
+                "text": "some text"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,52 @@
+﻿{
+  Triggers: [
+    {
+      Id: t_01,
+      Type: trigger:slack.channel_created
+    },
+    {
+      Id: t_02,
+      Type: trigger:http.webhook,
+      Inputs: {
+        include_payload: true
+      }
+    }
+  ],
+  Dispatch: {
+    Type: ByCustomer
+  },
+  StartSequence: seq_02,
+  Sequences: {
+    seq_01: {
+      Actions: [
+        {
+          Branches: {
+            foo: bar
+          },
+          Id: act_01_01,
+          Type: action:slack.post_message,
+          Inputs: {
+            channel: C1234,
+            message: Hello {{customer.name}}!
+          }
+        },
+        {
+          Id: act_01_02,
+          Type: action:system.wait,
+          Inputs: {
+            milliseconds: 42.4,
+            seconds: 42
+          }
+        }
+      ]
+    },
+    seq_02: {
+      Actions: [
+        {
+          Id: act_02_01,
+          Type: action:abbot.create_customer
+        }
+      ]
+    }
+  }
+}

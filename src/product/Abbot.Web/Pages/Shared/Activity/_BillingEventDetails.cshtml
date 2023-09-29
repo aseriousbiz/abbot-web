@@ -1,0 +1,55 @@
+@model Serious.Abbot.Pages.Activity.DetailsModel
+
+@{
+    var auditEvent = Model.AuditEvent as BillingEvent
+        ?? throw new InvalidOperationException($"AuditEvent is not a {nameof(BillingEvent)}.");
+}
+
+<div class="p-4">
+  <header>
+    <h1 class="mb-2 text-gray-500">Summary</h1>
+  </header>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div>
+      <partial name="Shared/Activity/_OccurrenceDetails" model="auditEvent"/>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Type</h2>
+      <div>
+        Subscription Change
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Actor</h2>
+      <div>
+        <partial name="Shared/Activity/_UserDetail" model="@auditEvent.Actor" />
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Plan</h2>
+      <div>
+        @auditEvent.PlanType
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Description</h2>
+      <div>
+        <markdown>
+          @auditEvent.Description
+        </markdown>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="font-bold text-sm mb-1">Billing Email</h2>
+      <div>
+        @auditEvent.BillingEmail
+      </div>
+    </div>
+  </div>
+</div>

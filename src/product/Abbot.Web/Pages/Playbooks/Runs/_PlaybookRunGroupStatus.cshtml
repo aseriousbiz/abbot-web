@@ -1,0 +1,68 @@
+@model Serious.Abbot.Playbooks.PlaybookRunGroupSummary
+
+@* First off, if this is a unary run group, we can just show the status of the run itself. *@
+@if (Model.RunCount == 1 && Model.LatestRun is not null) {
+    <partial name="Playbooks/Runs/_PlaybookRunStatus" model="Model.LatestRun" />
+    return;
+}
+
+@{
+    var dispatchCount = Model.Group.Properties.TotalDispatchCount ?? 1;
+    var cancelCount = Model.Group.Properties.RunCountsByOutcome.TryGetValue(PlaybookRunOutcome.Cancelled, out var vc) ? vc : 0;
+    var succeedCount = Model.Group.Properties.RunCountsByOutcome.TryGetValue(PlaybookRunOutcome.Succeeded, out var vs) ? vs : 0;
+    var failureCount =
+        (Model.Group.Properties.RunCountsByOutcome.TryGetValue(PlaybookRunOutcome.Faulted, out var vf) ? vf : 0) +
+        (Model.Group.Properties.RunCountsByOutcome.TryGetValue(PlaybookRunOutcome.TimedOut, out var vt) ? vt : 0);
+    var inProgressCount = dispatchCount - failureCount - cancelCount - succeedCount;
+
+    PillColor pillColor;
+    if (failureCount > 0) {
+        pillColor = PillColor.Red;
+    }
+    else if(cancelCount > 0)
+    {
+        pillColor = PillColor.Yellow;
+    }
+    else if (inProgressCount > 0) {
+        pillColor = PillColor.Gray;
+    } else {
+        pillColor = PillColor.Green;
+    }
+
+    var statusMessages = new List<string>();
+    if (inProgressCount > 0) {
+        statusMessages.Add($"{inProgressCount.ToQuantity("run")} in progress");
+    }
+    if (failureCount > 0) {
+        statusMessages.Add($"{failureCount.ToQuantity("run")} failed");
+    }
+    if (cancelCount > 0) {
+        statusMessages.Add($"{cancelCount.ToQuantity("run")} cancelled");
+    }
+    if (succeedCount > 0) {
+        statusMessages.Add($"{succeedCount.ToQuantity("run")} succeeded");
+    }
+
+    var message = $"{string.Join(", ", statusMessages)}";
+}
+
+<a asp-page="/Playbooks/Runs/Group" asp-route-groupId="@Model.Group.CorrelationId" asp-route-slug="@Model.Group.Playbook.Slug" preserve-staff>
+    <pill color="@pillColor" tooltip="@message">
+        @if (inProgressCount > 0) {
+            <i class="fa fa-spinner fa-spin-pulse"></i>
+            <span>@inProgressCount</span>
+        }
+        @if (failureCount > 0) {
+            <i class="fa fa-circle-exclamation"></i>
+            <span>@failureCount</span>
+        }
+        @if (cancelCount > 0) {
+            <i class="fa fa-circle-x"></i>
+            <span>@cancelCount</span>
+        }
+        @if (succeedCount > 0) {
+            <i class="fa fa-check"></i>
+            <span>@succeedCount</span>
+        }
+    </pill>
+</a>

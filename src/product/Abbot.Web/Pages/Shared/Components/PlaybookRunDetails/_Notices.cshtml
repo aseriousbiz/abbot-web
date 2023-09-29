@@ -1,0 +1,23 @@
+@using Serious.Abbot.Playbooks
+@model IEnumerable<Serious.Abbot.Playbooks.Notice>
+
+@foreach (var notice in Model) {
+    var (borderColor, bgColor, textColor) = notice.Type switch {
+        NoticeType.Information => ("border-slate-300", "bg-slate-50", "text-slate-500"),
+        NoticeType.Warning => ("border-yellow-300", "bg-yellow-50", "text-yellow-500"),
+        _ => (null, null, null)
+    };
+    <div class="border @borderColor @bgColor p-2 mt-2 rounded">
+        <p class="font-semibold @textColor">
+            @notice.Title
+        </p>
+
+        @if (notice.Details is { Length: > 0 } detail) {
+            foreach (var paragraph in detail.Split('\n')) {
+                <p class="font-mono text-xs">
+                    @paragraph
+                </p>
+            }
+        }
+    </div>
+}

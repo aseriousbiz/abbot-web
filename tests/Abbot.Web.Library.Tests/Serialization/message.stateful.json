@@ -1,0 +1,108 @@
+{
+  "type": "block_actions",
+  "user": {
+    "id": "U012LKJFG0P",
+    "username": "haacked",
+    "name": "haacked",
+    "team_id": "T013108BYLS"
+  },
+  "api_app_id": "A01TG9GPJQ3",
+  "token": "AUBq0lzDhvfWfOieKqkC1l7D",
+  "container": {
+    "type": "message",
+    "message_ts": "1649253333.908839",
+    "channel_id": "C01A3DGTSP9",
+    "is_ephemeral": false
+  },
+  "trigger_id": "3345598078038.1103008406706.32bf23032cab9aff0d8170b8c9b61317",
+  "team": {
+    "id": "T013108BYLS",
+    "domain": "aseriousbiz"
+  },
+  "is_enterprise_install": false,
+  "channel": {
+    "id": "C01A3DGTSP9",
+    "name": "haacked-playground"
+  },
+  "message": {
+    "type": "message",
+    "subtype": "bot_message",
+    "text": "Fallback text",
+    "ts": "1649253333.908839",
+    "username": "abbot-haackedy-haack-dev",
+    "icons": {
+      "image_48": "https://s3-us-west-2.amazonaws.com/slack-files2/bot_icons/2021-12-07/2825973053425_48.png"
+    },
+    "bot_id": "B01U63BS0EL",
+    "app_id": "A01TG9GPJQ3",
+    "team": "T013108BYLS",
+    "blocks": [
+      {
+        "type": "input",
+        "block_id": "s:27|MRpv",
+        "label": {
+          "type": "plain_text",
+          "text": "Label",
+          "emoji": true
+        },
+        "optional": false,
+        "dispatch_action": true,
+        "element": {
+          "type": "plain_text_input",
+          "action_id": "plain_text_input-action",
+          "dispatch_action_config": {
+            "trigger_actions_on": [
+              "on_enter_pressed"
+            ]
+          }
+        }
+      },
+      {
+        "type": "section",
+        "block_id": "s:27|gBCY",
+        "text": {
+          "type": "mrkdwn",
+          "text": "Pick a date for the deadline.",
+          "verbatim": false
+        },
+        "accessory": {
+          "type": "datepicker",
+          "action_id": "datepicker-action",
+          "initial_date": "1990-04-28",
+          "placeholder": {
+            "type": "plain_text",
+            "text": "Select a date",
+            "emoji": true
+          }
+        }
+      }
+    ]
+  },
+  "state": {
+    "values": {
+      "s:27|MRpv": {
+        "plain_text_input-action": {
+          "type": "plain_text_input",
+          "value": "Test"
+        }
+      },
+      "s:27|gBCY": {
+        "datepicker-action": {
+          "type": "datepicker",
+          "selected_date": "1990-04-13"
+        }
+      }
+    }
+  },
+  "response_url": "https://hooks.slack.com/actions/T013108BYLS/3364866436033/b69MQlVFx1qj5VVc44Wi5mBm",
+  "actions": [
+    {
+      "type": "datepicker",
+      "action_id": "datepicker-action",
+      "block_id": "s:27|gBCY",
+      "selected_date": "1990-04-13",
+      "initial_date": "1990-04-28",
+      "action_ts": "1649253996.934331"
+    }
+  ]
+}

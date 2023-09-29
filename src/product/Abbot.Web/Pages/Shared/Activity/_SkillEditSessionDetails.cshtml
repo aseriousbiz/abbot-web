@@ -1,0 +1,45 @@
+@model Serious.Abbot.Pages.Activity.DetailsModel
+@{
+    var auditEvent = Model.AuditEvent as SkillEditSessionAuditEvent
+                     ?? throw new InvalidOperationException($"AuditEvent is not a {nameof(SkillEditSessionAuditEvent)}.");
+    var duration = (auditEvent.Modified - @auditEvent.Created).FormatDuration();
+}
+<div class="px-4 pb-4">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="font-bold text-sm col-span-3">
+            Note: Multiple changes to the code for a skill within a moving ten minute window are rolled up into a single edit session audit log entry.
+        </div>
+        <div>
+            <h2 class="font-bold text-sm mb-1">Skill</h2>
+            <div>
+                <partial name="Shared/Activity/_SkillDetails" />
+            </div>
+        </div>
+
+        <div>
+            <h2 class="font-bold text-sm mb-1">Duration</h2>
+            <div>
+                @duration
+            </div>
+        </div>
+        
+        <div class="col-span-3">
+            <h2 class="font-bold text-sm mb-1">Changes</h2>
+            <div>
+                @if (Model.SessionDiff is not null) {
+                    <div class="code-diff">
+                        @if (Model.MaySeeCode || ViewContext.IsStaffMode() && Model.StaffMaySeeCode) {
+                            <partial name="Shared/Diff/_DiffPane" model="@Model.SessionDiff" />
+                        } else {
+                            <staff-only>
+                                <partial name="Shared/Activity/_StaffPermissionForm" />
+                            </staff-only>
+                        }
+                    </div>
+                } else {
+                    <p class="text-gray-500">Changes not available</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

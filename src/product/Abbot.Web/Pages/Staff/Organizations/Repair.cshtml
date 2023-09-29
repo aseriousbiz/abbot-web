@@ -1,0 +1,81 @@
+@page "/staff/organizations/{id}/repair/{handler?}"
+@model Serious.Abbot.Pages.Staff.Organizations.RepairPage
+
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Repair Data", "Repair Data");
+}
+
+<page-body>
+    @if (Model.Organization.PlatformType is PlatformType.Slack && Model.Organization.HasPlanFeature(PlanFeature.ConversationTracking) && Model.Organization.ApiToken is not null) {
+        <round-box>
+            <h2 class="text-3xl font-semibold">Import Conversation</h2>
+            <details>
+                <summary>Help</summary>
+                <p class="text-sm mt-2">
+                    This tool imports a message into Abbot as a tracked conversation.
+                    It requires a Channel ID (<code>C123456...</code>) and a Message ID (<code>9999999999.888888</code>).
+                    These values can be found in a URL to a specific message in Slack.
+                    To get these values from a customer, ask them to choose "Copy Link" in the triple-dot/kebab menu for the <span class="font-semibold">root message</span> of thread they want to track.
+                    This URL will look something like this:
+                </p>
+                <code class="mt-2">https://aseriousbiz.slack.com/archives/C9999999999/p9999999999888888</code>
+                <p class="text-sm mt-2">
+                    In this example, the channel ID is <code>C9999999999</code> and the message ID is the value <em>after the <code>p</code></em> and is <code>9999999999888888</code>
+                </p>
+                <p class="text-sm mt-2">
+                    If the customer selects a non-root message, you can still extract the correct values, but they come from a different place.
+                    A non-root message URL will look something like this:
+                </p>
+                <code class="mt-2">https://aseriousbiz.slack.com/archives/C9999999999/p1111111111222222?thread_ts=9999999999.888888&amp;cid=C9999999999</code>
+                <p class="text-sm mt-2">
+                    In this case, take the <code>thread_ts</code> query string value as the Message ID and <code>cid</code> query string value as the Channel ID.
+                    So, in this example, the Channel ID is <code>C9999999999</code> and the Message ID is <code>9999999999.888888</code>.
+                </p>
+            </details>
+
+            <div class="bg-yellow-200 p-4">
+                An imported conversation is visible to the customer.
+                They will see an event on the timeline for this conversation indicating "Abbot" imported this conversation.
+                Ensure the customer is aware you are doing this before you continue.
+            </div>
+
+            <form asp-page-handler="ImportConversation" method="post" class="flex flex-col mt-4">
+                <div class="flex flex-row gap-2">
+                    <input class="form-input" name="channelId" placeholder="Channel ID">
+                    <input class="form-input" name="messageId" placeholder="Message ID">
+                </div>
+                <p class="font-semibold">OR</p>
+                <div class="flex flex-row gap-2">
+                    <input class="form-input flex-grow" name="messageURL" placeholder="Message URL">
+                </div>
+                <div class="mt-2 flex flex-row gap-2 items-baseline">
+                    <button class="btn" type="submit" formaction="@Url.Page(null, "PreviewImportConversation")">Preview</button>
+                    <button id="@RepairPage.ImportButtonId" class="btn btn-danger" disabled data-tooltip="You have to preview before you can import.">Import</button>
+                </div>
+                <div id="@RepairPage.PreviewResultsId">
+                </div>
+            </form>
+        </round-box>
+    }
+    else {
+        <round-box>
+            <h2 class="text-3xl font-semibold">Import Conversation</h2>
+            <p class="text-red-500">Cannot import conversations from this organization.</p>
+            @if (Model.Organization.PlatformType is not PlatformType.Slack) {
+                <p>
+                    It is not a Slack organization.
+                </p>
+            }
+            else if (!Model.Organization.HasPlanFeature(PlanFeature.ConversationTracking)) {
+                <p>
+                    It is not running on a plan that supports conversation tracking.
+                </p>
+            }
+            else if (Model.Organization.ApiToken is null) {
+                <p>
+                    It has not installed Abbot, so we don't have an API token.
+                </p>
+            }
+        </round-box>
+    }
+</page-body>

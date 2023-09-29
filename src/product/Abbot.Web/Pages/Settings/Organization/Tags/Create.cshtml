@@ -1,0 +1,32 @@
+@page
+@model Serious.Abbot.Pages.Settings.Organization.Tags.CreatePage
+
+@{
+    ViewContext.SetPageInfo("Settings", "Create Conversation Tag");
+}
+
+<partial name="../_Header" model="Model.Viewer"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold"><a asp-page="../Index">Tags</a> / Create Conversation Tag</h2>
+
+        <form method="post">
+            <section class="py-2 px-4">
+                <div class="mb-4">
+                    <label class="font-bold" asp-for="NewTagName"></label>
+                    <p class="text-sm text-gray-500 mb-1">
+                        *Required.
+                    </p>
+                    <input class="form-input w-full" asp-for="NewTagName" />
+                    <span asp-validation-for="NewTagName"></span>
+                </div>
+
+                <div class="mb-4">
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </section>
+        </form>
+    </round-box>
+</page-body>

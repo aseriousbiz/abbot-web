@@ -1,0 +1,57 @@
+@page "/staff/organizations/{id}/edit"
+@model Serious.Abbot.Pages.Staff.Organizations.EditPage
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Organization Edit");
+}
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">Edit</h2>
+
+        <form method="post" class="grid gap-2 mt-5" style="grid-template-columns: max-content 1fr;">
+            <label class="font-semibold" asp-for="Slug">Organization Slug</label>
+            @if (Model.Organization.PlatformType is PlatformType.Slack)
+            {
+                <div>
+                    <code>@Model.Organization.Slug</code>
+                    <em class="text-sm">Slugs for Slack organization can't be changed. It's set when the user installs Abbot into Slack.</em>
+                </div>
+            }
+            else
+            {
+                <div>
+                    <input type="checkbox" asp-for="SlugIsDefault" />
+                    <label asp-for="SlugIsDefault">Use Default</label>
+                    <input class="form-input w-full @(Model.SlugIsDefault ? "disabled" : "")" asp-for="Slug" data-val-event="change" disabled="@Model.SlugIsDefault" />
+                    <span asp-validation-for="Slug"></span>
+                    <description asp-for="Slug"/>
+                </div>
+            }
+            <label class="font-semibold" asp-for="Reason">Reason</label>
+            <div>
+                <input class="form-input w-full" asp-for="Reason" placeholder="Reason">
+                <div class="italic text-sm">A reason is <strong>not required</strong>, but if you enter a reason, it will be visible to the customer in the activity log.</div>
+            </div>
+            <div class="col-span-2 place-self-start">
+                <button type="submit" class="btn btn-danger">Save Changes</button>
+                <span class="text-sm">This event will be recorded to the <a asp-page="Activity/Index" asp-route-id="@Model.Organization.PlatformId">Activity Log</a></span>
+            </div>
+        </form>
+    </round-box>
+</page-body>
+
+@section StaffScripts {
+    <script>
+        let checkbox = document.querySelector("#SlugIsDefault");
+        let input = document.querySelector("#Slug");
+        checkbox.addEventListener("change", function () {
+            if (checkbox.checked) {
+                input.disabled = true;
+                input.classList.add("disabled");
+            } else {
+                input.disabled = false;
+                input.classList.remove("disabled");
+            }
+        });
+    </script>
+}

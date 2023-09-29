@@ -1,0 +1,54 @@
+@page "/skills/{skill}/triggers/{trigger}/{triggerType}/delete"
+@using StackExchange.Profiling.Internal
+@model Serious.Abbot.Pages.Skills.Triggers.DeletePageModel
+@{
+    var trigger = Model.Trigger;
+    ViewContext.SetPageInfo("Triggers", "Trigger Delete", $"Delete trigger {trigger.Name}?");
+}
+
+
+<div class="border border-red-300 sm:w-96 m-8 bg-white shadow mx-auto">
+    <header class="p-2">
+        <h1 class="bg-red-500 text-white px-2">
+            Delete trigger for skill <span class="font-bold">@Model.SkillName</span>?
+        </h1>
+    </header>
+
+    <form class="px-4 pb-4" method="post">
+        <p class="m-2">
+            Deleting the trigger will make it unavailable to any systems using it.
+        </p>
+
+        @if (trigger.IsScheduledTrigger || !trigger.Description.IsNullOrWhiteSpace()) {
+            <dl class="p-4 bg-gray-100 text-sm rounded-lg">
+                @if (trigger.IsScheduledTrigger) {
+                    <dt class="font-bold">Schedule</dt>
+                    <dd>@trigger.CronScheduleDescription</dd>
+                    <dd class="font-mono text-xs text-gray-500 mb-2">(@trigger.CronSchedule)</dd>
+
+                    <dt class="font-bold">Timezone</dt>
+                    <dd class="mb-2">
+                        @trigger.TimeZoneId
+                    </dd>
+
+                    @if (!trigger.Arguments.IsNullOrWhiteSpace()) {
+                        <dt class="font-bold">Arguments</dt>
+                        <dt class="mb-2">@trigger.Arguments</dt>
+                    }
+                }
+
+                @if (!trigger.Description.IsNullOrWhiteSpace()) {
+                    <dt class="font-bold">Description</dt>
+                    <dt>
+                        @trigger.Description
+                    </dt>
+                }
+            </dl>
+        }
+
+        <div class="flex items-center mt-4">
+            <skillbacklink class="btn"/>
+            <button class="btn btn-danger ml-auto">Confirm Delete</button>
+        </div>
+    </form>
+</div>

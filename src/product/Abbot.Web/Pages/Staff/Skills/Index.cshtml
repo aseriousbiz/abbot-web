@@ -1,0 +1,91 @@
+@page "{language?}"
+@model Serious.Abbot.Pages.Staff.Skills.IndexPage
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Skill Runners Config");
+}
+
+<partial name="Staff/_Header"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+<partial name="_Header"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">Skill Runners</h2>
+
+        <p class="mt-5">These are the configured skill runners.</p>
+
+        <div class="mt-5 hard-box">
+            <table class="w-full">
+                <thead>
+                <tr>
+                    <th class="text-left border-b p-3">Language</th>
+                    <th class="text-left border-b p-3">App Setting: Endpoint</th>
+                    <th class="text-left border-b p-3">App Setting: Code</th>
+                    <th class="text-left border-b p-3">Override: Endpoint</th>
+                    <th class="text-left border-b p-3">Override: Code</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var (language, endpoint) in Model.AppConfigEndpoints.OrderBy(p => p.Key)) {
+                    <tr>
+                        <th class="align-middle p-3">@language</th>
+                        <td class="align-middle p-3">
+                            <copy-box value="@(endpoint.Url)"></copy-box>
+                        </td>
+                        <td class="align-middle p-3">
+                            @if (endpoint.ApiToken is {Length: >0}) {
+                                <copy-box value="@endpoint.ApiToken"></copy-box>
+                            } else {
+                                <em>None</em>
+                            }
+                        </td>
+                        @if(Model.OverrideEndpoints.TryGetValue(language, out var overrideEndpoint)) {
+                            <td class="align-middle p-3">
+                                <copy-box value="@(overrideEndpoint.Url)"></copy-box>
+                            </td>
+                            <td class="align-middle p-3">
+                                @if (overrideEndpoint.ApiToken is {Length: >0}) {
+                                    <copy-box value="@overrideEndpoint.ApiToken"></copy-box>
+                                } else {
+                                    <em>None</em>
+                                }
+                            </td>
+                        } else {
+                            <td class="align-middle p-3">
+                                <em>None</em>
+                            </td>
+                            <td class="align-middle p-3">
+                                <em>None</em>
+                            </td>
+                        }
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+
+        <h3 class="text-2xl font-semibold mt-5">Override Skill Runners</h3>
+
+        <p class="mt-5">
+            These are the active overrides to the configured skill runners. These take precedence over what's
+            configured in App Settings, but do not take precedence over per-organization configured skill runners.
+        </p>
+        <p>
+            To remove an override, click "Reset"
+        </p>
+
+        <div class="mt-5 grid gap-2 items-baseline" style="grid-template-columns: max-content 1fr 1fr max-content max-content;">
+        @foreach (var language in Model.AppConfigEndpoints.Keys.OrderBy(k => k)) {
+            <form method="post" asp-route-language="@language.ToString().ToLowerInvariant()" class="contents">
+                @{
+                    var overrideEndpoint = Model.OverrideEndpoints.TryGetValue(language, out var ovr) ? ovr : null;
+                }
+                <label class="font-semibold" asp-for="Input.Endpoint">@language</label>
+                <input asp-for="Input.Endpoint" value="@overrideEndpoint?.Url" class="form-input" placeholder="Endpoint URL"/>
+                <input asp-for="Input.Code" value="@overrideEndpoint?.ApiToken" placeholder="API Token" type="password"/>
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="submit" class="btn btn-danger" asp-route-language="@language.ToString().ToLowerInvariant()" asp-page-handler="Reset" data-confirm="Are you sure you want to clear the override runner endpoint for @(language)?">Reset</button>
+            </form>
+        }
+    </round-box>
+</page-body>

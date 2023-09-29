@@ -1,0 +1,32 @@
+@model FilterOptionModel
+
+<li class="m-0 border-y-1 border-gray-50">
+    <a asp-all-route-data="ViewContext.GetCurrentRouteValues()"
+       asp-route-q="@Model.NewFilter"
+       class="flex items-center gap-x-2 px-3 py-2 text-gray-700">
+        <span class="w-2 mr-1">
+            @if (Model.IsActive) {
+                if (Model is ToggleOptionModel toggle) {
+                    if (Model.Including && toggle.Include || !Model.Including && !toggle.Include) {
+                        <i class="fa-solid fa-check"></i>
+                    }
+                } else {
+                    if (Model.Including) {
+                        <i class="fa-solid fa-check"></i>
+                    } else {
+                        <i class="fa-solid fa-minus"></i>
+                    }
+                }
+            }
+        </span>
+        @if (Model.Image is not null) {
+            <img src="@Model.Image" class="w-6 rounded-full" alt=""/>
+        }
+        @* Special case for "none" filter option. I'll fix this up later -@haacked *@
+        @if (Model.Value is "none" or "default") {
+            <span class="font-normal italic">@Model.Label</span>
+        } else {
+            <span class="font-medium">@Model.Label</span>
+        }
+    </a>
+</li>

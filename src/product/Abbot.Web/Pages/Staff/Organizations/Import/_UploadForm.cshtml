@@ -1,0 +1,23 @@
+@model IndexPageModel
+
+<form enctype="multipart/form-data" method="post">
+    <h2 class="text-3xl font-semibold">Bulk Responders Import</h2>
+
+    <div class="p-1">
+        <label asp-for="Delimiter"></label>
+        <select asp-for="Delimiter" class="form-input">
+            <option value=",">,</option>
+            <option value="|">|</option>
+            <option value=";">;</option>
+            <option value=" ">tab</option>
+        </select>
+
+    </div>
+
+    <div class="p-1">
+        <label asp-for="FileUpload"></label>
+        <input asp-for="FileUpload" type="file">
+        <span asp-validation-for="FileUpload"></span>
+    </div>
+    <input asp-page-handler="Upload" class="btn" type="submit" value="Upload"/>
+</form>

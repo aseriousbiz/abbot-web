@@ -1,0 +1,16 @@
+@using Serious.Slack
+@using Serious.AspNetCore.TagHelpers
+@model RepairPage.ImportResponseModel
+
+<div class="flex-grow flex flex-col">
+    <p class="font-semibold">Last Verified Timestamp</p>
+    @if (Model.LastVerifiedMessageId is {} lastVerifiedMessageId) {
+        var lastVerifiedDate = SlackTimestamp.Parse(lastVerifiedMessageId);
+        <p>
+            <timeago datetime="@lastVerifiedDate.UtcDateTime"/>
+        </p>
+        <p><code>@lastVerifiedMessageId</code></p>
+    } else {
+        <p><code>Null</code></p>
+    }
+</div>

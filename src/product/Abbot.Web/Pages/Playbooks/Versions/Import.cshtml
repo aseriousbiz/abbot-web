@@ -1,0 +1,84 @@
+@page
+@model Serious.Abbot.Pages.Playbooks.Versions.ImportModel
+
+@{
+    var title = Model.Playbook is null
+        ? "Import new Playbook"
+        : "Import new Version";
+    ViewContext.SetPageInfo("Playbook", "Import Playbook", title);
+}
+
+<page-header>
+    <div class="font-medium text-sm">
+        <a asp-page="../Index" preserve-staff>
+            Playbooks
+        </a>
+        @if (Model.Playbook is not null) {
+            <span>/</span>
+            <a asp-page="../View"
+               preserve-staff
+               asp-route-slug="@Model.Playbook.Slug">@Model.Playbook.Name</a>
+        }
+    </div>
+
+    <div class="flex items-center mb-4">
+        @if (Model.Playbook is null) {
+            <div class="grow">
+                Import new playbook
+            </div>
+        } else {
+            <div class="grow">
+                Import new version of @Model.Playbook.Name
+            </div>
+        }
+    </div>
+</page-header>
+
+<page-body>
+    @* Turbo + Files = No Worky: https://github.com/hotwired/turbo/blob/151aca23ebc4eff11310cb24a619a535f3772aa2/src/core/drive/form_submission.ts#L285 *@
+    <form method="post" enctype="multipart/form-data" class="flex flex-col items-stretch rounded-2xl border border-slate-300 bg-white p-4 gap-y-1">
+        @if (Model.Playbook is null) {
+            <div class="contents">
+                <label asp-for="Input.Name"></label>
+                <input class="form-input" asp-for="Input.Name" data-controller="form-prefill"/>
+                <span asp-validation-for="Input.Name"></span>
+            </div>
+
+            <div class="contents">
+                <label asp-for="Input.Description"></label>
+                <textarea class="form-input h-32" asp-for="Input.Description" data-controller="form-prefill"></textarea>
+                <span asp-validation-for="Input.Description"></span>
+            </div>
+        }
+        <div class="grid" style="grid-template-columns: 1fr min-content 1fr;">
+            <div class="flex flex-col items-start gap-2">
+                <label asp-for="Input.DefinitionUrl"></label>
+                <input class="form-input w-full" asp-for="Input.DefinitionUrl" data-controller="form-prefill" />
+                <span asp-validation-for="Input.DefinitionUrl"></span>
+            </div>
+            <strong class="mx-4 place-self-center">or</strong>
+            <div class="flex flex-col items-start gap-2">
+                <label asp-for="Input.Content"></label>
+                <div class="flex gap-2">
+                    <input data-form-target="resettable" asp-for="Input.Content">
+                    <button data-action="form#reset" class="btn btn-danger">Clear</button>
+                </div>
+                <span asp-validation-for="Input.Content"></span>
+            </div>
+        </div>
+        @if (Model.InStaffTools) {
+            <div class="contents">
+                <label asp-for="Input.StaffReason"></label>
+                <input class="form-input" asp-for="Input.StaffReason"/>
+                <span asp-validation-for="Input.StaffReason"></span>
+            </div>
+        }
+        <div class="text-sm text-gray-500">
+            <i class="fa fa-circle-info"></i>
+            The new version will be imported as a draft and must be published before it will take effect.
+        </div>
+        <div class="mt-2 flex place-self-end gap-x-4">
+            <button class="btn btn-primary" type="submit">Import</button>
+        </div>
+    </form>
+</page-body>

@@ -1,0 +1,29 @@
+@using Serious.Slack
+@using Serious.AspNetCore.TagHelpers
+@model Conversation
+@{
+    var conversation = Model;
+    var createdTimestamp = new SlackTimestamp(conversation.Created).ToString();
+}
+
+<div class="flex-grow flex flex-col">
+    <p class="font-semibold">Created</p>
+    <p><timeago datetime="@conversation.Created"/></p>
+    <p><code>@createdTimestamp</code></p>
+</div>
+@if (conversation.IsImported) {
+    var importedDate = conversation.ImportedOn.Value;
+    var importedSlackTimestamp = new SlackTimestamp(importedDate).ToString();
+    <div class="flex-grow flex flex-col">
+        <p class="font-semibold">Imported</p>
+        <p>
+            <timeago datetime="importedDate"/> (@((importedDate - conversation.Created).Humanize()))
+        </p>
+        <p><code>@importedSlackTimestamp</code></p>
+    </div>
+} else {
+    <div class="flex-grow flex flex-col">
+        <p class="font-semibold">Imported</p>
+        <p>Nope</p>
+    </div>
+}

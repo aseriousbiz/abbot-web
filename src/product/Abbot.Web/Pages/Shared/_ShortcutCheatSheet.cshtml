@@ -1,0 +1,144 @@
+<div id="hotkeys-modal" class="modal" data-hotkey="?,ctrl+k,command+k">
+    <div class="modal-background"></div>
+    <div class="modal-content bg-white border border-gray-300 rounded shadow-md p-4" style="border-color: #A5B4FC;">
+        <header class="flex items-center mb-4">
+            <h3 class="font-semibold">Keyboard Shortcuts</h3>
+            <button class="modal-close text-lg ml-auto w-5 h-5 flex items-center justify-center" aria-label="close">
+                <i class="far fa-times"></i>
+            </button>
+        </header>
+        <div class="flex flex-col gap-y-2 text-sm">
+            <dl class="flex items-center gap-x-2">
+                <dt>Show this screen</dt>
+                <dd class="ml-auto text-xs flex gap-x-1 text-gray-500">
+                    <span class="border rounded font-mono px-1 shadow-sm">
+                        ?
+                    </span>
+                    or
+                    <span class="border rounded font-mono px-1 shadow-sm">
+                        <span class="cmd-or-ctrl">Cmd</span>+K
+                    </span>
+                </dd>
+            </dl>
+
+            <dl class="flex items-center gap-x-2">
+                <dt class="mr-2">Jump to skill</dt>
+                <dd class="ml-auto text-xs flex gap-x-1 text-gray-500">
+                    <span class="border rounded font-mono px-1 shadow-sm">
+                        t
+                    </span>
+                    or
+                    <span class="border rounded font-mono px-1 shadow-sm">
+                        ctrl+t
+                    </span>
+                </dd>
+            </dl>
+
+            <dl class="flex items-center gap-x-2">
+                <dt class="mr-2">Dismiss modal</dt>
+                <dd class="ml-auto border rounded font-mono text-gray-500 px-1 shadow-sm text-xs">
+                    Esc
+                </dd>
+            </dl>
+
+            <dl class="flex items-center gap-x-2">
+                <dt class="mr-2">Go to the overview page</dt>
+                <dd class="ml-auto border rounded font-mono text-gray-500 px-1 shadow-sm text-xs">
+                    g o
+                </dd>
+            </dl>
+
+            <dl class="flex items-center gap-x-2">
+                <dt class="mr-2">Go to the Conversations page</dt>
+                <dd class="ml-auto border rounded font-mono text-gray-500 px-1 shadow-sm text-xs">
+                    g c
+                </dd>
+            </dl>
+
+            <dl class="flex items-center gap-x-2">
+                <dt class="mr-2">Go to the Announcements page</dt>
+                <dd class="ml-auto border rounded font-mono text-gray-500 px-1 shadow-sm text-xs">
+                    g a
+                </dd>
+            </dl>
+
+            <dl class="flex items-center gap-x-2">
+                <dt class="mr-2">Go to the Insights page</dt>
+                <dd class="ml-auto border rounded font-mono text-gray-500 px-1 shadow-sm text-xs">
+                    g i
+                </dd>
+            </dl>
+
+            <dl class="flex items-center gap-x-2">
+                <dt class="mr-2">Go to the skills list</dt>
+                <dd class="ml-auto border rounded font-mono text-gray-500 px-1 shadow-sm text-xs">
+                    g s
+                </dd>
+            </dl>
+
+            @if (ViewBag.IsEditor == true) {
+                <dl class="flex items-center gap-x-2">
+                    <dt class="mr-2">Save skill</dt>
+                    <dd class="ml-auto border rounded font-mono text-gray-500 px-1 shadow-sm text-xs">
+                        <span class="cmd-or-ctrl">Cmd</span>+S
+                    </dd>
+                </dl>
+
+                <dl class="flex items-center gap-x-2">
+                    <dt class="mr-2">Toggle fullscreen mode</dt>
+                    <dd class="ml-auto border rounded font-mono text-gray-500 px-1 shadow-sm text-xs">
+                        <span class="cmd-or-ctrl">Cmd</span>+M
+                    </dd>
+                </dl>
+
+                <dl class="flex items-center gap-x-2">
+                    <dt class="mr-2">Exit fullscreen mode</dt>
+                    <dd class="ml-auto border rounded font-mono text-gray-500 px-1 shadow-sm text-xs">
+                        Shift+Esc
+                    </dd>
+                </dl>
+
+                <div class="font-semibold mt-4">
+                    Code search shortcuts <span class="font-normal">(when editor has focus)</span>
+                </div>
+
+                <dl class="flex items-center gap-x-2">
+                    <dt class="mr-2">
+                        Start searching
+                    </dt>
+                    <dd class="ml-auto border rounded font-mono text-gray-500 px-1 shadow-sm text-xs">
+                        <span class="cmd-or-ctrl">Cmd</span>+F
+                    </dd>
+                </dl>
+
+                <dl class="flex items-center gap-x-2">
+                    <dt class="mr-2">Find Next</dt>
+                    <dd class="ml-auto border rounded font-mono text-gray-500 px-1 shadow-sm text-xs">
+                        <span class="cmd-or-ctrl">Cmd</span>+G
+                    </dd>
+                </dl>
+
+                <dl class="flex items-center gap-x-2">
+                    <dt class="mr-2">Find Previous</dt>
+                    <dd class="ml-auto border rounded font-mono text-gray-500 px-1 shadow-sm text-xs">
+                        Shift+<span class="cmd-or-ctrl">Cmd</span>+G
+                    </dd>
+                </dl>
+
+                <dl class="flex items-center gap-x-2">
+                    <dt class="mr-2">Replace</dt>
+                    <dd class="ml-auto border rounded font-mono text-gray-500 px-1 shadow-sm text-xs">
+                        Ctrl+R
+                    </dd>
+                </dl>
+
+                <dl class="flex items-center gap-x-2">
+                    <dt class="mr-2">Jump to line</dt>
+                    <dd class="ml-auto border rounded font-mono text-gray-500 px-1 shadow-sm text-xs">
+                        Alt-G
+                    </dd>
+                </dl>
+            }
+        </div>
+    </div>
+</div>

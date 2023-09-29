@@ -1,0 +1,35 @@
+@model IReadOnlyList<PackageVersion>
+
+<table class="table version-history w-full" style="font-size: 14px;">
+    <thead>
+    <tr>
+        <th class="has-text-grey has-text-left">Version</th>
+        <th class="has-text-grey has-text-left">Created</th>
+        <th class="has-text-grey has-text-left">Author</th>
+        <th class="has-text-grey has-text-left">Release Notes</th>
+        <th class="has-text-grey has-text-left">Installs</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var version in Model) {
+        <tr>
+            <td class="has-text-weight-bold pt-2">@version.ToVersionString()</td>
+            <td class="pt-2">@version.Created.ToString("d")</td>
+            <td style="max-width: 100%; white-space: nowrap;">
+                <partial name="Shared/_SmallAvatar" model="@version.Creator" />
+                <span class="ml-1" style="vertical-align: middle">@version.Creator.DisplayName</span>
+            </td>
+            <td class="pt-2">
+                @if (@version.ReleaseNotes is {Length: > 0}) {
+                    <div class="content">
+                        <markdown>@version.ReleaseNotes</markdown>
+                    </div>
+                } else {
+                    <em class="subtle">No release notes for this version.</em>
+                }
+            </td>
+            <td class="pt-2">@version.InstalledSkills.Count</td>
+        </tr>
+    }
+    </tbody>
+</table>

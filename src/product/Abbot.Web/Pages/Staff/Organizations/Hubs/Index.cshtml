@@ -1,0 +1,60 @@
+@* Can't use '{handler?}' here because it conflicts with the View page *@
+@page "/staff/organizations/{id}/hubs"
+@model Serious.Abbot.Pages.Staff.Organizations.Hubs.IndexModel
+
+@{
+    ViewContext.SetPageInfo("Staff", "Staff Hub Tools", "Hub Tools");
+}
+
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">Hubs</h2>
+        @if (Model.Hubs.Any()) {
+            <table class="w-full">
+                <thead>
+                <tr>
+                    <th class="text-left border-b p-3">Name</th>
+                    <th class="text-left border-b p-3">Room</th>
+                    <th class="text-left border-b p-3"></th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var hub in Model.Hubs) {
+                    <tr>
+                        <td class="align-middle p-3">
+                            <a asp-page="View" asp-route-orgId="@Model.Organization.PlatformId" asp-route-id="@hub.Room.PlatformRoomId">
+                                @hub.Name
+                            </a>
+                        </td>
+                        <td class="align-middle p-3">
+                            <a asp-page="../Room" asp-route-orgId="@Model.Organization.PlatformId" asp-route-id="@hub.Room.PlatformRoomId">
+                                #@hub.Room.Name
+                            </a>
+                        </td>
+                        <td>
+                            <form asp-page-handler="Delete" method="post" asp-route-roomId="@hub.Room.PlatformRoomId">
+                                <button type="submit" class="btn btn-danger" data-confirm="WARNING: This will immediately delete the Hub and all data associated with it! This action will be logged and visible to the customer.">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        } else {
+            <blankslate>
+                <div class="text-center text-xl h-12 text-gray-500 mb-2">
+                    <span class="fa-stack small">
+                        <i class="fa-regular fa-inbox fa-stack-1x"></i>
+                        <i class="fa-regular fa-ban fa-stack-2x"></i>
+                    </span>
+                </div>
+
+                <h2 class="text-center text-lg text-gray-700">
+                    There are no Hubs in this organization.
+                </h2>
+            </blankslate>
+        }
+    </round-box>
+</page-body>

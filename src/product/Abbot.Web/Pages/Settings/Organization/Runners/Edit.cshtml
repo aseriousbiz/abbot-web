@@ -1,0 +1,27 @@
+@page "{language}/{handler?}"
+@model Serious.Abbot.Pages.Settings.Organization.Runners.EditPage
+
+@{
+    ViewContext.SetPageInfo("Settings", "Self-Hosted Skill Runners");
+}
+
+<partial name="Settings/Organization/_Header" model="Model.Viewer"/>
+<partial name="Shared/_StatusMessage" model="Model.StatusMessage"/>
+
+<page-body>
+    <round-box>
+        <h2 class="text-3xl font-semibold">
+            Editing @Model.DisplayName Runner Endpoint
+        </h2>
+        <form method="post" class="mt-5 grid gap-2" style="grid-template-columns: max-content 1fr;">
+            <label class="font-semibold" asp-for="Endpoint">Url: </label>
+            <input class="form-input" value="@Model.Endpoint" asp-for="Endpoint">
+            <label class="font-semibold" asp-for="ApiToken">API Token: </label>
+            <input asp-for="ApiToken" value="@Model.ApiToken" type="password">
+            <div class="col-span-2 place-self-start">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="submit" asp-page-handler="Reset" asp-route-language="@Model.Language.ToString().ToLowerInvariant()" class="btn btn-danger" data-confirm="This will reset your @Model.DisplayName runner endpoint to the default hosted runner.">Reset</button>
+            </div>
+        </form>
+    </round-box>
+</page-body>

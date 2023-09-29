@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assembly name="Microsoft.AspNetCore.Mvc.RazorPages">
+  <assembly>
+    <!-- https://github.com/aspnet/Mvc/commit/a8eb5bee7023a2a5d49fcdaea0c25b3416a69211 -->
+    <attribute ctor="M:JetBrains.Annotations.AspMvcAreaMasterLocationFormatAttribute.#ctor(System.String)">
+      <argument>~\Areas\{2}\Pages\{1}\{0}.cshtml</argument>
+    </attribute>
+    <attribute ctor="M:JetBrains.Annotations.AspMvcAreaMasterLocationFormatAttribute.#ctor(System.String)">
+      <argument>~\Areas\{2}\Pages\{0}.cshtml</argument>
+    </attribute>
+    <attribute ctor="M:JetBrains.Annotations.AspMvcAreaMasterLocationFormatAttribute.#ctor(System.String)">
+      <argument>~\Areas\{2}\Pages\Shared\{0}.cshtml</argument>
+    </attribute>
+    <attribute ctor="M:JetBrains.Annotations.AspMvcAreaPartialViewLocationFormatAttribute.#ctor(System.String)">
+      <argument>~\Areas\{2}\Pages\{0}.cshtml</argument>
+    </attribute>
+    <attribute ctor="M:JetBrains.Annotations.AspMvcAreaPartialViewLocationFormatAttribute.#ctor(System.String)">
+      <argument>~\Areas\{2}\Pages\{1}\{0}.cshtml</argument>
+    </attribute>
+    <attribute ctor="M:JetBrains.Annotations.AspMvcAreaPartialViewLocationFormatAttribute.#ctor(System.String)">
+      <argument>~\Areas\{2}\Pages\Shared\{0}.cshtml</argument>
+    </attribute>
+    <attribute ctor="M:JetBrains.Annotations.AspMvcAreaViewLocationFormatAttribute.#ctor(System.String)">
+      <argument>~\Areas\{2}\Pages\{1}\{0}.cshtml</argument>
+    </attribute>
+    <attribute ctor="M:JetBrains.Annotations.AspMvcAreaViewLocationFormatAttribute.#ctor(System.String)">
+      <argument>~\Areas\{2}\Pages\{0}.cshtml</argument>
+    </attribute>
+    <attribute ctor="M:JetBrains.Annotations.AspMvcAreaViewLocationFormatAttribute.#ctor(System.String)">
+      <argument>~\Areas\{2}\Pages\Shared\{0}.cshtml</argument>
+    </attribute>
+    <attribute ctor="M:JetBrains.Annotations.AspMvcMasterLocationFormatAttribute.#ctor(System.String)">
+      <argument>~\Pages\{1}\{0}.cshtml</argument>
+    </attribute>
+    <attribute ctor="M:JetBrains.Annotations.AspMvcMasterLocationFormatAttribute.#ctor(System.String)">
+      <argument>~\Pages\{0}.cshtml</argument>
+    </attribute>
+    <attribute ctor="M:JetBrains.Annotations.AspMvcMasterLocationFormatAttribute.#ctor(System.String)">
+      <argument>~\Pages\Shared\{0}.cshtml</argument>
+    </attribute>
+    <attribute ctor="M:JetBrains.Annotations.AspMvcPartialViewLocationFormatAttribute.#ctor(System.String)">
+      <argument>~\Pages\{0}.cshtml</argument>
+    </attribute>
+    <attribute ctor="M:JetBrains.Annotations.AspMvcPartialViewLocationFormatAttribute.#ctor(System.String)">
+      <argument>~\Pages\{1}\{0}.cshtml</argument>
+    </attribute>
+    <attribute ctor="M:JetBrains.Annotations.AspMvcPartialViewLocationFormatAttribute.#ctor(System.String)">
+      <argument>~\Pages\Shared\{0}.cshtml</argument>
+    </attribute>
+    <attribute ctor="M:JetBrains.Annotations.AspMvcViewLocationFormatAttribute.#ctor(System.String)">
+      <argument>~\Pages\{1}\{0}.cshtml</argument>
+    </attribute>
+    <attribute ctor="M:JetBrains.Annotations.AspMvcViewLocationFormatAttribute.#ctor(System.String)">
+      <argument>~\Pages\{0}.cshtml</argument>
+    </attribute>
+    <attribute ctor="M:JetBrains.Annotations.AspMvcViewLocationFormatAttribute.#ctor(System.String)">
+      <argument>~\Pages\Shared\{0}.cshtml</argument>
+    </attribute>
+  </assembly>
+  <member name="T:Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure.PageModelAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor(JetBrains.Annotations.ImplicitUseKindFlags,JetBrains.Annotations.ImplicitUseTargetFlags)">
+      <argument>InstantiatedWithFixedConstructorSignature</argument>
+      <argument>7</argument> <!--ImplicitUseTargetFlags.WithMembers | ImplicitUseTargetFlags.WithInheritors -->
+    </attribute>
+  </member>
+</assembly>

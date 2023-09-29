@@ -1,0 +1,20 @@
+#!/bin/bash
+set -euo pipefail
+
+# Identify Abbot PID
+abbot_pid=$(ps aux | grep '[d]otnet /app/Abbot.Web.dll' | awk '{print $2}')
+if [ -z $abbot_pid ]; then
+    echo "Fatal: Could not identify Abbot PID. Aborting."
+    exit 1
+fi
+
+# Ensure the '/dumps' directory exists
+# The '/home' directory is persistent between reboots, though we don't have infinite space, so clean up your dumps!
+mkdir -p /home/wwwroot_staff/dumps
+
+# Capture the dump
+dump_name="core_$(date +'%Y%m%dT%H%M%S')"
+/tools/dotnet-dump collect -p $abbot_pid --output "/home/wwwroot_staff/dumps/$dump_name"
+
+echo "Dump captured to /home/wwwroot_staff/dumps/$dump_name"
+echo "Remember to clean up your dumps!"

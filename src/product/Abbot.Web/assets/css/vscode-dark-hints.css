@@ -1,0 +1,89 @@
+:root {
+  --code-selection-background: #245b82;
+  --code-hint-background: #46484A;
+  --code-hint-border: #585858;
+  --code-hint-color: #C0C0C6;
+}
+
+.CodeMirror-hints.vscode-dark {
+  background-color: var(--code-hint-background);
+  border-color: var(--code-hint-border);
+  
+  .CodeMirror-hint-active {
+    background-color: var(--code-selection-background);
+  }
+  
+  .CodeMirror-hint {
+    color: var(--code-hint-color);
+  }
+}
+
+.CodeMirror-hints.vscode-dark .CodeMirror-hint-active {
+  background: var(--code-selection-background) !important;
+  color: var(--code-hint-color) !important;
+}
+
+.mirrorsharp-hint-info-tooltip,
+.mirrorsharp-any-tooltip,
+.CodeMirror-infotip {
+  background-color: var(--code-hint-background) !important;
+  border-color: var(--code-hint-border);
+}
+
+.mirrorsharp-signature-tooltip {
+  font-size: 90%;
+  
+  li.mirrorsharp-signature-selected {
+    background: #332;
+  }
+}
+
+.mirrorsharp-theme, .mirrorsharp-signature-tooltip {
+  color: #d4d4d4;
+  
+  .cm-string {
+    color: #a31515;
+  }
+
+  .cm-keyword,
+  .cm-atom {
+    color: #569cd6;
+  }
+  
+  .cm-punctuation, .cm-text {
+    color: #d4d4d4;
+  }
+  
+  .cm-method,
+  .cm-extensionmethod,
+  .cm-property,
+  .cm-field {
+    color: #ddd6a3;
+  }
+
+  .cm-namespace {
+    color: #add8e6
+  }
+  
+  .cm-punctuation,
+  .cm-interface,
+  .cm-type,
+  .cm-typeparameter,
+  .cm-class,
+  .cm-struct,
+  .cm-enum,
+  .cm-delegate {
+    color: #9cdcfe;
+  }
+
+  .cm-parameter,
+  .cm-def,
+  .cm-variable-3,
+  .cm-number {
+    color: #A9B7C6;
+  }
+
+  .cm-comment {
+    color: #57a64a;
+  }
+}
