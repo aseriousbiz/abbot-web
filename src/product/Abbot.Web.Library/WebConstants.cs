@@ -7,7 +7,7 @@ public static class WebConstants
 {
     public static readonly bool IsBeta = true;
 
-    public const string ASeriousBizSlackId = "T013108BYLS";
+    public const string ASeriousBizSlackId = "TFWSDE3AN";
     public const string FunnyBusinessSlackId = "T01CT0CT415";
     public const string PulumiSlackId = "T4PBPMA8J";
     public const string SupportEmail = "support@ab.bot";
