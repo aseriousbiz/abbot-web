@@ -25,6 +25,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_scripts", "_scripts", "{1B
 		script\server = script\server
 		script\test = script\test
 		script\watch = script\watch
+		script\restore = script\restore
+		script\runner = script\runner
+		script\start-services = script\start-services
+		script\user-secrets = script\user-secrets
+		script\watch-js = script\watch-js
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Abbot.Scripting.Interfaces", "src\scripting\Abbot.Scripting.Interfaces\Abbot.Scripting.Interfaces.csproj", "{DB74CD29-2115-42CF-9352-3B809A32375B}"
