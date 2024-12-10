@@ -575,19 +575,6 @@ public static class EntityExtensions
         subject.IsDefaultEscalationResponder = false;
     }
 
-    static readonly Dictionary<string, HashSet<string>> EmailDomainMap = new()
-    {
-        [WebConstants.PulumiSlackId] = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "pulumi.com" },
-    };
-
-    static bool EmailMatchesOrganizationCanonicalEmailDomain(string? email, Organization organization)
-    {
-        // Ok, this is hacky, but so far only one customer has complained and
-        // we may want to do the ugly fast thing for now and do the right thing later.
-        return !EmailDomainMap.TryGetValue(organization.PlatformId, out var emailDomains)
-               || emailDomains.Contains(email?.RightAfter('@') ?? "");
-    }
-
     /// <summary>
     /// Creates a new Skill instance that's a copy of the supplied skill, but with specified name and code.
     /// This is used by the Bot Console and CLI to run skill code that's in the process of being edited.

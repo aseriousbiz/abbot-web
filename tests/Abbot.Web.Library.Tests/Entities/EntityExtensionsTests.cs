@@ -482,67 +482,7 @@ public class EntityExtensionsTests
             Assert.Equal("https://example.com/avatar.png", user.Avatar);
             Assert.True(member.Active);
         }
-
-        [Theory]
-        [InlineData("T01234567", null, null, null)]
-        [InlineData("T01234567", null, "secret@example.com", "secret@example.com")]
-        [InlineData("T01234567", null, "example@pulumi.com", "example@pulumi.com")]
-        [InlineData("T01234567", "user@example.com", null, "user@example.com")]
-        [InlineData("T01234567", "user@example.com", "secret@example.com", "secret@example.com")]
-        [InlineData("T01234567", "user@example.com", "example@pulumi.com", "example@pulumi.com")]
-        [InlineData("T4PBPMA8J", null, null, null)]
-        [InlineData("T4PBPMA8J", null, "secret@example.com", null)]
-        [InlineData("T4PBPMA8J", null, "example@pulumi.com", "example@pulumi.com")]
-        [InlineData("T4PBPMA8J", null, "example@PuLuMi.cOm", "example@PuLuMi.cOm")]
-        [InlineData("T4PBPMA8J", "user@example.com", null, null)]
-        [InlineData("T4PBPMA8J", "user@example.com", "secret@example.com", null)]
-        [InlineData("T4PBPMA8J", "user@example.com", "example@pulumi.com", "example@pulumi.com")]
-        [InlineData("T4PBPMA8J", "user@example.com", "example@PuLuMi.cOm", "example@PuLuMi.cOm")]
-        [InlineData("T4PBPMA8J", "user@pulumi.com", null, "user@pulumi.com")]
-        [InlineData("T4PBPMA8J", "user@pulumi.com", "secret@example.com", null)]
-        [InlineData("T4PBPMA8J", "user@pulumi.com", "example@pulumi.com", "example@pulumi.com")]
-        [InlineData("T4PBPMA8J", "user@pulumi.com", "example@PuLuMi.cOm", "example@PuLuMi.cOm")]
-        public void ClearsEmailIfUserEmailIsNotCanonicalDomain(string platformId, string? userEmail, string? eventEmail, string expectedEmail)
-        {
-            var user = new User
-            {
-                DisplayName = "some-user",
-                PlatformUserId = "U0123456789",
-                Email = userEmail,
-            };
-            var member = new Member
-            {
-                User = user,
-                Active = true,
-                Organization = new Organization
-                {
-                    PlatformId = platformId,
-                    PlatformType = PlatformType.Slack,
-                    PlanType = PlanType.Free
-                },
-            };
-            var userEventPayload = new UserEventPayload(
-                "U0123456789",
-                platformId,
-                "new-real-name",
-                "new-display-name",
-                eventEmail,
-                "America/Los_Angeles",
-                "https://example.com/avatar.png",
-                IsGuest: false);
-
-            member.UpdateMemberInstanceFromUserEventPayload(userEventPayload);
-
-            Assert.Equal("new-display-name", member.DisplayName);
-            Assert.Equal("America/Los_Angeles", member.TimeZoneId);
-            Assert.Equal("new-display-name", user.DisplayName);
-            Assert.Equal("new-real-name", user.RealName);
-            Assert.Equal(expectedEmail, user.Email);
-            Assert.False(member.IsGuest);
-            Assert.Equal("https://example.com/avatar.png", user.Avatar);
-            Assert.True(member.Active);
-        }
-
+        
         [Fact]
         public void SetsActiveToFalseWhenDeleted()
         {

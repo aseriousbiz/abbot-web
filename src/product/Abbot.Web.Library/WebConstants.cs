@@ -9,7 +9,6 @@ public static class WebConstants
 
     public const string ASeriousBizSlackId = "TFWSDE3AN";
     public const string FunnyBusinessSlackId = "T01CT0CT415";
-    public const string PulumiSlackId = "T4PBPMA8J";
     public const string SupportEmail = "support@ab.bot";
     public const string SlackConnectInvitee = "paul@aseriousbusiness.com";
     public const string DefaultTimezoneId = "America/Los_Angeles";
