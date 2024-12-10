@@ -1,11 +1,13 @@
 using System.Globalization;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OpenAI_API.Chat;
 using Serious.Abbot.AI;
 using Serious.Abbot.AI.Commands;
 using Serious.Abbot.AI.Responder;
 using Serious.Abbot.AI.Templating;
+using Serious.Abbot.Configuration;
 using Serious.Abbot.Entities;
 using Serious.Abbot.Eventing.Messages;
 using Serious.Abbot.Infrastructure;
@@ -24,6 +26,7 @@ public class MagicResponderConsumer : IConsumer<ReceivedChatMessage>
     readonly PromptCompiler _promptCompiler;
     readonly Reactor _reactor;
     readonly IClock _clock;
+    readonly AbbotOptions _abbotOptions;
     readonly ILogger<MagicResponderConsumer> _logger;
 
     static readonly string[] FeatureList =
@@ -50,6 +53,7 @@ public class MagicResponderConsumer : IConsumer<ReceivedChatMessage>
         CommandRegistry registry,
         Reactor reactor,
         IClock clock,
+        IOptions<AbbotOptions> abbotOptions,
         ILogger<MagicResponderConsumer> logger)
     {
         _userRepository = userRepository;
@@ -59,6 +63,7 @@ public class MagicResponderConsumer : IConsumer<ReceivedChatMessage>
         _promptCompiler = promptCompiler;
         _reactor = reactor;
         _clock = clock;
+        _abbotOptions = abbotOptions.Value;
         _logger = logger;
 
         // Get allowed commands
@@ -95,7 +100,7 @@ public class MagicResponderConsumer : IConsumer<ReceivedChatMessage>
         // Check if we should be in debug mode
         var debugMode = false;
         var chatMessage = context.Message.ChatMessage;
-        if (sender.IsStaff() && organization.IsStaffOrganization() && chatMessage.Text.EndsWith(" [DEBUG]", StringComparison.OrdinalIgnoreCase))
+        if (sender.IsStaff() && organization.IsStaffOrganization(_abbotOptions.StaffOrganizationId.Require()) && chatMessage.Text.EndsWith(" [DEBUG]", StringComparison.OrdinalIgnoreCase))
         {
             // Remove the "[DEBUG]" token
             chatMessage = chatMessage with

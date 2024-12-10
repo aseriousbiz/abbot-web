@@ -38,7 +38,7 @@ public class OrganizationRepository : IOrganizationRepository
     readonly IAuditLog _auditLog;
     readonly IPublishEndpoint _publishEndpoint;
     readonly IAnalyticsClient _analyticsClient;
-    readonly IOptions<AbbotOptions> _options;
+    readonly AbbotOptions _abbotOptions;
 
     public OrganizationRepository(
         AbbotContext db,
@@ -47,7 +47,7 @@ public class OrganizationRepository : IOrganizationRepository
         IAuditLog auditLog,
         IPublishEndpoint publishEndpoint,
         IAnalyticsClient analyticsClient,
-        IOptions<AbbotOptions> options)
+        IOptions<AbbotOptions> abbotOptions)
     {
         _db = db;
         _userRepository = userRepository;
@@ -55,7 +55,7 @@ public class OrganizationRepository : IOrganizationRepository
         _auditLog = auditLog;
         _publishEndpoint = publishEndpoint;
         _analyticsClient = analyticsClient;
-        _options = options;
+        _abbotOptions = abbotOptions.Value;
     }
 
     public async Task<Organization?> GetAsync(int id) => await GetAsync(new Id<Organization>(id));
@@ -186,7 +186,7 @@ public class OrganizationRepository : IOrganizationRepository
 
             if (organization.PlanType is PlanType.None)
             {
-                organization.PlanType = _options.Value.DefaultPlan;
+                organization.PlanType = _abbotOptions.DefaultPlan;
             }
 
             _db.Organizations.Update(organization);
@@ -309,7 +309,7 @@ public class OrganizationRepository : IOrganizationRepository
         {
             organization = await CreateOrganizationAsync(
                 installEvent.PlatformId,
-                _options.Value.DefaultPlan, // When we're directly installed, they get the default plan.
+                _abbotOptions.DefaultPlan, // When we're directly installed, they get the default plan.
                 installEvent.Name,
                 installEvent.Domain,
                 installEvent.Slug,
@@ -846,7 +846,7 @@ public class OrganizationRepository : IOrganizationRepository
 
     public async Task AssociateSeriousCustomerAsync(Organization organization, Customer customer, Member actor)
     {
-        if (customer.Organization.PlatformId != WebConstants.StaffOrganizationSlackId)
+        if (customer.Organization.PlatformId != _abbotOptions.StaffOrganizationId)
         {
             throw new UnreachableException(
                 "Organizations can only be associated with a Customer in the ASeriousBiz Slack workspace.");

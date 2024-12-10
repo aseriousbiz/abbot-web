@@ -1,14 +1,13 @@
 using System.Security.Claims;
-using MassTransit;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Segment;
 using Serious.Abbot.Clients;
+using Serious.Abbot.Configuration;
 using Serious.Abbot.Entities;
-using Serious.Abbot.Eventing.Messages;
 using Serious.Abbot.Extensions;
 using Serious.Abbot.Infrastructure.Telemetry;
-using Serious.Abbot.Models;
 using Serious.Abbot.Repositories;
 using Serious.Abbot.Security;
 using Serious.Logging;
@@ -24,7 +23,7 @@ public class AuthenticationHandler : IAuthenticationHandler
     readonly IBackgroundSlackClient _backgroundSlackClient;
     readonly IAnalyticsClient _analyticsClient;
     readonly IRoleManager _roleManager;
-    readonly IPublishEndpoint _publishEndpoint;
+    readonly AbbotOptions _abbotOptions;
     readonly IClock _clock;
 
     public AuthenticationHandler(
@@ -33,7 +32,7 @@ public class AuthenticationHandler : IAuthenticationHandler
         IBackgroundSlackClient backgroundSlackClient,
         IAnalyticsClient analyticsClient,
         IRoleManager roleManager,
-        IPublishEndpoint publishEndpoint,
+        IOptions<AbbotOptions> abbotOptions,
         IClock clock)
     {
         _organizationRepository = organizationRepository;
@@ -41,7 +40,7 @@ public class AuthenticationHandler : IAuthenticationHandler
         _backgroundSlackClient = backgroundSlackClient;
         _analyticsClient = analyticsClient;
         _roleManager = roleManager;
-        _publishEndpoint = publishEndpoint;
+        _abbotOptions = abbotOptions.Value;
         _clock = clock;
     }
 
@@ -98,7 +97,7 @@ public class AuthenticationHandler : IAuthenticationHandler
 
     async Task<bool> ShouldAddUserToStaff(Organization organization)
     {
-        return organization.PlatformId == WebConstants.StaffOrganizationSlackId
+        return organization.PlatformId == _abbotOptions.StaffOrganizationId
                && organization.PlatformType == PlatformType.Slack
                && !await _organizationRepository.ContainsAtLeastOneUserInRoleAsync(organization, Roles.Staff);
     }

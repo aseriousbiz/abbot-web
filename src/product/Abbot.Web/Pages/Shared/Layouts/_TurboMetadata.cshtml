@@ -3,6 +3,7 @@
 @using Serious.Abbot.Live
 @inject IHostEnvironment HostEnvironment
 @inject IOptions<LiveOptions> LiveOptions
+@inject IOptions<AbbotOptions> AbbotOptions
 
 @* Metadata that must always be rendered, even when rendering a Turbo Frame response (not required for Turbo Stream responses) *@
 @* When/if we start optimizing server responses to return only what's changed when a Turbo Frame is used, we need to keep these in the <head> of the response *@
@@ -19,7 +20,7 @@
 <staff-only>
     <meta name="abbot-staff-mode" content="true">
 </staff-only>
-@if (member?.Organization.IsStaffOrganization() is true) {
+@if (member?.Organization.IsStaffOrganization(AbbotOptions.Value.StaffOrganizationId.Require()) is true) {
     <meta name="abbot-organization-is-serious" content="true">
 }
 <meta name="abbot-organization-id" content="@member?.OrganizationId">

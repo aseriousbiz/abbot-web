@@ -3,7 +3,9 @@ using System.Diagnostics;
 using System.Linq;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Segment;
+using Serious.Abbot.Configuration;
 using Serious.Abbot.Entities;
 using Serious.Abbot.Infrastructure.Telemetry;
 using Serious.Abbot.Messaging;
@@ -22,11 +24,17 @@ public class AuditLog : IAuditLog
     readonly AbbotContext _db;
     readonly IAnalyticsClient _analyticsClient;
     readonly IClock _clock;
+    readonly AbbotOptions _abbotOptions;
 
-    public AuditLog(AbbotContext db, IAnalyticsClient analyticsClient, IClock clock)
+    public AuditLog(
+        AbbotContext db,
+        IAnalyticsClient analyticsClient,
+        IOptions<AbbotOptions> abbotOptions,
+        IClock clock)
     {
         _db = db;
         _analyticsClient = analyticsClient;
+        _abbotOptions = abbotOptions.Value;
         _clock = clock;
     }
 
@@ -403,8 +411,8 @@ public class AuditLog : IAuditLog
         };
 
         var seriousOrganization =
-            await _db.Organizations.SingleOrDefaultAsync(o => o.PlatformId == WebConstants.StaffOrganizationSlackId)
-            ?? throw new InvalidOperationException($"The serious business organization {WebConstants.StaffOrganizationSlackId} doesn't exist");
+            await _db.Organizations.SingleOrDefaultAsync(o => o.PlatformId == _abbotOptions.StaffOrganizationId)
+            ?? throw new InvalidOperationException($"The serious business organization {_abbotOptions.StaffOrganizationId} doesn't exist");
         var organization = await _db.Organizations.SingleOrDefaultAsync(o => o.PlatformId == slackEvent.TeamId)
                            ?? seriousOrganization;
 

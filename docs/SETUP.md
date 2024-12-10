@@ -192,6 +192,7 @@ Slack_AppId=
 Slack_ClientId=
 Slack_ClientSecret=
 Slack_SigningSecret=
+Slack_OrganizationId= # Your Slack Organization Id
 # Optional
 GitHub_AppId=
 GitHub_AppName=
@@ -210,6 +211,7 @@ script/user-secrets set BotName $AbbotBotName
 script/user-secrets set Abbot:PublicHostName $PublicHostName
 script/user-secrets set Abbot:PublicIngestionHostName $PublicIngestionHostName
 script/user-secrets set Abbot:PublicTriggerHostName $PublicTriggerHostName
+script/user-secrets set Abbot:StaffOrganizationId $SlackOrganizationId
 script/user-secrets set MicrosoftAppId $MicrosoftAppId
 script/user-secrets set MicrosoftAppPassword $MicrosoftAppPassword
 script/user-secrets set Auth0:Domain $Auth0_Domain

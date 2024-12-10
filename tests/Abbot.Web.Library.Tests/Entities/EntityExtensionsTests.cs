@@ -482,7 +482,7 @@ public class EntityExtensionsTests
             Assert.Equal("https://example.com/avatar.png", user.Avatar);
             Assert.True(member.Active);
         }
-        
+
         [Fact]
         public void SetsActiveToFalseWhenDeleted()
         {

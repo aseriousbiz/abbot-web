@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Microsoft.Extensions.Options;
 using NetTopologySuite.Geometries;
+using Serious.Abbot.Configuration;
 using Serious.Abbot.Entities;
 using Serious.Abbot.Infrastructure;
 using Serious.Abbot.Messaging;
@@ -21,6 +23,7 @@ public sealed class WhoSkill : ISkill
     readonly IUserRepository _userRepository;
     readonly IGeocodeService _geocodeService;
     readonly IDefaultResponderService _defaultResponderService;
+    readonly AbbotOptions _abbotOptions;
     readonly IClock _clock;
 
     public WhoSkill(
@@ -30,6 +33,7 @@ public sealed class WhoSkill : ISkill
         IUserRepository userRepository,
         IGeocodeService geocodeService,
         IDefaultResponderService defaultResponderService,
+        IOptions<AbbotOptions> abbotOptions,
         IClock clock)
     {
         _memberFactRepository = memberFactRepository;
@@ -38,6 +42,7 @@ public sealed class WhoSkill : ISkill
         _userRepository = userRepository;
         _geocodeService = geocodeService;
         _defaultResponderService = defaultResponderService;
+        _abbotOptions = abbotOptions.Value;
         _clock = clock;
     }
 
@@ -134,7 +139,7 @@ public sealed class WhoSkill : ISkill
         if (foundItem is not null)
         {
             // EASTER EGG FOR US.
-            var response = messageContext.Organization.IsStaffOrganization()
+            var response = messageContext.Organization.IsStaffOrganization(_abbotOptions.StaffOrganizationId.Require())
                 ? "https://media.giphy.com/media/s3tpyHuSSr98A/giphy.gif"
                 : "I know.";
             await messageContext.SendActivityAsync(response);

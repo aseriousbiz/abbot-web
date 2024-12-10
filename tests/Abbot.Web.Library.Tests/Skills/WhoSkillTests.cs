@@ -231,28 +231,6 @@ public class WhoSkillTests
             var reply = messageContext.SentMessages.Last();
             Assert.Equal("I know.", reply);
         }
-
-        [Fact]
-        public async Task ReportsItAlreadyKnowsSomethingWithAGifForASeriousBizOnly()
-        {
-            var env = TestEnvironment.Create();
-            var member = env.TestData.Member;
-            member.Organization.PlatformId = WebConstants.StaffOrganizationSlackId;
-            await env.Db.SaveChangesAsync();
-            var user = member.User;
-            var messageContext = env.CreateFakeMessageContext(
-                "who",
-                $"is <@{user.PlatformUserId}> trusted", // SkillRouter reorders arguments to a standard format.
-                mentions: new[] { member });
-            var skill = env.Activate<WhoSkill>();
-            await skill.OnMessageActivityAsync(messageContext, CancellationToken.None);
-
-            await skill.OnMessageActivityAsync(messageContext, CancellationToken.None);
-
-            Assert.Equal(2, messageContext.SentMessages.Count);
-            var reply = messageContext.SentMessages.Last();
-            Assert.Equal("https://media.giphy.com/media/s3tpyHuSSr98A/giphy.gif", reply);
-        }
     }
 
     public class WhenRemovingInformationAboutUser

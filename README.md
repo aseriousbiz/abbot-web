@@ -164,6 +164,7 @@ Abbot is broken into several libraries.
 * `Serious.Razor` [README](src/product/Serious.Razor/README.md)
 [* `Serious.Slack.Messages` Types that represent Slack messages as well as a [Refit](https://github.com/reactiveui/refit) based Slack API client. This can be shared between Abbot.Functions and Abbot.Web.
 ]()
+
 ## Docs
 
 Find [developer documentation in the `docs/` folder](docs/).

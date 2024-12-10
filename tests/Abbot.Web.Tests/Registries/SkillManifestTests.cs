@@ -1,4 +1,5 @@
 using Abbot.Common.TestHelpers;
+using Serious.Abbot.Configuration;
 using Serious.Abbot.FeatureManagement;
 using Serious.Abbot.Messaging;
 using Serious.Abbot.Metadata;
@@ -22,7 +23,7 @@ public class SkillManifestTests
             await env.CreateListAsync("deepthought");
             await env.CreateAliasAsync("deep", "userskill1", string.Empty);
             env.BuiltinSkillRegistry.AddSkills(
-                new PingSkill(),
+                new PingSkill(new FakeOptions<AbbotOptions>(new AbbotOptions { StaffOrganizationId = "staff" })),
                 new EchoSkill(),
                 new FailSkill() /* Hidden */);
             var manifest = env.Activate<SkillManifest>();
@@ -50,7 +51,7 @@ public class SkillManifestTests
             organization.PlanType = planType;
             await env.Db.SaveChangesAsync();
             env.BuiltinSkillRegistry.AddSkills(
-                new PingSkill(),
+                new PingSkill(new FakeOptions<AbbotOptions>(new AbbotOptions { StaffOrganizationId = "staff" })),
                 new PlanFeatureTestSkill(),
                 new EchoSkill());
             var actor = new FakeFeatureActor("USER", "GROUP1", "GROUP2");
@@ -75,7 +76,7 @@ public class SkillManifestTests
             var env = TestEnvironment.Create();
             var organization = env.TestData.Organization;
             env.BuiltinSkillRegistry.AddSkills(
-                new PingSkill(),
+                new PingSkill(new FakeOptions<AbbotOptions>(new AbbotOptions { StaffOrganizationId = "staff" })),
                 new FeatureFlagTestSkill(),
                 new EchoSkill());
             var actor = new FakeFeatureActor("USER", "GROUP1", "GROUP2");
@@ -118,7 +119,7 @@ public class SkillManifestTests
             var env = TestEnvironment.Create();
             var organization = env.TestData.Organization;
             env.BuiltinSkillRegistry.AddSkills(
-                new PingSkill(),
+                new PingSkill(new FakeOptions<AbbotOptions>(new AbbotOptions { StaffOrganizationId = "staff" })),
                 new EchoSkill());
             await env.CreateSkillAsync("userskill1");
             await env.CreateSkillAsync("userskill2");
@@ -145,7 +146,7 @@ public class SkillManifestTests
             await env.CreateAliasAsync("userskill", "userskill1", string.Empty);
             await env.CreateAliasAsync("alias1", "ping", string.Empty);
             env.BuiltinSkillRegistry.AddSkills(
-                new PingSkill(),
+                new PingSkill(new FakeOptions<AbbotOptions>(new AbbotOptions { StaffOrganizationId = "staff" })),
                 env.Activate<RemoteSkillCallSkill>(),
                 env.Activate<ListSkill>());
             var manifest = env.Activate<SkillManifest>();
@@ -178,7 +179,7 @@ public class SkillManifestTests
         {
             var env = TestEnvironment.Create();
             var organization = env.TestData.Organization;
-            env.BuiltinSkillRegistry.AddSkill(new PingSkill());
+            env.BuiltinSkillRegistry.AddSkill(new PingSkill(new FakeOptions<AbbotOptions>(new AbbotOptions { StaffOrganizationId = "staff" })));
             await env.CreateAliasAsync("pong", "ping", "return", description: "Pongs the ping");
             var manifest = env.Activate<SkillManifest>();
 

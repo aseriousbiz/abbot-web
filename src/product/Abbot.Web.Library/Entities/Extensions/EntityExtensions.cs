@@ -181,12 +181,11 @@ public static class EntityExtensions
     /// If the organization is one of ours, this returns true.
     /// </summary>
     /// <param name="organization">The organization.</param>
+    /// <param name="staffOrganizationId">The staff organization id.</param>
     /// <returns></returns>
-    public static bool IsStaffOrganization(this Organization organization)
+    public static bool IsStaffOrganization(this Organization organization, string staffOrganizationId)
     {
-        return organization.PlatformId
-            is WebConstants.StaffOrganizationSlackId
-            or WebConstants.FunnyBusinessSlackId;
+        return string.Equals(organization.PlatformId, staffOrganizationId, StringComparison.Ordinal);
     }
 
     /// <summary>

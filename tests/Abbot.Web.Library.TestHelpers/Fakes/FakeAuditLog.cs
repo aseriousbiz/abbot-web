@@ -1,13 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Abbot.Common.TestHelpers;
 using Segment;
+using Serious.Abbot.Configuration;
 using Serious.Abbot.Entities;
 using Serious.Abbot.Telemetry;
 using Serious.Collections;
-using Xunit;
 
 namespace Serious.TestHelpers
 {
@@ -22,7 +18,7 @@ namespace Serious.TestHelpers
             IAnalyticsClient analyticsClient,
             IClock clock,
             CommonTestData? testData = null)
-            : base(db, analyticsClient, clock)
+            : base(db, analyticsClient, new FakeOptions<AbbotOptions>(new AbbotOptions { StaffOrganizationId = "blah" }), clock)
         {
             _auditLogReader = new AuditLogReader(db);
             _clock = clock.Require<TimeTravelClock>();

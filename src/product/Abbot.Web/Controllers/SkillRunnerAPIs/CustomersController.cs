@@ -1,6 +1,8 @@
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Serious.Abbot.Api;
+using Serious.Abbot.Configuration;
 using Serious.Abbot.Entities;
 using Serious.Abbot.Repositories;
 
@@ -11,15 +13,18 @@ public class CustomersController : SkillRunnerApiControllerBase
     readonly CustomerApiService _customerApiService;
     readonly InsightsApiService _insightsApiService;
     readonly IOrganizationRepository _organizationRepository;
+    readonly AbbotOptions _abbotOptions;
 
     public CustomersController(
         CustomerApiService customerApiService,
         InsightsApiService insightsApiService,
-        IOrganizationRepository organizationRepository)
+        IOrganizationRepository organizationRepository,
+        IOptions<AbbotOptions> abbotOptions)
     {
         _customerApiService = customerApiService;
         _insightsApiService = insightsApiService;
         _organizationRepository = organizationRepository;
+        _abbotOptions = abbotOptions.Value;
     }
 
     [HttpGet("customers")]
@@ -106,7 +111,7 @@ public class CustomersController : SkillRunnerApiControllerBase
 
     async Task<(RoomSelector?, Member)> GetRoomSelectorAndActor(int customerId)
     {
-        if (!Member.Organization.IsStaffOrganization())
+        if (!Member.Organization.IsStaffOrganization(_abbotOptions.StaffOrganizationId.Require()))
         {
             // Our customers can use this API to get their own stats for their own customers.
             return (new CustomerRoomSelector(new Id<Customer>(customerId)), Member);

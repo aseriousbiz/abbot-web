@@ -39,7 +39,7 @@ public class InternalCustomerManagementConsumer : IConsumer<OrganizationActivate
     readonly CustomerRepository _customerRepository;
     readonly IMetadataRepository _metadataRepository;
     readonly IOrganizationRepository _organizationRepository;
-    readonly IOptions<AbbotOptions> _abbotOptions;
+    readonly AbbotOptions _abbotOptions;
     readonly PlaybookDispatcher _playbookDispatcher;
     readonly ILogger<InternalCustomerManagementConsumer> _logger;
 
@@ -54,7 +54,7 @@ public class InternalCustomerManagementConsumer : IConsumer<OrganizationActivate
         _customerRepository = customerRepository;
         _metadataRepository = metadataRepository;
         _organizationRepository = organizationRepository;
-        _abbotOptions = abbotOptions;
+        _abbotOptions = abbotOptions.Value;
         _playbookDispatcher = playbookDispatcher;
         _logger = logger;
     }
@@ -79,17 +79,17 @@ public class InternalCustomerManagementConsumer : IConsumer<OrganizationActivate
 
     async Task UpdateOrganizationCustomerAsync(ConsumeContext context, Organization subject)
     {
-        if (subject.IsStaffOrganization())
+        if (subject.IsStaffOrganization(_abbotOptions.StaffOrganizationId.Require()))
         {
             // If the subject org is one of our orgs, don't do anything.
             // We don't want to spam ourselves with updates to our own org and test orgs.
             return;
         }
 
-        var seriousBiz = await _organizationRepository.GetAsync(WebConstants.StaffOrganizationSlackId);
+        var seriousBiz = await _organizationRepository.GetAsync(_abbotOptions.StaffOrganizationId.Require());
         if (seriousBiz is null)
         {
-            _logger.CannotFindSeriousBiz(WebConstants.StaffOrganizationSlackId);
+            _logger.CannotFindSeriousBiz(_abbotOptions.StaffOrganizationId.Require());
             return;
         }
 

@@ -1,9 +1,6 @@
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using Serious.Abbot.Configuration;
 using Serious.Abbot.Skills;
 using Serious.TestHelpers;
-using Xunit;
 
 public class PingSkillTests
 {
@@ -12,7 +9,7 @@ public class PingSkillTests
         [Fact]
         public async Task ReturnsPong()
         {
-            var skill = new PingSkill();
+            var skill = new PingSkill(new FakeOptions<AbbotOptions>(new AbbotOptions { StaffOrganizationId = "staff" }));
             var message = FakeMessageContext.Create("ping", "");
 
             await skill.OnMessageActivityAsync(message, CancellationToken.None);

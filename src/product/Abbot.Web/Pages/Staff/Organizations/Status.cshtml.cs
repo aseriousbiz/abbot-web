@@ -1,16 +1,14 @@
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
-using Microsoft.FeatureManagement;
+using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement.FeatureFilters;
+using Serious.Abbot.Configuration;
 using Serious.Abbot.Entities;
 using Serious.Abbot.FeatureManagement;
 using Serious.Abbot.Integrations.HubSpot;
 using Serious.Abbot.Integrations.Zendesk;
 using Serious.Abbot.Repositories;
-using Serious.Abbot.Scripting;
 using Serious.Abbot.Telemetry;
 using Serious.AspNetCore;
 using Serious.Slack;
@@ -24,6 +22,7 @@ public class StatusPage : OrganizationDetailPage
     readonly ISettingsManager _settingsManager;
     readonly IHostEnvironment _hostEnvironment;
     readonly FeatureService _featureService;
+    readonly AbbotOptions _abbotOptions;
 
     public DomId SettingsListDomId { get; } = new("settings-list");
 
@@ -34,6 +33,7 @@ public class StatusPage : OrganizationDetailPage
         ISettingsManager settingsManager,
         IHostEnvironment hostEnvironment,
         FeatureService featureService,
+        IOptions<AbbotOptions> abbotOptions,
         IAuditLog auditLog)
         : base(db, auditLog)
     {
@@ -42,6 +42,7 @@ public class StatusPage : OrganizationDetailPage
         _settingsManager = settingsManager;
         _hostEnvironment = hostEnvironment;
         _featureService = featureService;
+        _abbotOptions = abbotOptions.Value;
     }
 
     public IReadOnlyList<FieldInfo> Fields { get; private set; } = Array.Empty<FieldInfo>();
@@ -55,7 +56,7 @@ public class StatusPage : OrganizationDetailPage
 
     public ZendeskSettings? ZendeskSettings { get; private set; }
 
-    public bool ShowApiTokens => _hostEnvironment.IsDevelopment() && Request.IsLocal() || Organization.IsStaffOrganization();
+    public bool ShowApiTokens => _hostEnvironment.IsDevelopment() && Request.IsLocal() || Organization.IsStaffOrganization(_abbotOptions.StaffOrganizationId.Require());
 
     public TargetingContext? FeatureContext { get; private set; }
 
