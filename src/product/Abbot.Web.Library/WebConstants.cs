@@ -7,13 +7,13 @@ public static class WebConstants
 {
     public static readonly bool IsBeta = true;
 
-    public const string ASeriousBizSlackId = "TFWSDE3AN";
+    public const string StaffOrganizationSlackId = "TFWSDE3AN";
     public const string FunnyBusinessSlackId = "T01CT0CT415";
     public const string SupportEmail = "support@ab.bot";
     public const string SlackConnectInvitee = "paul@aseriousbusiness.com";
     public const string DefaultTimezoneId = "America/Los_Angeles";
 
-    public static readonly IEnumerable<string> OurSlackTeamIds = new[] { ASeriousBizSlackId, FunnyBusinessSlackId };
+    public static readonly IEnumerable<string> OurSlackTeamIds = new[] { StaffOrganizationSlackId, FunnyBusinessSlackId };
 
     public const string MigrationsAssembly = "Abbot.Web";
 

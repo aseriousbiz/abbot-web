@@ -846,7 +846,7 @@ public class OrganizationRepository : IOrganizationRepository
 
     public async Task AssociateSeriousCustomerAsync(Organization organization, Customer customer, Member actor)
     {
-        if (customer.Organization.PlatformId != WebConstants.ASeriousBizSlackId)
+        if (customer.Organization.PlatformId != WebConstants.StaffOrganizationSlackId)
         {
             throw new UnreachableException(
                 "Organizations can only be associated with a Customer in the ASeriousBiz Slack workspace.");

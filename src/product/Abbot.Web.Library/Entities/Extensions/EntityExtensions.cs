@@ -185,7 +185,7 @@ public static class EntityExtensions
     public static bool IsSerious(this Organization organization)
     {
         return organization.PlatformId
-            is WebConstants.ASeriousBizSlackId
+            is WebConstants.StaffOrganizationSlackId
             or WebConstants.FunnyBusinessSlackId;
     }
 
@@ -553,7 +553,6 @@ public static class EntityExtensions
         {
             var email = userEvent.Email ?? user.Email;
             user.Email = member.Organization.PlanType is not PlanType.None
-                && EmailMatchesOrganizationCanonicalEmailDomain(email, member.Organization)
                 && !userEvent.IsGuest
                     ? email
                     : null;

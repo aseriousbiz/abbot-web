@@ -403,8 +403,8 @@ public class AuditLog : IAuditLog
         };
 
         var seriousOrganization =
-            await _db.Organizations.SingleOrDefaultAsync(o => o.PlatformId == WebConstants.ASeriousBizSlackId)
-            ?? throw new InvalidOperationException($"The serious business organization {WebConstants.ASeriousBizSlackId} doesn't exist");
+            await _db.Organizations.SingleOrDefaultAsync(o => o.PlatformId == WebConstants.StaffOrganizationSlackId)
+            ?? throw new InvalidOperationException($"The serious business organization {WebConstants.StaffOrganizationSlackId} doesn't exist");
         var organization = await _db.Organizations.SingleOrDefaultAsync(o => o.PlatformId == slackEvent.TeamId)
                            ?? seriousOrganization;
 

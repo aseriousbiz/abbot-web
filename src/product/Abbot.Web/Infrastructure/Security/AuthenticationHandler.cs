@@ -98,7 +98,7 @@ public class AuthenticationHandler : IAuthenticationHandler
 
     async Task<bool> ShouldAddUserToStaff(Organization organization)
     {
-        return organization.PlatformId == WebConstants.ASeriousBizSlackId
+        return organization.PlatformId == WebConstants.StaffOrganizationSlackId
                && organization.PlatformType == PlatformType.Slack
                && !await _organizationRepository.ContainsAtLeastOneUserInRoleAsync(organization, Roles.Staff);
     }

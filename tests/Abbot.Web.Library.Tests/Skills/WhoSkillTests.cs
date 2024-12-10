@@ -237,7 +237,7 @@ public class WhoSkillTests
         {
             var env = TestEnvironment.Create();
             var member = env.TestData.Member;
-            member.Organization.PlatformId = WebConstants.ASeriousBizSlackId;
+            member.Organization.PlatformId = WebConstants.StaffOrganizationSlackId;
             await env.Db.SaveChangesAsync();
             var user = member.User;
             var messageContext = env.CreateFakeMessageContext(

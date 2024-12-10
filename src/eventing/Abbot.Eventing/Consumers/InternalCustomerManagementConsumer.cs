@@ -86,10 +86,10 @@ public class InternalCustomerManagementConsumer : IConsumer<OrganizationActivate
             return;
         }
 
-        var seriousBiz = await _organizationRepository.GetAsync(WebConstants.ASeriousBizSlackId);
+        var seriousBiz = await _organizationRepository.GetAsync(WebConstants.StaffOrganizationSlackId);
         if (seriousBiz is null)
         {
-            _logger.CannotFindSeriousBiz(WebConstants.ASeriousBizSlackId);
+            _logger.CannotFindSeriousBiz(WebConstants.StaffOrganizationSlackId);
             return;
         }
 
