@@ -25,7 +25,7 @@ public class DisablePage : OrganizationDetailPage
     public async Task<IActionResult> OnPostAsync(string id)
     {
         var organization = await InitializeDataAsync(id);
-        Expect.True(!organization.IsSerious());
+        Expect.True(!organization.IsStaffOrganization());
         organization.Enabled = false;
         await Db.SaveChangesAsync();
 

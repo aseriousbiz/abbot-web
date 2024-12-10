@@ -134,7 +134,7 @@ public sealed class WhoSkill : ISkill
         if (foundItem is not null)
         {
             // EASTER EGG FOR US.
-            var response = messageContext.Organization.IsSerious()
+            var response = messageContext.Organization.IsStaffOrganization()
                 ? "https://media.giphy.com/media/s3tpyHuSSr98A/giphy.gif"
                 : "I know.";
             await messageContext.SendActivityAsync(response);

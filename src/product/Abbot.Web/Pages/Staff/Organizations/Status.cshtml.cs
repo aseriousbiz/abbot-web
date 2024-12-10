@@ -55,7 +55,7 @@ public class StatusPage : OrganizationDetailPage
 
     public ZendeskSettings? ZendeskSettings { get; private set; }
 
-    public bool ShowApiTokens => _hostEnvironment.IsDevelopment() && Request.IsLocal() || Organization.IsSerious();
+    public bool ShowApiTokens => _hostEnvironment.IsDevelopment() && Request.IsLocal() || Organization.IsStaffOrganization();
 
     public TargetingContext? FeatureContext { get; private set; }
 

@@ -106,7 +106,7 @@ public class CustomersController : SkillRunnerApiControllerBase
 
     async Task<(RoomSelector?, Member)> GetRoomSelectorAndActor(int customerId)
     {
-        if (!Member.Organization.IsSerious())
+        if (!Member.Organization.IsStaffOrganization())
         {
             // Our customers can use this API to get their own stats for their own customers.
             return (new CustomerRoomSelector(new Id<Customer>(customerId)), Member);

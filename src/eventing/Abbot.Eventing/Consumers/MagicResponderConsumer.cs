@@ -95,7 +95,7 @@ public class MagicResponderConsumer : IConsumer<ReceivedChatMessage>
         // Check if we should be in debug mode
         var debugMode = false;
         var chatMessage = context.Message.ChatMessage;
-        if (sender.IsStaff() && organization.IsSerious() && chatMessage.Text.EndsWith(" [DEBUG]", StringComparison.OrdinalIgnoreCase))
+        if (sender.IsStaff() && organization.IsStaffOrganization() && chatMessage.Text.EndsWith(" [DEBUG]", StringComparison.OrdinalIgnoreCase))
         {
             // Remove the "[DEBUG]" token
             chatMessage = chatMessage with

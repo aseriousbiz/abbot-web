@@ -16,7 +16,7 @@ public sealed class PingSkill : ISkill
     {
         var meta = typeof(PingSkill).Assembly.GetBuildMetadata();
         var text = "Pong!";
-        if (messageContext.Organization.IsSerious())
+        if (messageContext.Organization.IsStaffOrganization())
         {
 #pragma warning disable CS0436
             text += $" _({meta.CommitId})_";

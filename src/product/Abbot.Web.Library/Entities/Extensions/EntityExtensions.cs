@@ -182,7 +182,7 @@ public static class EntityExtensions
     /// </summary>
     /// <param name="organization">The organization.</param>
     /// <returns></returns>
-    public static bool IsSerious(this Organization organization)
+    public static bool IsStaffOrganization(this Organization organization)
     {
         return organization.PlatformId
             is WebConstants.StaffOrganizationSlackId

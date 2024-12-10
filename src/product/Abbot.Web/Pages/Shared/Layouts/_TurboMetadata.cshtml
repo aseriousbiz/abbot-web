@@ -19,7 +19,7 @@
 <staff-only>
     <meta name="abbot-staff-mode" content="true">
 </staff-only>
-@if (member?.Organization.IsSerious() is true) {
+@if (member?.Organization.IsStaffOrganization() is true) {
     <meta name="abbot-organization-is-serious" content="true">
 }
 <meta name="abbot-organization-id" content="@member?.OrganizationId">

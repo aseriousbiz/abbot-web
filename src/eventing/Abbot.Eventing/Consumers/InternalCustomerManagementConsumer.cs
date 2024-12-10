@@ -79,7 +79,7 @@ public class InternalCustomerManagementConsumer : IConsumer<OrganizationActivate
 
     async Task UpdateOrganizationCustomerAsync(ConsumeContext context, Organization subject)
     {
-        if (subject.IsSerious())
+        if (subject.IsStaffOrganization())
         {
             // If the subject org is one of our orgs, don't do anything.
             // We don't want to spam ourselves with updates to our own org and test orgs.
